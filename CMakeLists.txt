@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 2.8.0)
 
 if (WIN32)
   add_definitions(WINDOWS)
+else()
+  add_definitions(-Wno-write-strings) # TODO: fix thise warnings instead of disabling
 endif()
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
