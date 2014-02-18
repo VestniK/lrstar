@@ -1099,7 +1099,7 @@ void  Symtab::term_symtab ()
 //                                                                                                 //
 //    add_symb - add symbol to table.
 
-int   Symtab::add_symbol (short t, char* token_start, char* token_end, int type, int line)
+int   Symtab::add_symbol (short t, char* token_start, const char* token_end, int type, int line)
 {
       char*p;
 		sti = get_symbol (token_start, token_end, type);
@@ -1131,10 +1131,10 @@ int   Symtab::add_symbol (short t, char* token_start, char* token_end, int type,
 //                                                                                                 //
 //    get_symbol - get symbol number from table.
 
-int   Symtab::get_symbol (char* token_start, char* token_end, int type)
+int   Symtab::get_symbol (const char* token_start, const char* token_end, int type)
 {
-      char* p = token_start;		    	         // Point at start.
-      char* q = token_end;			 	            // Point at end.
+      const char* p = token_start;		    	         // Point at start.
+      const char* q = token_end;			 	            // Point at end.
       length = (short)(q-p);       				   // Get length.
       uint hash = length;         	   		   // Set hash to length.
       int i = 0;						   			   // Set shift value to 0.

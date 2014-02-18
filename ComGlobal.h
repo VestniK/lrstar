@@ -138,6 +138,10 @@
       #define close  _close
       #define chmod  _chmod
       #define unlink _unlink
+      #else // WINDOWS
+      #define strlwr mystrlwr
+      #define strupr mystrupr
+      #define _filelength filelength
       #endif
 
       #define cchar     const char
@@ -294,8 +298,8 @@
 			static void     init_symtab  (int);	                // Initialize the symbol table.
 			static void     term_symtab  ();		                // Terminate the symbol table.
 			static char*    symname      (int);                 // Get symbol name.
-			static int      add_symbol   (short, char*, char*, int, int); // Add symbol to symbol table.
-			static int      get_symbol   (char*, char*, int);        // Get symbol number.
+			static int      add_symbol   (short, char*, const char*, int, int); // Add symbol to symbol table.
+			static int      get_symbol   (const char*, const char*, int);        // Get symbol number.
 			static void     print_symtab (char**);              // Print the symbol table. 
 		};
 
