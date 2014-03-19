@@ -11,6 +11,12 @@
   		#include "conio.h"
 		#endif					
 
+#ifdef UNIX
+static const char dirSep = '/';
+#else
+static const char dirSep = '\\';
+#endif
+
 	// 1 = upper, 2 = lower, 4 = '_', 8 = digit, 16 = quote ("|') 
 		uchar charcode[256] = 
 		{
@@ -566,7 +572,7 @@ int   get_fid (char *arg, char *dir, char *fn, char *ft)
       fn [0] = 0;
       ft [0] = 0;
 
-		last_slash = strrchr(arg, '\\');
+		last_slash = strrchr(arg, dirSep);
 		if (last_slash != NULL)
 		{
 			f = last_slash + 1;			// Point at filename start.
@@ -781,7 +787,7 @@ void  fix_backslash (char *in) // Change \\ to \ in place.
       char *out = in;
       while (*in != 0)
       {
-         if (*in == '\\' && *(in+1) == '\\') in++;
+         if (*in == dirSep && *(in+1) == dirSep) in++;
          *out++ = *in++;
       }
       *out = 0;
