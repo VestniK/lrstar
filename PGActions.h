@@ -32,7 +32,6 @@
 
       // Functions ...	
 			static int   	CheckOptions ();
-         static int   	startdecl_					(int p);
          static int   	arrow_						(int p);
          static int   	code_start_					(int p);
          static int   	init_code_start_			(int p);
@@ -51,9 +50,6 @@
          static int   	rightassoc_   				(int p);
          static int   	oper_         				(int p);
          static int   	goalsymbol_   				(int p);
-         static int   	startsymbol_   			(int p);
-         static int   	endsymbol_   				(int p);
-         static int   	colon_     					(int p);
          static int   	headsymbol_   				(int p);
          static int   	eof_          				(int p);
          static int   	prod_         				(int p);

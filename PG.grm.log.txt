@@ -34,7 +34,7 @@ Includes                            399  "/inc   =    500,000"    0 %
 Child nodes in graph                554  "/ch    =    500,000"    0 % 
 Nondeterministic actions              0  "/nd    =    100,000"    0 % 
 
-0 min 0.015 sec, 95.073 MB, 0 warnings, 0 errors.
+0 min 0.046 sec, 95.073 MB, 0 warnings, 0 errors.
 
 /* 3 keywords */
 

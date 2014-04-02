@@ -93,7 +93,6 @@
    GoalSymbolDef    	-> GoalSymbol GoalSymbolRule					               *> goaldef_(1)
 							;
    GoalSymbol			-> {goal_symbol}				                              => goalsymbol_(1)  
-	//						-> '$goal'																=> goalsymbol_(1)  
 							;
    GoalSymbolRule		-> ':'  GoalTails RuleActions [';']                     =*> prod_(1)
                      -> '->' GoalTails RuleActions [';']                     =*> prod_(1)

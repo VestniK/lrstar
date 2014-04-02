@@ -16,7 +16,9 @@ if errorlevel == 1 goto :end
 bin\dfastar PG.lgr PGLexer.h.skl  PGLexer.h  PGLexer.cpp.skl  PGLexer.cpp  /tm /m 
 if errorlevel == 1 goto :end		
 
-rem gcc *.cpp -lstdc++ -olrstar 
+rem gcc *.cpp -lstdc++ -w -olrstar -DLRSTAR 
+rem gcc *.cpp -lstdc++ -w -odfastar -DDFASTAR
+
 :end
 
                                         

@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="LRSTAR 6.3.011"
+	Name="LRSTAR 6.3.012"
 	ProjectGUID="{EA5645D7-512C-454E-8B96-1D2F01E5F755}"
 	RootNamespace="LALR 6.0.025"
 	TargetFrameworkVersion="131072"
@@ -727,6 +727,10 @@
 						Outputs="PG.grm.log.txt"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\readme.txt"
+				>
 			</File>
 		</Filter>
 		<Filter

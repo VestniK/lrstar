@@ -1,34 +1,51 @@
 
-How to compile LRSTAR and DFASTAR from the source code.
+HOW TO COMPILE LRSTAR & DFASTAR FROM THE SOURCE CODE.
 
-Visual C++ workspaces are already defined for this.  
-If you are not using Windows or Visual C++, do the following:
+The source code in LRSTAR 6.3.012 compiles without error
+when compiling with GCC 4.6.1.  This is based on my 
+experience on Windows as of March 28 2014.  If not using 
+the option "-w", many warning messages will be displayed, 
+but these are not a problem.  
 
-1. Specify either UNIX or WINDOWS:
+---------------------------------------------------------
 
-	#define UNIX (in ComGlobal.h)
-or /D UNIX on the compile command line
+ON WINDOWS SYSTEMS:
 
-	#define WINDOWS (in ComGlobal.h)
-or /D WINDOWS on the compile command line
+   Visual C++ workspaces are already defined for this in 
+   the "source" directory.  
 
-2. Specify:
+   If you are not using Visual C++, do the following:
 
-	#define LRSTAR (in ComGlobal.h)
-or /D LRSTAR on the compile command line. 
+   1. Specify WINDOWS and LRSTAR on the command line:
 
-3. Compile all the code (*.cpp) to make lrstar.exe 
+      /D WINDOWS /D LRSTAR
 
-4. Specify:
+      Compile all the code (*.cpp) to make lrstar.exe 
 
-	#define DFASTAR (in ComGlobal.h)
-or /D DFASTAR on the compile command line. 
+   2. Specify WINDOWS and DFASTAR on the command line:
 
-5. Compile all the code (*.cpp) to make dfastar.exe
+      /D WINDOWS /D DFASTAR 
 
+      Compile all the code (*.cpp) to make dfastar.exe
 
-Notes: 
+---------------------------------------------------------
 
-A. Do not specify both WINDOWS and UNIX.
-B. Do not specify both LRSTAR and DFASTAR.
+ON UNIX/LINUX SYSTEMS:
 
+	For compiling with GCC:
+
+   1. Specify UNIX and LRSTAR on the command line:
+
+      gcc *.cpp -lstdc++ -w -DUNIX -DLRSTAR -olrstar
+
+   2. Specify UNIX and DFASTAR on the command line:
+
+      gcc *.cpp -lstdc++ -w -DUNIX -DDFASTAR -odfastar
+
+---------------------------------------------------------
+
+ON MAC OS X SYSTEMS:
+
+	I don't know about this, sorry.
+
+---------------------------------------------------------

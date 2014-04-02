@@ -207,103 +207,26 @@ int   PGParseAction::arrow_ (int prod)
       return 0;
 }
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-
-int   PGParseAction::startdecl_ (int prod) // %start for yacc
-{
-      int a = pact_arg[prod];			// first argument index.
-      int x = arg_numb[a] - 1;	// parse stack index.
-      int sti = add_symbol (0, PS[x].start, PS[x].end, TERMINAL|NONTERMINAL, PS[x].line);
-      if (symbol[sti].type & TERMINAL)    // Already a terminal?
-      {
-			prt_error ("Symbol '%s' has already been declared as a terminal", PS[x].start, PS[x].end, PS[x].line);
-      }
-      else if (symbol[sti].type & NONTERMINAL)  // Already a start symbol?
-      {
-			prt_error ("Symbol '%s' has already been declared as a start symbol", PS[x].start, PS[x].end, PS[x].line);
-      }
-		else if (symbol[sti].type & OPERATOR)
-      {
-			prt_error ("Symbol '%s' has already been declared as an operator", PS[x].start, PS[x].end, PS[x].line);
-      }
-		else if (symbol[sti].numb >= 0)
-		{
-			prt_error ("Symbol '%s' has already been declared somewhere", PS[x].start, PS[x].end, PS[x].line);
-		}
-		start_symbol = sti;  // define the yacc start symbol. 
-      return 0;
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
 
-int   PGParseAction::goalsymbol_ (int p)  // LRSTAR/YACC goal symbol.
+int   PGParseAction::goalsymbol_ (int p)  // LRSTAR goal symbol.
 {
 		int sti;
 		goal_symbol = 1;
 		int x = arg_numb [pact_arg[p]] - 1;
-		if (x == -1) // YaccStart goal symbol ($start) ?
+		sti = head_sti = PS[x].sti = add_symbol (0, PS[x].start, PS[x].end, TERMINAL|ARGUMENT|CONSTANT, PS[x].line);
+		if (symbol[sti].type & TERMINAL)    // Already a terminal?
 		{
-			sti = head_sti = add_symbol (0, "Goal", "Goal"+4, 0, 0);
-			PS[0].sti   = sti;
-			PS[0].start = symbol[sti].start;
-			PS[0].end   = symbol[sti].start + symbol[sti].length;
+			prt_error ("Symbol '%s' has already been defined as a terminal", PS[x].start, PS[x].end, PS[x].line);
 		}
-		else
+		else if (symbol[sti].type & CONSTANT)    // Already a constant?
 		{
-			sti = head_sti = PS[x].sti = add_symbol (0, PS[x].start, PS[x].end, TERMINAL|ARGUMENT|CONSTANT, PS[x].line);
-			if (symbol[sti].type & TERMINAL)    // Already a terminal?
-			{
-				prt_error ("Symbol '%s' has already been defined as a terminal", PS[x].start, PS[x].end, PS[x].line);
-			}
-			else if (symbol[sti].type & CONSTANT)    // Already a constant?
-			{
-				prt_error ("Symbol '%s' has already been defined as a constant", PS[x].start, PS[x].end, PS[x].line);
-			}
+			prt_error ("Symbol '%s' has already been defined as a constant", PS[x].start, PS[x].end, PS[x].line);
 		}
 		symbol[sti].type |= NONTERMINAL; // Make it a nonterminal.
 		symbol[sti].numb  = N_heads;
 		symbol[sti].value = N_heads++;	// Increment nonterminal counter.
-      return 0;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-
-int   PGParseAction::startsymbol_ (int p)	// Yacc $start symbol.
-{
-		if (start_symbol == 0) // Start not defined yet?
-		{
-			prt_warning ("No start symbol has been defined, assuming %s is the start symbol", token.start, token.end, line_numb);
-			start_symbol = add_symbol (0, token.start, token.end, 0, line_numb);
-		}
-		PS[0].sti   = start_symbol;
-		PS[0].start = symbol[start_symbol].start;
-		PS[0].end   = symbol[start_symbol].start + symbol[start_symbol].length;
-      symbol[start_symbol].type |= TAIL;
-		return 0;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-
-int   PGParseAction::endsymbol_ (int p)	// Yacc $end symbol.
-{
-      int sti = add_symbol (0, "<eof>", "<eof>"+5, 0, 0);
-		PS[0].sti   = sti;
-		PS[0].start = symbol[sti].start;
-		PS[0].end   = symbol[sti].start + symbol[sti].length;
-      symbol[sti].type |= TAIL;
-      return 0;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-
-int   PGParseAction::colon_ (int p)	// Yacc ':' for goal production.
-{
-		PS[0].sti  = -COLON;
       return 0;
 }
 
@@ -605,6 +528,8 @@ int   PGParseAction::prod_ (int p)
       return 0;
 }
 
+#ifdef YACC // For yacc grammars (not fully implemented yet). 
+
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
 
@@ -792,6 +717,8 @@ int   PGParseAction::end_code_start_ (int prod)
 		token.end = p;
       return 0;
 }
+
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //

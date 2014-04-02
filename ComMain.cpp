@@ -5,7 +5,7 @@
 		#ifdef DFASTAR
       char* program = "DFASTAR";
 		#endif
-      char* version = "6.3.011";
+      char* version = "6.3.012";
       char* copywrt = "Copyright 2014 Paul B Mann";
 
 		#ifdef  _DEBUG
