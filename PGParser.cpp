@@ -1163,7 +1163,9 @@ int   Symtab::get_symbol (const char* token_start, const char* token_end, int ty
 					while (++j < length);				// while end not reached.
 					return (i);								// Found it.
 				}
-	Cont:    cell = (hash *= 65549) / hashdiv;	// Get new cell number.
+			Cont:
+                                cell = (hash *= 65549) / hashdiv;	// Get new cell number.
+                                cell %= max_cells;
 				i = hashvec [cell];					   // Get symbol index.
 			}
 			while (i >= 0);      					   // While not empty slot.
