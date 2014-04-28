@@ -12,12 +12,6 @@
 
 namespace @grm_name; {
 
-class ParserStackOverflow: public ParseError
-{
-public:
-    const char *what() const throw() {return "Parser stack overflow";}
-};
-
 class ParserStackCorruption: public ParseError
 {
 public:
@@ -31,28 +25,26 @@ public:
     const char *what() const throw() {return "Syntax error detected";}
 };
 
-const size_t Parser::stackSize = 1024;
+const size_t Parser::stackIncrementStep = 1024;
 
 Parser::Parser():
     tokenActions(0),
     parseActions(0),
-    stackStart(new Stack[stackSize]),
-    stackEnd(stackStart + stackSize),
-    stackTop(stackStart),
+    stackTop(0),
     stateNum(0)
 {
+    stack.resize(stackIncrementStep);
 }
 
 Parser::~Parser()
 {
-    delete[] stackStart;
 }
 
 void Parser::parse(const char *input) throw(ParseError)
 {
     lexer.start(input);
     stateNum = 0;
-    stackTop = stackStart;
+    stackTop = 0;
     while (true) {
         int termSymb = lexer.next();
         int symbIdx = -termSymb;
@@ -65,14 +57,14 @@ void Parser::parse(const char *input) throw(ParseError)
 @@
         while (true) {
             if (Bm[Br[stateNum] + Bc[termSymb]] & Bmask[termSymb]) { // Check B-matrix for shift action.
-                if (++stackTop >= stackEnd)
-                    throw ParserStackOverflow();
-                stackTop->state = stateNum;
-                stackTop->symbol = termSymb;
-                stackTop->symbolIndex = symbIdx;
+                if (++stackTop >= stack.size())
+                    stack.resize(stack.size() + stackIncrementStep);
+                stack[stackTop].state = stateNum;
+                stack[stackTop].symbol = termSymb;
+                stack[stackTop].symbolIndex = symbIdx;
 @optn_debug?;...
-                stackTop->start = lexer.currentToken().start;
-                stackTop->end = lexer.currentToken().end;
+                stack[stackTop].start = lexer.currentToken().start;
+                stack[stackTop].end = lexer.currentToken().end;
 @@
                 stateNum = Tm[Tr[stateNum] + Tc[termSymb]]; // Get next state from terminal transition matrix.
                 while (stateNum <= 0) // While shift-reduce actions.
@@ -98,36 +90,36 @@ void Parser::parse(const char *input) throw(ParseError)
 void Parser::reduce(int prodRule)
 {
 @optn_debug?;...
-    const Stack * const oldTop = stackTop;
+    const size_t oldTop = stackTop;
 @@
+    assert(static_cast<int>(stackTop) >= ProdLen[prodRule]);
     stackTop -= ProdLen[prodRule]; // Reduce stack ptr by production length.
-    assert(stackTop >= stackStart);
 @numb_pact?;...
     if (parseActions && parseActionNumber[prodRule] >= 0) {
         switch (parseActionNumber[prodRule]) {
-            @pact_func.1|case %d: parseActions->%s(prodRule, stackTop, ProdLen[prodRule]+1)\; break\;||\n            |;
+            @pact_func.1|case %d: parseActions->%s(prodRule, &stack[stackTop], ProdLen[prodRule]+1)\; break\;||\n            |;
         }
     }
 @@
     if (ProdLen[prodRule] < 0) { // Null production?
-        if (stackTop >= stackEnd)
-            throw ParserStackOverflow();
-        stackTop->state = stateNum;
-        stackTop->symbolIndex = 0;
+        if (stackTop >= stack.size())
+            stack.resize(stack.size() + stackIncrementStep);
+        stack[stackTop].state = stateNum;
+        stack[stackTop].symbolIndex = 0;
 @optn_debug?;...
-        stackTop->end = stackTop->start = lexer.currentToken().start;
+        stack[stackTop].end = stack[stackTop].start = lexer.currentToken().start;
 @@
     }
 @optn_debug?;...
     if (stackTop < oldTop) {
-        stackTop->end = oldTop->end;
-        printf("===> Reduction %d matched the following text:\n%.*s\n", prodRule, (int)(stackTop->end - stackTop->start), stackTop->start);
+        stack[stackTop].end = stack[oldTop].end;
+        printf("===> Reduction %d matched the following text:\n%.*s\n", prodRule, (int)(stack[stackTop].end - stack[stackTop].start), stack[stackTop].start);
     }
 @@
-    stackTop->symbol = -nonterminalNumber[prodRule];
+    stack[stackTop].symbol = -nonterminalNumber[prodRule];
     if (ProdLen[prodRule] != 0) // Do not override symbol index in rules matches one term
-        stackTop->symbolIndex = 0;
-    stateNum = Nm[Nr[stackTop->state] + Nc[prodRule]]; // Get next state from nonterminal transition.
+        stack[stackTop].symbolIndex = 0;
+    stateNum = Nm[Nr[stack[stackTop].state] + Nc[prodRule]]; // Get next state from nonterminal transition.
 }
 
 const int Parser::acceptState = @accp_sta.d;;
