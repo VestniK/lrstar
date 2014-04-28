@@ -25,15 +25,14 @@ enum Terminal
 };
 @@
 
-@numb_node?;...
-// Defined constants for the node names
-enum Nodes
-{
-    @node_name.1|%s = %d||,\n    |;
-};
-@@
-
 class ParseError: public std::exception {};
+
+@numb_node?;...
+// Base AST node class
+class Node;
+// Node subclassess to be implemented in the user code
+@node_name.1|class %s\;||\n|;
+@@
 
 // Parser state which is stored in the stack
 struct StackFrame
@@ -45,7 +44,32 @@ struct StackFrame
     const char *start;
     const char *end;
 @@
+@numb_node?;...
+    Node *node;
+@@
 };
+
+@numb_node?;...
+class Visitor
+{
+public:
+    virtual void visit(Node *) {}
+    @node_name.1|virtual void visit(%s *) {}||\n    |;
+};
+
+class Node
+{
+public:
+    Node(StackFrame *start, int reductionSize);
+    virtual void accept(Visitor *visitor) {visitor->visit(this);}
+
+    static Node *linkup(StackFrame *start, int reductionSize);
+
+private:
+    Node *children;
+    Node *next;
+};
+@@
 
 // Token actions interface
 class TokenActions
@@ -125,8 +149,10 @@ private:
     static const @pact_numb.t; parseActionNumber[];
     // Get grammar nonterminal symbol number by terminal number
     static const @prod_head.t; nonterminalNumber[];
+@numb_node?;...
     // Get id of a node to be created by production number
     static const @node_numb.t; nodeNumber[];
+@@
 };
 
 } // namespace @grm_name;

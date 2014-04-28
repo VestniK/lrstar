@@ -25,6 +25,34 @@ public:
     const char *what() const throw() {return "Syntax error detected";}
 };
 
+@numb_node?;...
+Node::Node(StackFrame *start, int reductionSize):
+    children(linkup(start, reductionSize)),
+    next(nullptr)
+{
+}
+
+Node *Node::linkup(StackFrame *start, int reductionSize)
+{
+    Node *first = nullptr;
+    Node *last = nullptr;
+    for (StackFrame *frame = start; frame < start + reductionSize; ++frame) {
+        if (!frame->node)
+            continue;
+        assert((first && last) || (!first && !last));
+        if (!first)
+            first = frame->node;
+        if (!last)
+            last = frame->node;
+        else
+            last->next = frame->node;
+        while (last->next)
+            last = last->next;
+    }
+    return first;
+}
+@@
+
 const size_t Parser::stackIncrementStep = 1024;
 
 Parser::Parser():
@@ -62,6 +90,9 @@ void Parser::parse(const char *input) throw(ParseError)
                 stack[stackTop].state = stateNum;
                 stack[stackTop].symbol = termSymb;
                 stack[stackTop].symbolIndex = symbIdx;
+@numb_node?;...
+                stack[stackTop].node = nullptr;
+@@
 @optn_debug?;...
                 stack[stackTop].start = lexer.currentToken().start;
                 stack[stackTop].end = lexer.currentToken().end;
@@ -107,19 +138,26 @@ void Parser::reduce(int prodRule)
             stack.resize(stack.size() + stackIncrementStep);
         stack[stackTop].state = stateNum;
         stack[stackTop].symbolIndex = 0;
+@numb_node?;...
+        stack[stackTop].node = nullptr;
+@@
 @optn_debug?;...
         stack[stackTop].end = stack[stackTop].start = lexer.currentToken().start;
 @@
     }
+@numb_node?;...
+    if (nodeNumber[prodRule] >= 0) {
+        stack[stackTop].node = new Node(&stack[stackTop], ProdLen[prodRule]+1); // TODO: memory cleanup needed! subclasses creation needed
+        printf("===> Going to create node of type %d\n", static_cast<int>(nodeNumber[prodRule]));
+    } else
+        stack[stackTop].node = Node::linkup(&stack[stackTop], ProdLen[prodRule]+1);
+@@
 @optn_debug?;...
     if (stackTop < oldTop) {
         stack[stackTop].end = stack[oldTop].end;
         printf("===> Reduction %d matched the following text:\n%.*s\n", prodRule, (int)(stack[stackTop].end - stack[stackTop].start), stack[stackTop].start);
     }
 @@
-    if (nodeNumber[prodRule] >= 0) {
-        printf("===> Going to create node of type %d\n", static_cast<int>(nodeNumber[prodRule]));
-    }
     // Reduce stack
     stack[stackTop].symbol = -nonterminalNumber[prodRule];
     if (ProdLen[prodRule] != 0) // Do not override symbol index in rules matches one term
@@ -232,9 +270,11 @@ const @prod_head.t; Parser::nonterminalNumber[@prod_head.d;] =
     @prod_head.20|%d|, |,\n    |;
 };
 
+@numb_node?;...
 const @node_numb.t; Parser::nodeNumber[@node_numb.d;] =
 {
     @node_numb.20|%d|, |,\n    |;
 };
+@@
 
 } // namespace @grm_name;
