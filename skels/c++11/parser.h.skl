@@ -31,7 +31,7 @@ struct Stack
 {
     int state;
     int symbol; // Symbol stacked, terminal (positive) or nonterminal (negative).
-    int symbolIndex; // Symbol index returned by toket action (-1 for all nonterminals ans terms without token action).
+    int symbolIndex; // TODO: rename to represent that it's term not symbol and document possible values
 @optn_debug?;...
     const char *start;
     const char *end;

@@ -55,7 +55,7 @@ void Parser::parse(const char *input) throw(ParseError)
     stackTop = stackStart;
     while (true) {
         int termSymb = lexer.next();
-        int symbIdx = -1;
+        int symbIdx = -termSymb;
 @numb_tact?;...
         if (tokenActions && tokenActionNumber[termSymb] >= 0) { // TODO: move to separate func and save returned values as symbol table index???
             switch(tokenActionNumber[termSymb]) {
@@ -113,6 +113,7 @@ void Parser::reduce(int prodRule)
         if (stackTop >= stackEnd)
             throw ParserStackOverflow();
         stackTop->state = stateNum;
+        stackTop->symbolIndex = 0;
 @optn_debug?;...
         stackTop->end = stackTop->start = lexer.currentToken().start;
 @@
@@ -124,7 +125,8 @@ void Parser::reduce(int prodRule)
     }
 @@
     stackTop->symbol = -nonterminalNumber[prodRule];
-    stackTop->symbolIndex = -1;
+    if (ProdLen[prodRule] != 0) // Do not override symbol index in rules matches one term
+        stackTop->symbolIndex = 0;
     stateNum = Nm[Nr[stackTop->state] + Nc[prodRule]]; // Get next state from nonterminal transition.
 }
 
