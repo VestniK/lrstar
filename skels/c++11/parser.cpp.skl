@@ -67,7 +67,9 @@ std::shared_ptr<Node> Node::linkup(StackFrame *start, int reductionSize)
 const size_t Parser::stackIncrementStep = 1024;
 
 Parser::Parser():
+@numb_tact?;...
     tokenActions(nullptr),
+@@
     parseActions(nullptr),
     nodeActions(nullptr),
     stackTop(0),
@@ -272,11 +274,13 @@ const @rmat_col.t; Parser::Rc [@rmat_col.d;] =
     @rmat_col.20|%d|, |,\n    |;
 };
 
+@numb_tact?;...
 // Token action number
 const @tact_numb.t; Parser::tokenActionNumber[@tact_numb.d;] =
 {
     @tact_numb.20|%d|, |,\n    |;
 };
+@@
 
 // Parser action number
 const @pact_numb.t; Parser::parseActionNumber[@pact_numb.d;] =

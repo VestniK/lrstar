@@ -63,7 +63,7 @@ protected:
     Visitor() {}
 };
 
-// TODO think how to uppercase grammar name dicumented .u format specifier doesn't work.
+// TODO think how to uppercase grammar name. Dicumented .u format specifier doesn't work.
 #define @grm_name;_NODE \
     protected:\
         virtual void accept(@grm_name;::Visitor *visitor) override {visitor->visit(this);}\
@@ -97,6 +97,7 @@ public:
     @nact_func.1|virtual void on%s(%s *node) = 0\;||\n    |;
 };
 @@
+@numb_tact?;...
 
 // Token actions interface
 class TokenActions
@@ -106,6 +107,7 @@ public:
 
     @tact_func.1|virtual int %s(int terminalNumb, const Token &token) = 0\;||\n        |;
 };
+@@
 
 class ParseActions
 {
@@ -122,7 +124,9 @@ public:
     Parser();
     ~Parser();
 
+@numb_tact?;...
     void setTokenActions(TokenActions *actions) {tokenActions = actions;}
+@@
     void setParseActions(ParseActions *actions) {parseActions = actions;}
 @numb_node?;...
     void setNodeActions(NodeActions *actions) {nodeActions = actions;}
@@ -141,7 +145,9 @@ private:
 // Class data
 private:
     Lexer lexer;
+@numb_tact?;...
     TokenActions *tokenActions;
+@@
     ParseActions *parseActions;
 @numb_node?;...
     NodeActions *nodeActions;
@@ -181,8 +187,10 @@ private:
     static const @rmat_row.t; Rr[]; // row(base).
     static const @rmat_col.t; Rc[]; // column(displacement).
 
+@numb_tact?;...
     // Get token action number by terminal number
     static const @tact_numb.t; tokenActionNumber[];
+@@
     // Get parser action number by terminal number
     static const @pact_numb.t; parseActionNumber[];
 @numb_node?;...
