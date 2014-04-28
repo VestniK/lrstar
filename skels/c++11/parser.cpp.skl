@@ -32,10 +32,10 @@ Node::Node(StackFrame *start, int reductionSize):
 {
 }
 
-Node *Node::linkup(StackFrame *start, int reductionSize)
+std::shared_ptr<Node> Node::linkup(StackFrame *start, int reductionSize)
 {
-    Node *first = nullptr;
-    Node *last = nullptr;
+    std::shared_ptr<Node> first = nullptr;
+    std::shared_ptr<Node> last = nullptr;
     for (StackFrame *frame = start; frame < start + reductionSize; ++frame) {
         if (!frame->node)
             continue;
@@ -68,7 +68,12 @@ Parser::~Parser()
 {
 }
 
+@numb_node?;...
+std::shared_ptr<Node> Parser::parse(const char *input) throw(ParseError)
+@@
+@numb_node!;...
 void Parser::parse(const char *input) throw(ParseError)
+@@
 {
     lexer.start(input);
     stateNum = 0;
@@ -111,7 +116,12 @@ void Parser::parse(const char *input) throw(ParseError)
             }
             if (stateNum == acceptState) {
                 reduce(0); // last reduction when accept state reached.
+@numb_node?;...
+                return stack[stackTop].node;
+@@
+@numb_node!;...
                 return;
+@@
             }
             throw SyntaxError();
         }
@@ -147,8 +157,10 @@ void Parser::reduce(int prodRule)
     }
 @numb_node?;...
     if (nodeNumber[prodRule] >= 0) {
-        stack[stackTop].node = new Node(&stack[stackTop], ProdLen[prodRule]+1); // TODO: memory cleanup needed! subclasses creation needed
-        printf("===> Going to create node of type %d\n", static_cast<int>(nodeNumber[prodRule]));
+        stack[stackTop].node = parseActions ?
+            parseActions->create(static_cast<Node::Type>(nodeNumber[prodRule]), &stack[stackTop], ProdLen[prodRule]+1) :
+            std::shared_ptr<Node>(new Node(&stack[stackTop], ProdLen[prodRule]+1))
+        ;
     } else
         stack[stackTop].node = Node::linkup(&stack[stackTop], ProdLen[prodRule]+1);
 @@

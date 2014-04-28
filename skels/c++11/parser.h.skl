@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <exception>
+#include <memory>
 #include <vector>
 
 #include "@grm_name;lexer.h"
@@ -45,7 +46,7 @@ struct StackFrame
     const char *end;
 @@
 @numb_node?;...
-    Node *node;
+    std::shared_ptr<Node> node;
 @@
 };
 
@@ -57,17 +58,24 @@ public:
     @node_name.1|virtual void visit(%s *) {}||\n    |;
 };
 
+// TODO think how to uppercase grammar name dicumented .u format specifier doesn't work.
+#define @grm_name;_NODE public: virtual void accept(@grm_name;::Visitor *visitor) {visitor->visit(this);} private:
 class Node
 {
+@grm_name.s;_NODE
 public:
+    enum Type
+    {
+        @node_name.1|%s = %d\,||\n        |;
+    };
+
     Node(StackFrame *start, int reductionSize);
-    virtual void accept(Visitor *visitor) {visitor->visit(this);}
 
-    static Node *linkup(StackFrame *start, int reductionSize);
+    static std::shared_ptr<Node> linkup(StackFrame *start, int reductionSize);
 
-private:
-    Node *children;
-    Node *next;
+protected:
+    std::shared_ptr<Node> children;
+    std::shared_ptr<Node> next;
 };
 @@
 
@@ -85,6 +93,9 @@ class ParseActions
 public:
     virtual ~ParseActions() {}
 
+@numb_node?;...
+    virtual std::shared_ptr<Node> create(Node::Type type, StackFrame *start, int reductionSize) = 0;
+@@
     @pact_func.1|virtual void %s(int productionNum, const StackFrame *reductionStart, int reductionSize) = 0\;||\n    |;
 };
 
@@ -97,7 +108,12 @@ public:
 
     void setTokenActions(TokenActions *actions) {tokenActions = actions;}
     void setParseActions(ParseActions *actions) {parseActions = actions;}
+@numb_node?;...
+    std::shared_ptr<Node> parse(const char *input) throw(ParseError);
+@@
+@numb_node!;...
     void parse(const char *input) throw(ParseError);
+@@
 
 // Internal methods
 private:
