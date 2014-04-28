@@ -35,6 +35,7 @@ const size_t Parser::stackSize = 1024;
 
 Parser::Parser():
     tokenActions(0),
+    parseActions(0),
     stackStart(new ParserState[stackSize]),
     stackEnd(stackStart + stackSize),
     stackTop(stackStart),
@@ -54,10 +55,11 @@ void Parser::parse(const char *input) throw(ParseError)
     stackTop = stackStart;
     while (true) {
         int termSymb = lexer.next();
+        int symbIdx = -1;
 @numb_tact?;...
         if (tokenActions && tokenActionNumber[termSymb] >= 0) { // TODO: move to separate func and save returned values as symbol table index???
             switch(tokenActionNumber[termSymb]) {
-                @tact_func.1|case %d: tokenActions->%s(termSymb, lexer.currentToken())\; break\;||\n                |;
+                @tact_func.1|case %d: symbIdx = tokenActions->%s(termSymb, lexer.currentToken())\; break\;||\n                |;
             }
         }
 @@
@@ -66,6 +68,8 @@ void Parser::parse(const char *input) throw(ParseError)
                 if (++stackTop >= stackEnd)
                     throw ParserStackOverflow();
                 stackTop->state = stateNum;
+                stackTop->symbol = termSymb;
+                stackTop->symbolIndex = symbIdx;
 @optn_debug?;...
                 stackTop->start = lexer.currentToken().start;
                 stackTop->end = lexer.currentToken().end;
@@ -98,6 +102,13 @@ void Parser::reduce(int prodRule)
 @@
     stackTop -= ProdLen[prodRule]; // Reduce stack ptr by production length.
     assert(stackTop >= stackStart);
+@numb_pact?;...
+    if (parseActions && parseActionNumber[prodRule] >= 0) {
+        switch (parseActionNumber[prodRule]) {
+            @pact_func.1|case %d: parseActions->%s(prodRule, stackTop, ProdLen[prodRule]+1)\; break\;||\n            |;
+        }
+    }
+@@
     if (ProdLen[prodRule] < 0) { // Null production?
         if (stackTop >= stackEnd)
             throw ParserStackOverflow();
@@ -112,6 +123,8 @@ void Parser::reduce(int prodRule)
         printf("===> Reduction %d matched the following text:\n%.*s\n", prodRule, (int)(stackTop->end - stackTop->start), stackTop->start);
     }
 @@
+    stackTop->symbol = -nonterminalNumber[prodRule];
+    stackTop->symbolIndex = -1;
     stateNum = Nm[Nr[stackTop->state] + Nc[prodRule]]; // Get next state from nonterminal transition.
 }
 
@@ -202,9 +215,22 @@ const @rmat_col.t; Parser::Rc [@rmat_col.d;] =
     @rmat_col.20|%d|, |,\n    |;
 };
 
+// Token action number
 const @tact_numb.t; Parser::tokenActionNumber[@tact_numb.d;] =
 {
     @tact_numb.20|%d|, |,\n    |;
+};
+
+// Parser action number
+const @pact_numb.t; Parser::parseActionNumber[@pact_numb.d;] =
+{
+    @pact_numb.20|%d|, |,\n    |;
+};
+
+// Nonterminal number
+const @prod_head.t; Parser::nonterminalNumber[@prod_head.d;] =
+{
+    @prod_head.20|%d|, |,\n    |;
 };
 
 } // namespace @grm_name;

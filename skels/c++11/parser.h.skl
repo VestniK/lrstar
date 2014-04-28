@@ -17,12 +17,22 @@
 
 namespace @grm_name; {
 
+@def_cons?;...
+// Terminal state num constants
+enum Terminal
+{
+    @def_cons.1|%s = %d||,\n    |;
+};
+@@
+
 class ParseError: public std::exception {};
 
 // Parser state which is stored in the stack
-struct ParserState
+struct ParserState // TODO: name should reflect that it's a stask element
 {
     int state;
+    int symbol; // Symbol stacked, terminal (positive) or nonterminal (negative).
+    int symbolIndex; // Symbol index returned by toket action (-1 for all nonterminals ans terms without token action).
 @optn_debug?;...
     const char *start;
     const char *end;
@@ -33,7 +43,17 @@ struct ParserState
 class TokenActions
 {
 public:
+    virtual ~TokenActions() {}
+
     @tact_func.1|virtual int %s(int terminalNumb, const Token &token) = 0\;||\n        |;
+};
+
+class ParseActions
+{
+public:
+    virtual ~ParseActions() {}
+
+    @pact_func.1|virtual void %s(int productionNum, const ParserState *reductionStart, int reductionSize) = 0\;||\n    |;
 };
 
 class Parser
@@ -43,7 +63,8 @@ public:
     Parser();
     ~Parser();
 
-    void setTokenActions(TokenActions *tokenActions) {this->tokenActions = tokenActions;}
+    void setTokenActions(TokenActions *actions) {tokenActions = actions;}
+    void setParseActions(ParseActions *actions) {parseActions = actions;}
     void parse(const char *input) throw(ParseError);
 
 // Internal methods
@@ -54,6 +75,7 @@ private:
 private:
     Lexer lexer;
     TokenActions *tokenActions;
+    ParseActions *parseActions;
     static const size_t stackSize;
     ParserState *stackStart;
     const ParserState * const stackEnd;
@@ -65,7 +87,7 @@ private:
     static const int acceptState;
 
     // Production rule length minus one(zero based).
-    static const @prod_leng.t; ProdLen[];
+    static const @prod_leng.t; ProdLen[]; // TODO: name should start from lowercase
 
     // Boolean matrix parser tables
     static const @bmat_numb.t; Bm[]; // matrix data.
@@ -92,6 +114,10 @@ private:
 
     // Get token action number by terminal number
     static const @tact_numb.t; tokenActionNumber[];
+    // Get parser action number by terminal number
+    static const @pact_numb.t; parseActionNumber[];
+    // Get grammar nonterminal symbol number by terminal number
+    static const @prod_head.t; nonterminalNumber[];
 };
 
 } // namespace @grm_name;
