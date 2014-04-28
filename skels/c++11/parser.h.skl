@@ -62,11 +62,6 @@ class Node
 {
 @grm_name.s;_NODE
 public:
-    enum Type
-    {
-        @node_name.1|%s = %d\,||\n        |;
-    };
-
     Node(StackFrame *start, int reductionSize);
 
     static std::shared_ptr<Node> linkup(StackFrame *start, int reductionSize);
@@ -91,9 +86,6 @@ class ParseActions
 public:
     virtual ~ParseActions() {}
 
-@numb_node?;...
-    virtual std::shared_ptr<Node> create(Node::Type type, StackFrame *start, int reductionSize) = 0;
-@@
     @pact_func.1|virtual void %s(int productionNum, const StackFrame *reductionStart, int reductionSize) = 0\;||\n    |;
 };
 

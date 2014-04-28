@@ -2,6 +2,9 @@
 #include <cstdio>
 
 #include "@grm_name;parser.h"
+// Should be created manually. Should contain Node sublcasses forward declared in
+// the @grm_name;parser.h
+#include "@grm_name;nodes.h"
 
 @("int8_t", "uint8_t", "int16_t", "uint16_t", "int", "uint", "const char*")
 @//
@@ -150,13 +153,10 @@ void Parser::reduce(int prodRule)
         stack[stackTop].end = stack[stackTop].start = lexer.currentToken().start;
     }
 @numb_node?;...
-    if (nodeNumber[prodRule] >= 0) {
-        stack[stackTop].node = parseActions ?
-            parseActions->create(static_cast<Node::Type>(nodeNumber[prodRule]), &stack[stackTop], ProdLen[prodRule]+1) :
-            std::shared_ptr<Node>(new Node(&stack[stackTop], ProdLen[prodRule]+1))
-        ;
-    } else
-        stack[stackTop].node = Node::linkup(&stack[stackTop], ProdLen[prodRule]+1);
+    switch (nodeNumber[prodRule]) {
+        @node_name.1|case %d: stack[stackTop].node = std::shared_ptr<Node>(new %s(&stack[stackTop], ProdLen[prodRule]+1))\; break\;||\n        |;
+        default: stack[stackTop].node = Node::linkup(&stack[stackTop], ProdLen[prodRule]+1); break;
+    }
 @@
     if (stackTop < oldTop) {
         stack[stackTop].end = stack[oldTop].end;
