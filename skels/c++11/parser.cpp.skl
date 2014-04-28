@@ -67,8 +67,9 @@ std::shared_ptr<Node> Node::linkup(StackFrame *start, int reductionSize)
 const size_t Parser::stackIncrementStep = 1024;
 
 Parser::Parser():
-    tokenActions(0),
-    parseActions(0),
+    tokenActions(nullptr),
+    parseActions(nullptr),
+    nodeActions(nullptr),
     stackTop(0),
     stateNum(0)
 {
@@ -164,6 +165,11 @@ void Parser::reduce(int prodRule)
     switch (nodeNumber[prodRule]) {
         @node_name.1|case %d: stack[stackTop].node = std::shared_ptr<Node>(new %s(&stack[stackTop], ProdLen[prodRule]+1))\; break\;||\n        |;
         default: stack[stackTop].node = Node::linkup(&stack[stackTop], ProdLen[prodRule]+1); break;
+    }
+    if (nodeActions) {
+        switch (nodeActionNumber[prodRule]) {
+            @nact_func.1|case %d: nodeActions->on%s(dynamic_cast<%s *>(stack[stackTop].node.get()))\; break\;||\n            |;
+        }
     }
 @@
     if (stackTop < oldTop) {
@@ -276,6 +282,12 @@ const @tact_numb.t; Parser::tokenActionNumber[@tact_numb.d;] =
 const @pact_numb.t; Parser::parseActionNumber[@pact_numb.d;] =
 {
     @pact_numb.20|%d|, |,\n    |;
+};
+
+// Node action number
+const @nact_numb.t; Parser::nodeActionNumber[@nact_numb.d;] =
+{
+    @nact_numb.20|%d|, |,\n    |;
 };
 
 // Nonterminal number

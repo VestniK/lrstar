@@ -87,6 +87,15 @@ protected:
     std::shared_ptr<Node> children;
     std::shared_ptr<Node> next;
 };
+
+// Node actions interface TODO: hide interface if no node actions even if nodes exists
+class NodeActions
+{
+public:
+    virtual ~NodeActions() {}
+
+    @nact_func.1|virtual void on%s(%s *node) = 0\;||\n    |;
+};
 @@
 
 // Token actions interface
@@ -116,6 +125,9 @@ public:
     void setTokenActions(TokenActions *actions) {tokenActions = actions;}
     void setParseActions(ParseActions *actions) {parseActions = actions;}
 @numb_node?;...
+    void setNodeActions(NodeActions *actions) {nodeActions = actions;}
+@@
+@numb_node?;...
     std::shared_ptr<Node> parse(const char *input) throw(ParseError);
 @@
 @numb_node!;...
@@ -131,6 +143,9 @@ private:
     Lexer lexer;
     TokenActions *tokenActions;
     ParseActions *parseActions;
+@numb_node?;...
+    NodeActions *nodeActions;
+@@
     std::vector<StackFrame> stack;
     size_t stackTop;
     static const size_t stackIncrementStep;
@@ -170,6 +185,10 @@ private:
     static const @tact_numb.t; tokenActionNumber[];
     // Get parser action number by terminal number
     static const @pact_numb.t; parseActionNumber[];
+@numb_node?;...
+    // Node action number
+    static const @nact_numb.t; nodeActionNumber[];
+@@
     // Get grammar nonterminal symbol number by terminal number
     static const @prod_head.t; nonterminalNumber[];
 @numb_node?;...
