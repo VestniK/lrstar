@@ -36,7 +36,7 @@ const size_t Parser::stackSize = 1024;
 Parser::Parser():
     tokenActions(0),
     parseActions(0),
-    stackStart(new ParserState[stackSize]),
+    stackStart(new Stack[stackSize]),
     stackEnd(stackStart + stackSize),
     stackTop(stackStart),
     stateNum(0)
@@ -98,7 +98,7 @@ void Parser::parse(const char *input) throw(ParseError)
 void Parser::reduce(int prodRule)
 {
 @optn_debug?;...
-    const ParserState * const oldTop = stackTop;
+    const Stack * const oldTop = stackTop;
 @@
     stackTop -= ProdLen[prodRule]; // Reduce stack ptr by production length.
     assert(stackTop >= stackStart);

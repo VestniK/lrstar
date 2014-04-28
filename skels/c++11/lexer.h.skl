@@ -72,5 +72,5 @@ private:
 
 } // namespace @grm_name;
 
-#endif
+#endif // @grm_name;_lexer_h
 

@@ -5,8 +5,7 @@
 #include <cstdlib>
 #include <exception>
 
-//#include "@grm_name;lexer.h" // TODO: retrun this one
-#include "rlexer.h"
+#include "@grm_name;lexer.h"
 
 @("int8_t", "uint8_t", "int16_t", "uint16_t", "int", "uint", "const char*")
 @//
@@ -28,7 +27,7 @@ enum Terminal
 class ParseError: public std::exception {};
 
 // Parser state which is stored in the stack
-struct ParserState // TODO: name should reflect that it's a stask element
+struct Stack
 {
     int state;
     int symbol; // Symbol stacked, terminal (positive) or nonterminal (negative).
@@ -53,7 +52,7 @@ class ParseActions
 public:
     virtual ~ParseActions() {}
 
-    @pact_func.1|virtual void %s(int productionNum, const ParserState *reductionStart, int reductionSize) = 0\;||\n    |;
+    @pact_func.1|virtual void %s(int productionNum, const Stack *reductionStart, int reductionSize) = 0\;||\n    |;
 };
 
 class Parser
@@ -77,9 +76,9 @@ private:
     TokenActions *tokenActions;
     ParseActions *parseActions;
     static const size_t stackSize;
-    ParserState *stackStart;
-    const ParserState * const stackEnd;
-    ParserState *stackTop;
+    Stack * const stackStart;
+    const Stack * const stackEnd;
+    Stack *stackTop;
     int stateNum;
 
 // Internal grammar constants
@@ -122,4 +121,4 @@ private:
 
 } // namespace @grm_name;
 
-#endif
+#endif // @grm_name;_parser_h
