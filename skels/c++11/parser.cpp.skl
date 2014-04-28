@@ -32,6 +32,7 @@ public:
 const size_t @grm_name;Parser::stackSize = 1024;
 
 @grm_name;Parser::@grm_name;Parser():
+    tokenActions(0),
     stackStart(new ParserState[stackSize]),
     stackEnd(stackStart + stackSize),
     stackTop(stackStart),
@@ -51,6 +52,13 @@ void @grm_name;Parser::parse(const char *input) throw(ParseError)
     stackTop = stackStart;
     while (true) {
         int termSymb = lexer.next();
+@numb_tact?;...
+        if (tokenActions && tokenActionNumber[termSymb] >= 0) { // TODO: move to separate func and save returned values as symbol table index???
+            switch(tokenActionNumber[termSymb]) {
+                @tact_func.1|case %d: tokenActions->%s(termSymb, lexer.currentToken())\; break\;||\n                |;
+            }
+        }
+@@
         while (true) {
             if (Bm[Br[stateNum] + Bc[termSymb]] & Bmask[termSymb]) { // Check B-matrix for shift action.
                 if (++stackTop >= stackEnd)
@@ -91,8 +99,8 @@ void @grm_name;Parser::reduce(int prodRule)
     if (ProdLen[prodRule] < 0) { // Null production?
         if (stackTop >= stackEnd)
             throw ParserStackOverflow();
-@optn_debug?;...
         stackTop->state = stateNum;
+@optn_debug?;...
         stackTop->end = stackTop->start = lexer.currentToken().start;
 @@
     }
@@ -190,4 +198,9 @@ const @rmat_row.t; @grm_name;Parser::Rr [@rmat_row.d;] =
 const @rmat_col.t; @grm_name;Parser::Rc [@rmat_col.d;] =
 {
     @rmat_col.20|%d|, |,\n    |;
+};
+
+const @tact_numb.t; @grm_name;Parser::tokenActionNumber[@tact_numb.d;] =
+{
+    @tact_numb.20|%d|, |,\n    |;
 };

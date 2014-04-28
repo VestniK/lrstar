@@ -17,6 +17,7 @@
 
 class ParseError: public std::exception {};
 
+// Parser state which is stored in the stack
 struct ParserState
 {
     int state;
@@ -26,23 +27,39 @@ struct ParserState
 @@
 };
 
-class @grm_name;Parser
+// Token actions interface
+class TokenActions
 {
 public:
+    @tact_func.1|virtual int %s(int terminalNumb, const Token &token) = 0\;||\n        |;
+};
+
+class @grm_name;Parser // TODO: move everything in the namespace @grm_name; and use short classes names
+{
+public:
+    // Parser methods
     @grm_name;Parser();
     ~@grm_name;Parser();
+
+    void setTokenActions(TokenActions *tokenActions) {this->tokenActions = tokenActions;}
     void parse(const char *input) throw(ParseError);
 
+// Internal methods
 private:
     void reduce(int prodRule);
 
+// Class data
+private:
     @grm_name;Lexer lexer;
+    TokenActions *tokenActions;
     static const size_t stackSize;
     ParserState *stackStart;
     const ParserState * const stackEnd;
     ParserState *stackTop;
     int stateNum;
 
+// Internal grammar constants
+private:
     static const int acceptState;
 
     // Production rule length minus one(zero based).
@@ -70,6 +87,9 @@ private:
     static const @rmat_numb.t; Rm[]; // matrix data.
     static const @rmat_row.t; Rr[]; // row(base).
     static const @rmat_col.t; Rc[]; // column(displacement).
+
+    // Get token action number by terminal number
+    static const @tact_numb.t; tokenActionNumber[];
 };
 
 #endif
