@@ -98,10 +98,8 @@ void Parser::parse(const char *input) throw(ParseError)
 @numb_node?;...
                 stack[stackTop].node = nullptr;
 @@
-@optn_debug?;...
                 stack[stackTop].start = lexer.currentToken().start;
                 stack[stackTop].end = lexer.currentToken().end;
-@@
                 stateNum = Tm[Tr[stateNum] + Tc[termSymb]]; // Get next state from terminal transition matrix.
                 while (stateNum <= 0) // While shift-reduce actions.
                     reduce(-stateNum);
@@ -131,9 +129,7 @@ void Parser::parse(const char *input) throw(ParseError)
 void Parser::reduce(int prodRule)
 {
     // Perform reduce related actions
-@optn_debug?;...
     const size_t oldTop = stackTop;
-@@
     assert(static_cast<int>(stackTop) >= ProdLen[prodRule]);
     stackTop -= ProdLen[prodRule]; // Reduce stack ptr by production length.
 @numb_pact?;...
@@ -151,9 +147,7 @@ void Parser::reduce(int prodRule)
 @numb_node?;...
         stack[stackTop].node = nullptr;
 @@
-@optn_debug?;...
         stack[stackTop].end = stack[stackTop].start = lexer.currentToken().start;
-@@
     }
 @numb_node?;...
     if (nodeNumber[prodRule] >= 0) {
@@ -164,12 +158,12 @@ void Parser::reduce(int prodRule)
     } else
         stack[stackTop].node = Node::linkup(&stack[stackTop], ProdLen[prodRule]+1);
 @@
-@optn_debug?;...
     if (stackTop < oldTop) {
         stack[stackTop].end = stack[oldTop].end;
+@optn_debug?;...
         printf("===> Reduction %d matched the following text:\n%.*s\n", prodRule, (int)(stack[stackTop].end - stack[stackTop].start), stack[stackTop].start);
-    }
 @@
+    }
     // Reduce stack
     stack[stackTop].symbol = -nonterminalNumber[prodRule];
     if (ProdLen[prodRule] != 0) // Do not override symbol index in rules matches one term
