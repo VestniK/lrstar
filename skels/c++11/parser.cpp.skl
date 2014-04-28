@@ -89,6 +89,7 @@ void Parser::parse(const char *input) throw(ParseError)
 
 void Parser::reduce(int prodRule)
 {
+    // Perform reduce related actions
 @optn_debug?;...
     const size_t oldTop = stackTop;
 @@
@@ -116,6 +117,10 @@ void Parser::reduce(int prodRule)
         printf("===> Reduction %d matched the following text:\n%.*s\n", prodRule, (int)(stack[stackTop].end - stack[stackTop].start), stack[stackTop].start);
     }
 @@
+    if (nodeNumber[prodRule] >= 0) {
+        printf("===> Going to create node of type %d\n", static_cast<int>(nodeNumber[prodRule]));
+    }
+    // Reduce stack
     stack[stackTop].symbol = -nonterminalNumber[prodRule];
     if (ProdLen[prodRule] != 0) // Do not override symbol index in rules matches one term
         stack[stackTop].symbolIndex = 0;
@@ -225,6 +230,11 @@ const @pact_numb.t; Parser::parseActionNumber[@pact_numb.d;] =
 const @prod_head.t; Parser::nonterminalNumber[@prod_head.d;] =
 {
     @prod_head.20|%d|, |,\n    |;
+};
+
+const @node_numb.t; Parser::nodeNumber[@node_numb.d;] =
+{
+    @node_numb.20|%d|, |,\n    |;
 };
 
 } // namespace @grm_name;
