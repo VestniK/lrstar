@@ -10,6 +10,8 @@
 // Skeleton:     @skl_file;
 // Output:       @out_file;
 
+namespace @grm_name; {
+
 class ParserStackOverflow: public ParseError
 {
 public:
@@ -29,9 +31,9 @@ public:
     const char *what() const throw() {return "Syntax error detected";}
 };
 
-const size_t @grm_name;Parser::stackSize = 1024;
+const size_t Parser::stackSize = 1024;
 
-@grm_name;Parser::@grm_name;Parser():
+Parser::Parser():
     tokenActions(0),
     stackStart(new ParserState[stackSize]),
     stackEnd(stackStart + stackSize),
@@ -40,12 +42,12 @@ const size_t @grm_name;Parser::stackSize = 1024;
 {
 }
 
-@grm_name;Parser::~@grm_name;Parser()
+Parser::~Parser()
 {
     delete[] stackStart;
 }
 
-void @grm_name;Parser::parse(const char *input) throw(ParseError)
+void Parser::parse(const char *input) throw(ParseError)
 {
     lexer.start(input);
     stateNum = 0;
@@ -89,7 +91,7 @@ void @grm_name;Parser::parse(const char *input) throw(ParseError)
     }
 }
 
-void @grm_name;Parser::reduce(int prodRule)
+void Parser::reduce(int prodRule)
 {
 @optn_debug?;...
     const ParserState * const oldTop = stackTop;
@@ -113,94 +115,96 @@ void @grm_name;Parser::reduce(int prodRule)
     stateNum = Nm[Nr[stackTop->state] + Nc[prodRule]]; // Get next state from nonterminal transition.
 }
 
-const int @grm_name;Parser::acceptState = @accp_sta.d;;
+const int Parser::acceptState = @accp_sta.d;;
 
-const @prod_leng.t; @grm_name;Parser::ProdLen[] =
+const @prod_leng.t; Parser::ProdLen[] =
 {
     @prod_leng.20|%d|, |,\n    |;
 };
 
 // B_matrix.
-const @bmat_numb.t; @grm_name;Parser::Bm[@bmat_numb.d;] =
+const @bmat_numb.t; Parser::Bm[@bmat_numb.d;] =
 {
     @bmat_numb.20|%d|, |,\n    |;
 };
 
 // B_matrix row.
-const @bmat_row.t; @grm_name;Parser::Br[@bmat_row.d;] =
+const @bmat_row.t; Parser::Br[@bmat_row.d;] =
 {
     @bmat_row.20|%d|, |,\n    |;
 };
 
 // B_matrix column.
-const @bmat_col.t; @grm_name;Parser::Bc[@bmat_col.d;] =
+const @bmat_col.t; Parser::Bc[@bmat_col.d;] =
 {
     @bmat_col.20|%d|, |,\n    |;
 };
 
 @optn_bm.eq.2;...
 // B_matrix column.
-const @bmat_mask.t; @grm_name;Parser::Bmask[@bmat_mask.d;] =
+const @bmat_mask.t; Parser::Bmask[@bmat_mask.d;] =
 {
     @bmat_mask.20|%d|, |,\n    |;
 };
 @@
 
 // T_matrix.
-const @tmat_numb.t; @grm_name;Parser::Tm [@tmat_numb.d;] =
+const @tmat_numb.t; Parser::Tm [@tmat_numb.d;] =
 {
     @tmat_numb.20|%d|, |,\n    |;
 };
 
 // T_matrix row.
-const @tmat_row.t; @grm_name;Parser::Tr [@tmat_row.d;] =
+const @tmat_row.t; Parser::Tr [@tmat_row.d;] =
 {
     @tmat_row.20|%d|, |,\n    |;
 };
 
 // T_matrix column.
-const @tmat_col.t; @grm_name;Parser::Tc [@tmat_col.d;] =
+const @tmat_col.t; Parser::Tc [@tmat_col.d;] =
 {
     @tmat_col.20|%d|, |,\n    |;
 };
 
 // N_matrix.
-const @nmat_numb.t; @grm_name;Parser::Nm [@nmat_numb.d;] =
+const @nmat_numb.t; Parser::Nm [@nmat_numb.d;] =
 {
     @nmat_numb.20|%d|, |,\n    |;
 };
 
 // N_matrix row.
-const @nmat_row.t; @grm_name;Parser::Nr [@nmat_row.d;] =
+const @nmat_row.t; Parser::Nr [@nmat_row.d;] =
 {
     @nmat_row.20|%d|, |,\n    |;
 };
 
 // N_matrix column.
-const @nmat_col.t; @grm_name;Parser::Nc [@nmat_col.d;] =
+const @nmat_col.t; Parser::Nc [@nmat_col.d;] =
 {
     @nmat_col.20|%d|, |,\n    |;
 };
 
 // R_matrix.
-const @rmat_numb.t; @grm_name;Parser::Rm [@rmat_numb.d;] =
+const @rmat_numb.t; Parser::Rm [@rmat_numb.d;] =
 {
     @rmat_numb.20|%d|, |,\n    |;
 };
 
 // R_matrix row.
-const @rmat_row.t; @grm_name;Parser::Rr [@rmat_row.d;] =
+const @rmat_row.t; Parser::Rr [@rmat_row.d;] =
 {
     @rmat_row.20|%d|, |,\n    |;
 };
 
 // R_matrix column.
-const @rmat_col.t; @grm_name;Parser::Rc [@rmat_col.d;] =
+const @rmat_col.t; Parser::Rc [@rmat_col.d;] =
 {
     @rmat_col.20|%d|, |,\n    |;
 };
 
-const @tact_numb.t; @grm_name;Parser::tokenActionNumber[@tact_numb.d;] =
+const @tact_numb.t; Parser::tokenActionNumber[@tact_numb.d;] =
 {
     @tact_numb.20|%d|, |,\n    |;
 };
+
+} // namespace @grm_name;

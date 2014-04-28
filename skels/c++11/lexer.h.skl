@@ -10,6 +10,8 @@
 // Skeleton:     @skl_file;
 // Output:       @out_file;
 
+namespace @grm_name; {
+
 struct Token
 {
     const char* start;
@@ -22,10 +24,10 @@ struct Token
 @@
 };
 
-class @grm_name;Lexer
+class Lexer
 {
 public:
-    @grm_name;Lexer() {}
+    Lexer() {}
 
     void start(const char *input);
     int next();
@@ -67,6 +69,8 @@ private:
 
     static const @term_numb.6t; terminal[]; // Terminal-symbol number for symbol recognized.
 };
+
+} // namespace @grm_name;
 
 #endif
 
