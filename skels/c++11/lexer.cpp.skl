@@ -20,19 +20,19 @@ char *token_name[] =
 // Boolean Matrix and Vectors.
 
 // Boolean matrix.
-@bmat_numb.t; @grm_name;Lexer::Bm[@bmat_numb.d;] =
+const @bmat_numb.t; @grm_name;Lexer::Bm[@bmat_numb.d;] =
 {
     @bmat_numb.40|%d|, |,\n    |;
 };
 
 // B_matrix row.
-@bmat_row.t; @grm_name;Lexer::Br[@bmat_row.d;] =
+const @bmat_row.t; @grm_name;Lexer::Br[@bmat_row.d;] =
 {
     @bmat_row.20|%d|, |,\n    |;
 };
 
 // B_matrix column.
-@bmat_col.t; @grm_name;Lexer::Bc[@bmat_col.d;] =
+const @bmat_col.t; @grm_name;Lexer::Bc[@bmat_col.d;] =
 {
     @bmat_col.20|%d|, |,\n    |;
 };
@@ -41,32 +41,32 @@ char *token_name[] =
 // Terminal Transition Matrix and Vectors.
 
 // Transition matrix.
-@tmat_numb.t; @grm_name;Lexer::Tm[@tmat_numb.d;] =
+const @tmat_numb.t; @grm_name;Lexer::Tm[@tmat_numb.d;] =
 {
     @tmat_numb.20|%d|, |,\n    |;
 };
 
 // T_matrix row.
-@tmat_row.t; @grm_name;Lexer::Tr[@tmat_row.d;] =
+const @tmat_row.t; @grm_name;Lexer::Tr[@tmat_row.d;] =
 {
     @tmat_row.20|%d|, |,\n    |;
 };
 
 // T_matrix column.
-@tmat_col.t; @grm_name;Lexer::Tc[@tmat_col.d;] =
+const @tmat_col.t; @grm_name;Lexer::Tc[@tmat_col.d;] =
 {
     @tmat_col.20|%d|, |,\n    |;
 };
 
 // Token numbers for each state.
-@term_numb.t; @grm_name;Lexer::terminal[@term_numb.d;] =
+const @term_numb.t; @grm_name;Lexer::terminal[@term_numb.d;] =
 {
     @term_numb.20|%d|, |,\n    |;
 };
 
 @strings?;...
 // String return values.
-@strings.t; @grm_name;Lexer::string[@strings.d;] =
+const @strings.t; @grm_name;Lexer::string[@strings.d;] =
 {
     @strings.1|%s|, |,\n    |;
 };
