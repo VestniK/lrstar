@@ -1,3 +1,6 @@
+#include <cassert>
+#include <cstdio>
+
 #include "@grm_name;parser.h"
 
 @("int8_t", "uint8_t", "int16_t", "uint16_t", "int", "uint", "const char*")
@@ -6,13 +9,108 @@
 // Grammar:      @grm_file;
 // Skeleton:     @skl_file;
 // Output:       @out_file;
-@grm_name;Parser::@grm_name;Parser()
+
+class ParserStackOverflow: public ParseError
+{
+public:
+    const char *what() const throw() {return "Parser stack overflow";}
+};
+
+class ParserStackCorruption: public ParseError
+{
+public:
+    const char *what() const throw() {return "Parser stack corrupted";}
+};
+
+// TODO: better error message
+class SyntaxError: public ParseError
+{
+public:
+    const char *what() const throw() {return "Syntax error detected";}
+};
+
+const size_t @grm_name;Parser::stackSize = 1024;
+
+@grm_name;Parser::@grm_name;Parser():
+    stackStart(new ParserState[stackSize]),
+    stackEnd(stackStart + stackSize),
+    stackTop(stackStart),
+    stateNum(0)
 {
 }
 
-void @grm_name;Parser::parse()
+@grm_name;Parser::~@grm_name;Parser()
 {
+    delete[] stackStart;
 }
+
+void @grm_name;Parser::parse(const char *input) throw(ParseError)
+{
+    lexer.start(input);
+    stateNum = 0;
+    stackTop = stackStart;
+    while (true) {
+        int termSymb = lexer.next();
+        while (true) {
+            if (Bm[Br[stateNum] + Bc[termSymb]] & Bmask[termSymb]) { // Check B-matrix for shift action.
+                if (++stackTop >= stackEnd)
+                    throw ParserStackOverflow();
+                stackTop->state = stateNum;
+@optn_debug?;...
+                stackTop->start = lexer.currentToken().start;
+                stackTop->end = lexer.currentToken().end;
+@@
+                stateNum = Tm[Tr[stateNum] + Tc[termSymb]]; // Get next state from terminal transition matrix.
+                while (stateNum <= 0) // While shift-reduce actions.
+                    reduce(-stateNum);
+                break;
+            }
+            int prodRule = Rr[stateNum] > 0 ? Rr[stateNum] : Rm[Rc[termSymb] - Rr[stateNum]];
+            if (prodRule > 0) {
+                reduce(prodRule);
+                while (stateNum <= 0) // While shift-reduce actions.
+                    reduce(-stateNum);
+                continue;
+            }
+            if (stateNum == acceptState) {
+                reduce(0); // last reduction when accept state reached.
+                return;
+            }
+            throw SyntaxError();
+        }
+    }
+}
+
+void @grm_name;Parser::reduce(int prodRule)
+{
+@optn_debug?;...
+    const ParserState * const oldTop = stackTop;
+@@
+    stackTop -= ProdLen[prodRule]; // Reduce stack ptr by production length.
+    assert(stackTop >= stackStart);
+    if (ProdLen[prodRule] < 0) { // Null production?
+        if (stackTop >= stackEnd)
+            throw ParserStackOverflow();
+@optn_debug?;...
+        stackTop->state = stateNum;
+        stackTop->end = stackTop->start = lexer.currentToken().start;
+@@
+    }
+@optn_debug?;...
+    if (stackTop < oldTop) {
+        stackTop->end = oldTop->end;
+        printf("===> Reduction %d matched the following text:\n%.*s\n", prodRule, (int)(stackTop->end - stackTop->start), stackTop->start);
+    }
+@@
+    stateNum = Nm[Nr[stackTop->state] + Nc[prodRule]]; // Get next state from nonterminal transition.
+}
+
+const int @grm_name;Parser::acceptState = @accp_sta.d;;
+
+const @prod_leng.t; @grm_name;Parser::ProdLen[] =
+{
+    @prod_leng.20|%d|, |,\n    |;
+};
 
 // B_matrix.
 const @bmat_numb.t; @grm_name;Parser::Bm[@bmat_numb.d;] =
@@ -38,5 +136,58 @@ const @bmat_mask.t; @grm_name;Parser::Bmask[@bmat_mask.d;] =
 {
     @bmat_mask.20|%d|, |,\n    |;
 };
-
 @@
+
+// T_matrix.
+const @tmat_numb.t; @grm_name;Parser::Tm [@tmat_numb.d;] =
+{
+    @tmat_numb.20|%d|, |,\n    |;
+};
+
+// T_matrix row.
+const @tmat_row.t; @grm_name;Parser::Tr [@tmat_row.d;] =
+{
+    @tmat_row.20|%d|, |,\n    |;
+};
+
+// T_matrix column.
+const @tmat_col.t; @grm_name;Parser::Tc [@tmat_col.d;] =
+{
+    @tmat_col.20|%d|, |,\n    |;
+};
+
+// N_matrix.
+const @nmat_numb.t; @grm_name;Parser::Nm [@nmat_numb.d;] =
+{
+    @nmat_numb.20|%d|, |,\n    |;
+};
+
+// N_matrix row.
+const @nmat_row.t; @grm_name;Parser::Nr [@nmat_row.d;] =
+{
+    @nmat_row.20|%d|, |,\n    |;
+};
+
+// N_matrix column.
+const @nmat_col.t; @grm_name;Parser::Nc [@nmat_col.d;] =
+{
+    @nmat_col.20|%d|, |,\n    |;
+};
+
+// R_matrix.
+const @rmat_numb.t; @grm_name;Parser::Rm [@rmat_numb.d;] =
+{
+    @rmat_numb.20|%d|, |,\n    |;
+};
+
+// R_matrix row.
+const @rmat_row.t; @grm_name;Parser::Rr [@rmat_row.d;] =
+{
+    @rmat_row.20|%d|, |,\n    |;
+};
+
+// R_matrix column.
+const @rmat_col.t; @grm_name;Parser::Rc [@rmat_col.d;] =
+{
+    @rmat_col.20|%d|, |,\n    |;
+};

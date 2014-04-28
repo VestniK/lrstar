@@ -2,6 +2,11 @@
 #define @grm_name;_parser_h
 
 #include <stdint.h>
+#include <cstdlib>
+#include <exception>
+
+//#include "@grm_name;lexer.h" // TODO: retrun this one
+#include "rlexer.h"
 
 @("int8_t", "uint8_t", "int16_t", "uint16_t", "int", "uint", "const char*")
 @//
@@ -9,20 +14,62 @@
 // Grammar:      @grm_file;
 // Skeleton:     @skl_file;
 // Output:       @out_file;
+
+class ParseError: public std::exception {};
+
+struct ParserState
+{
+    int state;
+@optn_debug?;...
+    const char *start;
+    const char *end;
+@@
+};
+
 class @grm_name;Parser
 {
 public:
     @grm_name;Parser();
-    void parse();
+    ~@grm_name;Parser();
+    void parse(const char *input) throw(ParseError);
 
 private:
+    void reduce(int prodRule);
+
+    @grm_name;Lexer lexer;
+    static const size_t stackSize;
+    ParserState *stackStart;
+    const ParserState * const stackEnd;
+    ParserState *stackTop;
+    int stateNum;
+
+    static const int acceptState;
+
+    // Production rule length minus one(zero based).
+    static const @prod_leng.t; ProdLen[];
+
     // Boolean matrix parser tables
-    static const @bmat_numb.t; Bm[]; // matrix data
+    static const @bmat_numb.t; Bm[]; // matrix data.
     static const @bmat_row.t; Br[]; // row(base).
     static const @bmat_col.t; Bc[]; // column(displacement).
 @optn_bm.eq.2;...
     static const @bmat_mask.t; Bmask[]; // masks.
 @@
+
+    // Terminal transition matrix(gives next state or reduction).
+    static const @tmat_numb.t; Tm[]; // matrix data.
+    static const @tmat_row.t; Tr[]; // row(base).
+    static const @tmat_col.t; Tc[]; // column(displacement).
+
+    // Nonterminal transition matrix(gives next state or reduction).
+    static const @nmat_numb.t; Nm[]; // matrix data.
+    static const @nmat_row.t; Nr[]; // row(base).
+    static const @nmat_col.t; Nc[]; // column(displacement).
+
+    // Reduction matrix(gives reduction).
+    static const @rmat_numb.t; Rm[]; // matrix data.
+    static const @rmat_row.t; Rr[]; // row(base).
+    static const @rmat_col.t; Rc[]; // column(displacement).
 };
 
 #endif
