@@ -35,6 +35,14 @@ Node::Node(StackFrame *start, int reductionSize):
 {
 }
 
+void Node::walk(Visitor *visitor)
+{
+    this->accept(visitor);
+    for (Node *currChild = children.get(); currChild != nullptr; currChild = currChild->next.get())
+        currChild->walk(visitor);
+    this->seeOff(visitor);
+}
+
 std::shared_ptr<Node> Node::linkup(StackFrame *start, int reductionSize)
 {
     std::shared_ptr<Node> first = nullptr;
