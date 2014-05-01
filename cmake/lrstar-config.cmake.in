@@ -28,8 +28,8 @@ macro(lrstar_grammar outVar grammarName skelType skelPath)
       ${__skel_full_path}/lexer.cpp.skl
       ${__skel_full_path}/lexer.h.skl
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-    COMMAND ${CMAKE_SOURCE_DIR}/lrstar ${CMAKE_CURRENT_SOURCE_DIR}/${grammarName}.grm ${__skel_full_path}/parser.h.skl ${CMAKE_CURRENT_BINARY_DIR}/${grammarName}parser.h ${__skel_full_path}/parser.cpp.skl ${CMAKE_CURRENT_BINARY_DIR}/${grammarName}parser.cpp -exp
-    COMMAND ${CMAKE_SOURCE_DIR}/dfastar ${CMAKE_CURRENT_SOURCE_DIR}/${grammarName}.lgr ${__skel_full_path}/lexer.h.skl ${CMAKE_CURRENT_BINARY_DIR}/${grammarName}lexer.h ${__skel_full_path}/lexer.cpp.skl ${CMAKE_CURRENT_BINARY_DIR}/${grammarName}lexer.cpp -col
+    COMMAND ${LRSTAR_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/${grammarName}.grm ${__skel_full_path}/parser.h.skl ${CMAKE_CURRENT_BINARY_DIR}/${grammarName}parser.h ${__skel_full_path}/parser.cpp.skl ${CMAKE_CURRENT_BINARY_DIR}/${grammarName}parser.cpp -exp
+    COMMAND ${DFASTAR_PATH}/dfastar ${CMAKE_CURRENT_SOURCE_DIR}/${grammarName}.lgr ${__skel_full_path}/lexer.h.skl ${CMAKE_CURRENT_BINARY_DIR}/${grammarName}lexer.h ${__skel_full_path}/lexer.cpp.skl ${CMAKE_CURRENT_BINARY_DIR}/${grammarName}lexer.cpp -col
   )
   set_source_files_properties(
     ${CMAKE_CURRENT_BINARY_DIR}/${grammarName}parser.h
