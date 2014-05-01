@@ -372,7 +372,7 @@ set:  if (*opt == '/')
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
 
-int   GetMaxValues (char* dn, char* fn)
+int   GetMaxValues (const char* dn, const char* fn)
 {
 		char* p;
 		int   rc;   // Return code.
@@ -458,7 +458,7 @@ Ret:  FREE (input_start, filesize);
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
 
-void  SaveMaxValues (char* dn, char* fn)
+void  SaveMaxValues (const char* dn, const char* fn)
 {			  
 		int i;
       FILE* fp;

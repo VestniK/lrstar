@@ -531,8 +531,8 @@
       extern char*  get_file (char*dir, char*fn, char*ft, int *nb, int flags);
 		extern int 	  GetSkeletonFilename (char* arg, int i, int na);
 		extern int 	  GetOutputFilename (char* arg, int i, int na);
-		extern int    GetMaxValues  (char* dn, char* fn);
-		extern void   SaveMaxValues (char* dn, char* fn);
+		extern int    GetMaxValues  (const char* dn, const char* fn);
+		extern void   SaveMaxValues (const char* dn, const char* fn);
 
 		extern int	  itsakeyword (char* terminal);
       extern int    inputi (char*);

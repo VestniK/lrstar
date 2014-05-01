@@ -72,7 +72,7 @@
 			"m",			"Minimize lexer-table size",									LG_MINIMIZE,			1,
 		//	"nc",			"Number of characters (128,256)",							LG_NUMBCHAR,			256,
 			"ki",     	"Keyword and <identifier> recognition",					LG_KEYWORDIDENT,	   1,
-			"q",			"Quiet mode, minimal screen display",						LG_QUIET,				0,   
+			"q",			"Quiet mode, minimal screen display",						LG_QUIET,				0,
 			"r",    		"Remove duplicate states",										LG_REMOVEDUP,			1,
 			"s",    		"State machine for conflicts report",		   			LG_STATELIST,			0,
 			"so",   		"Optimized state machine",										LG_STATELISTOPT,		0,
@@ -81,10 +81,16 @@
 			"tm",    	"Table-driven medium",											LG_TABL_MEDIUM,		0,   
 			"tl",    	"Table-driven large",											LG_TABL_LARGE,		   0, 
 			"v",     	"Verbose, output more information",							LG_VERBOSE,		      1,
-			"w",     	"Warnings listing",												LG_WARNINGS,			0,  
+			"w",     	"Warnings listing",												LG_WARNINGS,			0,
 			"",			"",																	0,				         0
 		};
 		#endif
+
+#if defined WINDOWS
+      static const char *maxValsFile = "lrstar.txt";
+#elif defined UNIX
+      static const char *maxValsFile = ".lrstar.cfg";
+#endif
 
       OPTION MAOption[]= // Memory Allocation Options
 		{
@@ -197,8 +203,13 @@ int   main (int na, char *arg[])
 				if (GetOutputFilename   (arg[i], i++, na) == 0) Terminate (0);
 			}
 
+#if defined WINDOWS
 			if (get_fid (arg[0], dn, fn, ft)    == 0) Terminate (0);
-			if (GetMaxValues (dn, "options.txt") == 0) Terminate (0);
+#elif defined UNIX
+			strcpy(dn, getenv("HOME"));
+                        strcat(dn, "/");
+#endif
+                        if (GetMaxValues (dn, "options.txt") == 0) Terminate (0);
 
 			#ifdef LRSTAR
 			int verbose = optn[PG_VERBOSE];
