@@ -45,3 +45,8 @@ set_target_properties(lrstar PROPERTIES COMPILE_DEFINITIONS LRSTAR)
 
 add_executable(dfastar ${SRC})
 set_target_properties(dfastar PROPERTIES COMPILE_DEFINITIONS DFASTAR)
+
+install(TARGETS lrstar dfastar RUNTIME DESTINATION bin)
+
+add_subdirectory(skels)
+add_subdirectory(cmake)
