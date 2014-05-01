@@ -1,0 +1,26 @@
+# Maintainer: Sergey Vidyuk <sir.vestnik@gmail.com>
+
+pkgname=lrstar
+pkgver=6.6.003
+pkgrel=1
+arch=('i686' 'x86_64')
+pkgdesc="LRSTAR/DFASTAR parser/lexer generator"
+url='http://lrstar.org'
+license=('BSD')
+depends=()
+makedepends=('cmake')
+
+build() {
+  mkdir build
+  cd build
+  # TODO fix compiler segfault in Release compilation
+  cmake ${srcdir}/../../../ \
+    -DCMAKE_BUILD_TYPE=Debug \
+    -DCMAKE_INSTALL_PREFIX=/usr
+  make
+}
+
+package() {
+  cd build
+  make DESTDIR="${pkgdir}" install
+}
