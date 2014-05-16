@@ -7,7 +7,7 @@
       char* program = "DFASTAR";
 		#endif
 
-      char* version = "6.5.020";
+      char* version = "6.6.003";
       char* copywrt = "Copyright 2014 Paul B Mann";
 
 		#ifdef  _DEBUG
@@ -198,7 +198,7 @@ int   main (int na, char *arg[])
 			}
 
 			if (get_fid (arg[0], dn, fn, ft)    == 0) Terminate (0);
-			if (GetMaxValues (dn, "lrstar.txt") == 0) Terminate (0);
+			if (GetMaxValues (dn, "options.txt") == 0) Terminate (0);
 
 			#ifdef LRSTAR
 			int verbose = optn[PG_VERBOSE];

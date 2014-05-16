@@ -95,7 +95,7 @@
 			<DebugSettings
 				Command="$(TargetPath)"
 				WorkingDirectory="..\grm"
-				CommandArguments="c ..\skl\lexer.cpp.skl ..\skl\lexer.cpp /dc "
+				CommandArguments="c ..\skl\lexer.cpp.skl ..\skl\lexer.cpp /dc"
 				Attach="false"
 				DebuggerType="3"
 				Remote="1"

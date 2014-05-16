@@ -234,7 +234,11 @@
 
 int   LGParser::Parse ()                            
 {
-      if (!LGParser::parse()) return 0;
+		init_lexer ();										// Initialize lexer.
+		if (LGActions::CheckOptions() == 0) return 0;
+		LGActions::init();								// Initialize everything else.
+
+      if (LGParser::parse() == 0) return 0;
 		LGActions::term ();
 		if (n_errors) return 0;
       return (1);
@@ -261,7 +265,6 @@ int   LGParser::parse ()                        // LR Parser.
       int p;												// Production.  
       int x;												// State.  
 
-		LGLexer::init_lexer ();							// Initialize lexer.
       PS = P_stack;										// Set parse stack pointer.   
       n_errors = 0;										// Set number of errors.    
       x = 0;												// Set state to zero.
@@ -269,7 +272,7 @@ int   LGParser::parse ()                        // LR Parser.
       RS = R_stack;										// Reset reduction stack pointer.
 		top_ptr = PS;										// Save parse stack top pointer.
 		top_state = x;										// Save current state.
-		t = get_token ();									// Get next token. 
+		t = get_token ();									// Get token. 
 		if (t == 0) goto Err;							// Bad token!
 		goto Cont;
 
@@ -280,17 +283,16 @@ Read: RS = R_stack;										// Reset reduction stack pointer.
 Cont:	if (tact_numb[t] >= 0)							// If input action ...         
       {
 			int t1 = t;
-         T_start = token.start;						// Set token start.
-         T_end   = token.end;							// Set token end.
+      // T_start = token.start;						// Set token start.
+      // T_end   = token.end;							// Set token end.
          t = (*tact_func[tact_numb [t]]) (t, tact_arg[t]);	// Call token action.  
       }
-	/*	if (0)
-		{
-    	  	char ch = *token.end;
+    	/*	For debugging ...
+			char ch = *token.end;
   			*token.end = 0;
 			printf ("       %-20s %3d, %s\n", token.start, t, term_symb[t]);
   			*token.end = ch; 
-		}	*/
+		*/
 
 Shft: if (Bm [Br[x] + Bc[t]] & Bmask[t])			// Accept this terminal symbol?
       {

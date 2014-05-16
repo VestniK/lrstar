@@ -25,6 +25,7 @@
       #define LEXFILE      1024
       #define IGNORESYM    2048
       #define OUTPUTSYM    4096
+      #define ACTIONCODE   8192
 
       #define MAXPRODLENG	 256	// Maximum number of symbols per production.
 

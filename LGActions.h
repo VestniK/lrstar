@@ -26,6 +26,7 @@
 			static int*    term_type;
 
 			static char**  str_start;
+			static char**  code_start;
 	      static int*    defcon_value;
 		   static char**  defcon_name;
 	      static int*		ret_value;
@@ -34,6 +35,7 @@
 			static int*    ret_numb;
 			static int   	n_symbs;
       	static int   	n_strings;
+      	static int   	n_actioncodes;
       	static int   	n_terms;
       	static int   	n_lex_terms;
       	static int   	n_heads;
@@ -127,8 +129,10 @@
          static int   	term ();
          static int   	get_char ();
          static int   	GEN_EBNF ();
+			static int  	ADDSYM (char*, int);
 			static char* 	ADDSYMBOL (char*, int);
          static int   	ADD_TOKEN (int, int);
+         static int   	ADD_TOKEN2 (int, int);
          static int   	ADD_IGNORE (int, int);
          static int   	ADD_KEYWORD (int, int);
          static void  	EXPAND_SETS ();
@@ -157,7 +161,6 @@
       // Production actions ...
          static int   	EOGI (int, int);
          static int   	PRO_OPTNS (int, int);
-         static int   	pro_optns (int, int);
          static int   	ADD_TAIL (int, int);
          static int   	PUSH_UNDEF (int, int);
          static int   	PUSH_TAIL (int, int);
@@ -181,6 +184,7 @@
          static int   	ADD_TERMNO (int, int);
          static int   	ADD_DEFCON (int, int);
          static int   	ADD_STRING (int, int);
+         static int   	ADD_CODE   (int, int);
          static int   	START_GRM ();
          static int   	ADD_GOAL (int, int);
          static int   	ADD_EOF (int, int);

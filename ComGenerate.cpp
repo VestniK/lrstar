@@ -156,10 +156,11 @@
 		#ifdef DFASTAR
 		enum DefCon
 		{
+			LG_ACTION_CODE,    // Action code. 
 			LG_BMAT_COL,   	// B matrix column index.
 			LG_BMAT_NUMB,  	// B matrix (0's and 1's). 
 			LG_BMAT_ROW,   	// B matrix row index.
-			LG_CODE,   			// Direct code. 
+			LG_DIRECT_CODE, 	// Direct code. 
 			LG_DEF_CONS,   	// Defined constants. 
 			LG_ERR_TOKEN,  	// Error token.
 			LG_GRM_FILE,   	// Grammar filename.
@@ -281,11 +282,12 @@
 		#ifdef DFASTAR
 		CODETABLE LGCodeTable[] =
 		{
+			"action_code", "dt",	LG_ACTION_CODE,   "Action code",
 			"bmat_col",    "dt",	LG_BMAT_COL,    	"B matrix column index",
 			"bmat_numb",   "dt",	LG_BMAT_NUMB,   	"B matrix (0's and 1's)", 
 			"bmat_row",    "dt",	LG_BMAT_ROW,    	"B matrix row index",
 			"def_cons",    "dt",	LG_DEF_CONS,    	"Defined constants", 
-			"direct_code", "s",	LG_CODE,    		"Direct code output", 
+			"direct_code", "s",	LG_DIRECT_CODE,   "Direct code output", 
 			"err_token",   "dt",	LG_ERR_TOKEN,   	"Error token",
 			"grm",         "s ",	LG_GRM_NAME,    	"Grammar name (same as grm_name)",
 			"grm_file",    "s ",	LG_GRM_FILE,    	"Grammar filename",
@@ -321,7 +323,7 @@ int   Generate::GenerateCode (char* sklfid, char* outfid, int verbose)
       int nb;
 		static int first = 1;
 
-	//	printf ("-> GenerateCode\n");
+ 	//	printf ("-> GenerateCode\n");
 		if (first)
 		{
 			first = 0;
@@ -680,7 +682,7 @@ void	Generate::STAKCOND() // Stack current conditional status.
 		group_start = p;
 		staktop++;
 
-	/*	#ifdef _DEBUG
+		#ifdef _DEBUG
 		char c;
 		c = *(group_start+15);
 		*(group_start+15) = 0;
@@ -690,7 +692,6 @@ void	Generate::STAKCOND() // Stack current conditional status.
 		printf ("in_group = %d\n\n", in_group);
 		*(group_start+15) = c;
 		#endif  
-	*/
 }
 
 void	Generate::UNSTAKCOND() // Unstack conditional status.
@@ -2076,6 +2077,30 @@ void  Generate::O_TXT (char **s, int n)
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
 
+void  Generate::O_TXTN (char **s, int m, int n)
+{
+      char *t;
+      int i, y[2];
+		if (n ==    0) return;
+		if (s == NULL) return;
+
+      y[0] = 0;
+      y[1] = 0;
+      if (n-- > 0)
+      {
+         for (i = m;; i++)
+         {
+            t = s[i];
+            y[0] = i;
+            if (i == n) { O_DATA (i, y, t, NULL); return; }
+            O_DATA (i, y, t, end);
+         }
+      }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//                                                                           //
+
 void  Generate::O_TXTSTR (char **s, int n)
 {
       char *t;
@@ -2606,9 +2631,10 @@ void  LGGenerate::EMIT (int i)
          case LG_TMAT_COL:  O_ARRAY (T_col, n_terms); break;
 
          /* Terminals returned from lexer. */
-         case LG_TERM_NUMB: O_NUMTXT2(D_red, ret_name, n_states); break;
-         case LG_DEF_CONS:  O_NUMTXT (defcon_value, defcon_name, n_constants); break;
-         case LG_STRINGS:   O_TXT    (str_start, n_strings); break;
+         case LG_TERM_NUMB:	O_NUMTXT2(D_red, ret_name, n_states); break;
+         case LG_DEF_CONS:		O_NUMTXT (defcon_value, defcon_name, n_constants); break;
+         case LG_STRINGS:		O_TXTN   (str_start, 1, n_strings); break;
+         case LG_ACTION_CODE:  O_TXTN   (code_start, 1, n_actioncodes); break;
       }  
 }
 #endif
@@ -2719,9 +2745,10 @@ void  LGGenerate::EMITTYPE (int i)
          case LG_TMAT_COL:  DEF_TYPE (T_col, n_terms); break;
 
          /* Terminals returned from lexer. */
-         case LG_TERM_NUMB: DEF_TYPE (D_red, n_states); break;
-         case LG_DEF_CONS:  DEF_TYPEA (n_constants); break;
-			case LG_STRINGS:   DEF_TYPEA (n_strings); break;
+         case LG_TERM_NUMB:	DEF_TYPE (D_red, n_states); break;
+         case LG_DEF_CONS:		DEF_TYPEA (n_constants); break;
+			case LG_STRINGS:		DEF_TYPEA (n_strings); break;
+			case LG_ACTION_CODE:  DEF_TYPEA (n_actioncodes); break;
 
 			/* Default (erroroneous code) */
 			default: 
@@ -2877,9 +2904,10 @@ int   LGGenerate::VALUE (int i)
          case LG_TMAT_COL:  n = n_terms; break;
 
          /* Terminals returned from lexer. */
-         case LG_TERM_NUMB: n = n_states; break; 
-         case LG_DEF_CONS:  n = n_constants; break; 
-         case LG_STRINGS:   n = n_strings; if (n == 1) n = 0; break; 
+         case LG_TERM_NUMB:	n = n_states; break; 
+         case LG_DEF_CONS:		n = n_constants; break; 
+         case LG_STRINGS:		n = n_strings-1; break; 
+         case LG_ACTION_CODE:  n = n_actioncodes-1; break; 
 
          /* Numbers of stuff. */
          case LG_NUMB_STA:  n = n_states; break; 
@@ -3018,7 +3046,7 @@ void  LGGenerate::EMITSTR (int i)
             strcpy (charstring, version);
             break;
          }
-         case LG_CODE: // Version
+         case LG_DIRECT_CODE: // Version
          {
             n_addedlines = OUTPUT_CODE ();
 				return; // return not break!

@@ -254,6 +254,7 @@ int   Generate::OUTPUT_CODE ()
 		n_codelines = 0;
       for (s = 0; s < n_states-1; s++)
       {
+		//	printf ("state %d\n", s);
 			PRT_STA (s);
 			nt = tt_end[s] - tt_start[s];	// Number of transitions.
 			if (nt > 0) // Any transitions?
@@ -272,6 +273,7 @@ int   Generate::OUTPUT_CODE ()
 						n++;
 						i = tt_symb[t];
 						action[i] = id_state; 
+					//	printf ("action[%d] = %d\n", i, action[i]);
 						if (optn[LG_INSENSITIVE]) 
 						{
 							if (lower[i-32] == i) 
@@ -284,6 +286,7 @@ int   Generate::OUTPUT_CODE ()
 					error_count -= n;
 				}
 				FASTINI (0, action_count, n_states);
+
 				for (t = tt_start[s]; t < tt_end[s]; t++)
 				{
 					if (tt_action[t] != 0 && tt_action[t] != n_states-1)
@@ -304,7 +307,11 @@ int   Generate::OUTPUT_CODE ()
 				}
 				for (i = 0; i < max_char_set; i++)
 				{
-					if (action[i] != MAX_INT) action_count[action[i]]++;  
+					if (action[i] != MAX_INT) 
+					{
+					//	printf ("action[%d] = %d\n", i, action[i]);
+						action_count[action[i]]++;  
+					}
 				}
 
 			// Get default action ...

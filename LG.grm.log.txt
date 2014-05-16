@@ -3,24 +3,24 @@ LRSTAR 6.5.019 Copyright 2014 Paul B Mann.
 
 Input     LG.grm /k /exp /c /g /s /d 
 
-Grammar       90 rules, 30 terminals, 40 nonterminals.
-LR(1)        119 states in Minimal LR(1) state machine.
-              48 states after implementing shift-reduce actions.
+Grammar       92 rules, 29 terminals, 40 nonterminals.
+LR(1)        120 states in Minimal LR(1) state machine.
+              49 states after implementing shift-reduce actions.
 Conflicts      0 states, 0 shift-reduce, 0 reduce-reduce conflicts.
 
 Grammar is LALR(1), 0 extra states were added.
 
             rows   cols          matrix        list       vect      total
-B matrix      22 x   22 x 1 =       484 ->       48 +      108 =      156  
-T matrix       5 x   21 x 1 =       105 ->       86 +       78 =      164  
-N matrix       9 x   33 x 1 =       297 ->      153 +      138 =      291  
-R matrix       5 x    5 x 1 =        22 ->       22 +       78 =      100  
-Total                                           309 +      402 =      711
+B matrix      20 x   20 x 1 =       400 ->       44 +      107 =      151  
+T matrix       4 x   17 x 1 =        68 ->       66 +       78 =      144  
+N matrix       9 x   33 x 1 =       297 ->      197 +      141 =      338  
+R matrix       6 x    6 x 1 =        30 ->       30 +       78 =      108  
+Total                                           337 +      404 =      741
 
-0 min 0.015 sec, 94.611 MB, 1 warning, 0 errors.
+0 min 0.015 sec, 94.613 MB, 2 warnings, 0 errors.
 
 Skeleton: LGParser.h.skl
 Output:   LGParser.h (124 lines)
 Skeleton: LGParser.cpp.skl
-Output:   LGParser.cpp (829 lines)
+Output:   LGParser.cpp (836 lines)
 

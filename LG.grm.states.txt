@@ -8,738 +8,808 @@ STATE MACHINE LISTING:
 ///////////////////////////// STATE 0 /////////////////////////////
 //
 // *    0  Goal -> . Grammar <eof> 
-// *    5  Options -> . 
 
-           {option_string}                           +<=    6
-           (default)                                  <=    5
+           {first_lexical}                           +<=   13
+           {first_literal}                           +<=   14
+           {first_string}                            +=>    5
 
            Grammar                                   +=>    1
            Options                                   +=>    2
+           TokenProd                                 +<=   77
+           Token                                     +=>    3
+           TokenProd...                              +=>    4
 
 ///////////////////////////// STATE 1 /////////////////////////////
 //
 // *    0  Goal -> Grammar . <eof> 
 
-           <eof>                                     +=>   47
+           <eof>                                     +=>   48
 
 Came from: 0
 
 ///////////////////////////// STATE 2 /////////////////////////////
 //
-// *    1  Grammar -> Options . TokenProd... 
-// *    2  Grammar -> Options . TokenProd... PP 
-// *    3  Grammar -> Options . TokenProd... (NonterminalDef | SetDef | EscapeDef)... 
-// *    4  Grammar -> Options . TokenProd... PP (NonterminalDef | SetDef | EscapeDef)... 
+// *    5  Grammar -> Options . TokenProd... 
+// *    6  Grammar -> Options . TokenProd... PP 
+// *    7  Grammar -> Options . TokenProd... (NonterminalDef | SetDef | EscapeDef)... 
+// *    8  Grammar -> Options . TokenProd... PP (NonterminalDef | SetDef | EscapeDef)... 
 
-           {first_lexical}                           +=>    5
-           {first_literal}                           +=>    6
-           {first_string}                            +=>    7
+           {first_lexical}                           +<=   13
+           {first_literal}                           +<=   14
+           {first_string}                            +<=   15
 
-           TokenProd                                 +<=   73
+           TokenProd                                 +<=   77
            Token                                     +=>    3
-           TokenProd...                              +=>    4
+           TokenProd...                              +=>    6
 
 Came from: 0
 
 ///////////////////////////// STATE 3 /////////////////////////////
 //
-// *    8  TokenProd -> Token . ReturnValue 
-// *    9  TokenProd -> Token . ReturnValue ';' 
+// *   11  TokenProd -> Token . ReturnValue 
+// *   12  TokenProd -> Token . ActionCode 
 
-           <alpha>                                   +<=   14
-           <string>                                  +<=   15
-           <integer>                                 +<=   13
+           <alpha>                                   +<=   17
+           <string>                                  +<=   18
+           <integer>                                 +<=   16
+           '{'                                       +<=   19
 
-           ReturnValue                               +=>    8
+           ReturnValue                               +<=   11
+           ActionCode                                +<=   12
 
-Came from: 2 4
+Came from: 0 2 4 6
 
 ///////////////////////////// STATE 4 /////////////////////////////
 //
-// *    2  Grammar -> Options TokenProd... . PP 
-// *    3  Grammar -> Options TokenProd... . (NonterminalDef | SetDef | EscapeDef)... 
-// *    4  Grammar -> Options TokenProd... . PP (NonterminalDef | SetDef | EscapeDef)... 
-// *   74  TokenProd... -> TokenProd... . TokenProd 
-// *    1  Grammar -> Options TokenProd... . 
+// *    2  Grammar -> TokenProd... . PP 
+// *    3  Grammar -> TokenProd... . (NonterminalDef | SetDef | EscapeDef)... 
+// *    4  Grammar -> TokenProd... . PP (NonterminalDef | SetDef | EscapeDef)... 
+// *   78  TokenProd... -> TokenProd... . TokenProd 
+// *    1  Grammar -> TokenProd... . 
 
-           '%%'                                      +<=    7
-           {first_alpha}                             +<=   22
-           {first_lexical}                           +=>   15
-           {first_ignore}                            +<=   24
-           {first_escape}                            +<=   71
-           {first_literal}                           +=>    6
-           {first_string}                            +=>    7
+           '%%'                                      +<=   10
+           {first_alpha}                             +<=   26
+           {first_lexical}                           +=>   13
+           {first_ignore}                            +<=   28
+           {first_escape}                            +<=   75
+           {first_literal}                           +<=   14
+           {first_string}                            +<=   15
            (default)                                  <=    1
 
-           PP                                        +=>    9
-           TokenProd                                 +<=   74
+           PP                                        +=>    7
+           TokenProd                                 +<=   78
            Token                                     +=>    3
-           NonterminalDef                            +<=   75
-           AlphaSymbol                               +=>   10
-           LexicalSymbol                             +=>   11
-           IgnoreSymbol                              +=>   12
-           SetDef                                    +<=   76
-           EscapeDef                                 +<=   77
-           EscapeSymbol                              +=>   13
-           (NonterminalDef | SetDef | EscapeDef)     +<=   78
-           (NonterminalDef | SetDef | EscapeDef)...  +=>   14
+           NonterminalDef                            +<=   79
+           AlphaSymbol                               +=>    8
+           LexicalSymbol                             +=>    9
+           IgnoreSymbol                              +=>   10
+           SetDef                                    +<=   80
+           EscapeDef                                 +<=   81
+           EscapeSymbol                              +=>   11
+           (NonterminalDef | SetDef | EscapeDef)     +<=   82
+           (NonterminalDef | SetDef | EscapeDef)...  +=>   12
 
-Came from: 2
+Came from: 0
 
 ///////////////////////////// STATE 5 /////////////////////////////
 //
-// *   10  Token -> {first_lexical} . ['=>'] 
-// *   80  ['=>'] -> . 
+// *    9  Options -> {first_string} . 
+// *   15  Token -> {first_string} . 
 
-           '=>'                                      +<=   81
-           (default)                                  <=   80
+           <alpha>                                    <=   15
+           <string>                                   <=   15
+           <integer>                                  <=   15
+           '{'                                        <=   15
+           {first_lexical}                            <=    9
+           {first_literal}                            <=    9
+           {first_string}                             <=    9
 
-           ['=>']                                    +<=   10
-
-Came from: 2
+Came from: 0
 
 ///////////////////////////// STATE 6 /////////////////////////////
 //
-// *   11  Token -> {first_literal} . ['=>'] 
-// *   80  ['=>'] -> . 
+// *    6  Grammar -> Options TokenProd... . PP 
+// *    7  Grammar -> Options TokenProd... . (NonterminalDef | SetDef | EscapeDef)... 
+// *    8  Grammar -> Options TokenProd... . PP (NonterminalDef | SetDef | EscapeDef)... 
+// *   78  TokenProd... -> TokenProd... . TokenProd 
+// *    5  Grammar -> Options TokenProd... . 
 
-           '=>'                                      +<=   81
-           (default)                                  <=   80
+           '%%'                                      +<=   10
+           {first_alpha}                             +<=   26
+           {first_lexical}                           +=>   13
+           {first_ignore}                            +<=   28
+           {first_escape}                            +<=   75
+           {first_literal}                           +<=   14
+           {first_string}                            +<=   15
+           (default)                                  <=    5
 
-           ['=>']                                    +<=   11
+           PP                                        +=>   14
+           TokenProd                                 +<=   78
+           Token                                     +=>    3
+           NonterminalDef                            +<=   79
+           AlphaSymbol                               +=>    8
+           LexicalSymbol                             +=>    9
+           IgnoreSymbol                              +=>   10
+           SetDef                                    +<=   80
+           EscapeDef                                 +<=   81
+           EscapeSymbol                              +=>   11
+           (NonterminalDef | SetDef | EscapeDef)     +<=   82
+           (NonterminalDef | SetDef | EscapeDef)...  +=>   15
 
-Came from: 2 4
+Came from: 2
 
 ///////////////////////////// STATE 7 /////////////////////////////
 //
-// *   12  Token -> {first_string} . ['=>'] 
-// *   80  ['=>'] -> . 
+// *    4  Grammar -> TokenProd... PP . (NonterminalDef | SetDef | EscapeDef)... 
+// *    2  Grammar -> TokenProd... PP . 
 
-           '=>'                                      +<=   81
-           (default)                                  <=   80
-
-           ['=>']                                    +<=   12
-
-Came from: 2 4
-
-///////////////////////////// STATE 8 /////////////////////////////
-//
-// *    9  TokenProd -> Token ReturnValue . ';' 
-// *    8  TokenProd -> Token ReturnValue . 
-
-           ';'                                       +<=    9
-           (default)                                  <=    8
-
-Came from: 3
-
-///////////////////////////// STATE 9 /////////////////////////////
-//
-// *    4  Grammar -> Options TokenProd... PP . (NonterminalDef | SetDef | EscapeDef)... 
-// *    2  Grammar -> Options TokenProd... PP . 
-
-           {first_alpha}                             +<=   22
-           {first_lexical}                           +<=   23
-           {first_ignore}                            +<=   24
-           {first_escape}                            +<=   71
+           {first_alpha}                             +<=   26
+           {first_lexical}                           +<=   27
+           {first_ignore}                            +<=   28
+           {first_escape}                            +<=   75
            (default)                                  <=    2
 
-           NonterminalDef                            +<=   75
-           AlphaSymbol                               +=>   10
-           LexicalSymbol                             +=>   11
-           IgnoreSymbol                              +=>   12
-           SetDef                                    +<=   76
-           EscapeDef                                 +<=   77
-           EscapeSymbol                              +=>   13
-           (NonterminalDef | SetDef | EscapeDef)     +<=   78
+           NonterminalDef                            +<=   79
+           AlphaSymbol                               +=>    8
+           LexicalSymbol                             +=>    9
+           IgnoreSymbol                              +=>   10
+           SetDef                                    +<=   80
+           EscapeDef                                 +<=   81
+           EscapeSymbol                              +=>   11
+           (NonterminalDef | SetDef | EscapeDef)     +<=   82
            (NonterminalDef | SetDef | EscapeDef)...  +=>   16
 
 Came from: 4
 
-///////////////////////////// STATE 10 /////////////////////////////
+///////////////////////////// STATE 8 /////////////////////////////
 //
-// *   16  NonterminalDef -> AlphaSymbol . ArrowProd... [';'] 
-// *   19  NonterminalDef -> AlphaSymbol . ArrowProd BarProd... [';'] 
-// *   50  SetDef -> AlphaSymbol . Arrow '{' SetExpr '}' 
-// *   51  SetDef -> AlphaSymbol . Arrow '{' SetExpr '}' ';' 
+// *   20  NonterminalDef -> AlphaSymbol . ArrowProd... [';'] 
+// *   23  NonterminalDef -> AlphaSymbol . ArrowProd BarProd... [';'] 
+// *   54  SetDef -> AlphaSymbol . Arrow '{' SetExpr '}' 
+// *   55  SetDef -> AlphaSymbol . Arrow '{' SetExpr '}' ';' 
 
-           '->'                                      +<=   26
+           '->'                                      +<=   30
 
            ArrowProd                                 +=>   17
            Arrow                                     +=>   18
            ArrowProd...                              +=>   19
 
-Came from: 4 9 14 16
+Came from: 4 6 7 12 14 15 16 26
 
-///////////////////////////// STATE 11 /////////////////////////////
+///////////////////////////// STATE 9 /////////////////////////////
 //
-// *   17  NonterminalDef -> LexicalSymbol . ArrowProd... [';'] 
-// *   20  NonterminalDef -> LexicalSymbol . ArrowProd BarProd... [';'] 
+// *   21  NonterminalDef -> LexicalSymbol . ArrowProd... [';'] 
+// *   24  NonterminalDef -> LexicalSymbol . ArrowProd BarProd... [';'] 
 
-           '->'                                      +<=   26
+           '->'                                      +<=   30
 
            ArrowProd                                 +=>   20
            Arrow                                     +=>   21
            ArrowProd...                              +=>   22
 
-Came from: 4 9 14 16
+Came from: 4 6 7 12 14 15 16 26
 
-///////////////////////////// STATE 12 /////////////////////////////
+///////////////////////////// STATE 10 /////////////////////////////
 //
-// *   18  NonterminalDef -> IgnoreSymbol . ArrowProd... [';'] 
-// *   21  NonterminalDef -> IgnoreSymbol . ArrowProd BarProd... [';'] 
+// *   22  NonterminalDef -> IgnoreSymbol . ArrowProd... [';'] 
+// *   25  NonterminalDef -> IgnoreSymbol . ArrowProd BarProd... [';'] 
 
-           '->'                                      +<=   26
+           '->'                                      +<=   30
 
            ArrowProd                                 +=>   23
            Arrow                                     +=>   21
            ArrowProd...                              +=>   24
 
-Came from: 4 9 14 16
+Came from: 4 6 7 12 14 15 16 26
 
-///////////////////////////// STATE 13 /////////////////////////////
+///////////////////////////// STATE 11 /////////////////////////////
 //
-// *   69  EscapeDef -> EscapeSymbol . Arrow Number 
-// *   70  EscapeDef -> EscapeSymbol . Arrow Number ';' 
+// *   73  EscapeDef -> EscapeSymbol . Arrow Number 
+// *   74  EscapeDef -> EscapeSymbol . Arrow Number ';' 
 
-           '->'                                      +<=   26
+           '->'                                      +<=   30
 
            Arrow                                     +=>   25
 
-Came from: 4 9 14 16
+Came from: 4 6 7 12 14 15 16 26
+
+///////////////////////////// STATE 12 /////////////////////////////
+//
+// *   83  (NonterminalDef | SetDef | EscapeDef)... -> (NonterminalDef | SetDef | EscapeDef)... . (NonterminalDef | SetDef | EscapeDef) 
+// *    3  Grammar -> TokenProd... (NonterminalDef | SetDef | EscapeDef)... . 
+
+           {first_alpha}                             +<=   26
+           {first_lexical}                           +<=   27
+           {first_ignore}                            +<=   28
+           {first_escape}                            +<=   75
+           (default)                                  <=    3
+
+           NonterminalDef                            +<=   79
+           AlphaSymbol                               +=>    8
+           LexicalSymbol                             +=>    9
+           IgnoreSymbol                              +=>   10
+           SetDef                                    +<=   80
+           EscapeDef                                 +<=   81
+           EscapeSymbol                              +=>   11
+           (NonterminalDef | SetDef | EscapeDef)     +<=   83
+
+Came from: 4
+
+///////////////////////////// STATE 13 /////////////////////////////
+//
+// *   13  Token -> {first_lexical} . 
+// *   27  LexicalSymbol -> {first_lexical} . 
+
+           <alpha>                                    <=   13
+           <string>                                   <=   13
+           <integer>                                  <=   13
+           '->'                                       <=   27
+           '{'                                        <=   13
+
+Came from: 4 6
 
 ///////////////////////////// STATE 14 /////////////////////////////
 //
-// *   79  (NonterminalDef | SetDef | EscapeDef)... -> (NonterminalDef | SetDef | EscapeDef)... . (NonterminalDef | SetDef | EscapeDef) 
-// *    3  Grammar -> Options TokenProd... (NonterminalDef | SetDef | EscapeDef)... . 
+// *    8  Grammar -> Options TokenProd... PP . (NonterminalDef | SetDef | EscapeDef)... 
+// *    6  Grammar -> Options TokenProd... PP . 
 
-           {first_alpha}                             +<=   22
-           {first_lexical}                           +<=   23
-           {first_ignore}                            +<=   24
-           {first_escape}                            +<=   71
-           (default)                                  <=    3
+           {first_alpha}                             +<=   26
+           {first_lexical}                           +<=   27
+           {first_ignore}                            +<=   28
+           {first_escape}                            +<=   75
+           (default)                                  <=    6
 
-           NonterminalDef                            +<=   75
-           AlphaSymbol                               +=>   10
-           LexicalSymbol                             +=>   11
-           IgnoreSymbol                              +=>   12
-           SetDef                                    +<=   76
-           EscapeDef                                 +<=   77
-           EscapeSymbol                              +=>   13
-           (NonterminalDef | SetDef | EscapeDef)     +<=   79
+           NonterminalDef                            +<=   79
+           AlphaSymbol                               +=>    8
+           LexicalSymbol                             +=>    9
+           IgnoreSymbol                              +=>   10
+           SetDef                                    +<=   80
+           EscapeDef                                 +<=   81
+           EscapeSymbol                              +=>   11
+           (NonterminalDef | SetDef | EscapeDef)     +<=   82
+           (NonterminalDef | SetDef | EscapeDef)...  +=>   26
 
-Came from: 4
+Came from: 6
 
 ///////////////////////////// STATE 15 /////////////////////////////
 //
-// *   10  Token -> {first_lexical} . ['=>'] 
-// *   23  LexicalSymbol -> {first_lexical} . 
-// *   80  ['=>'] -> . 
+// *   83  (NonterminalDef | SetDef | EscapeDef)... -> (NonterminalDef | SetDef | EscapeDef)... . (NonterminalDef | SetDef | EscapeDef) 
+// *    7  Grammar -> Options TokenProd... (NonterminalDef | SetDef | EscapeDef)... . 
 
-           '=>'                                      +<=   81
-           <alpha>                                    <=   80
-           <string>                                   <=   80
-           <integer>                                  <=   80
-           '->'                                       <=   23
+           {first_alpha}                             +<=   26
+           {first_lexical}                           +<=   27
+           {first_ignore}                            +<=   28
+           {first_escape}                            +<=   75
+           (default)                                  <=    7
 
-           ['=>']                                    +<=   10
+           NonterminalDef                            +<=   79
+           AlphaSymbol                               +=>    8
+           LexicalSymbol                             +=>    9
+           IgnoreSymbol                              +=>   10
+           SetDef                                    +<=   80
+           EscapeDef                                 +<=   81
+           EscapeSymbol                              +=>   11
+           (NonterminalDef | SetDef | EscapeDef)     +<=   83
 
-Came from: 4
+Came from: 6
 
 ///////////////////////////// STATE 16 /////////////////////////////
 //
-// *   79  (NonterminalDef | SetDef | EscapeDef)... -> (NonterminalDef | SetDef | EscapeDef)... . (NonterminalDef | SetDef | EscapeDef) 
-// *    4  Grammar -> Options TokenProd... PP (NonterminalDef | SetDef | EscapeDef)... . 
+// *   83  (NonterminalDef | SetDef | EscapeDef)... -> (NonterminalDef | SetDef | EscapeDef)... . (NonterminalDef | SetDef | EscapeDef) 
+// *    4  Grammar -> TokenProd... PP (NonterminalDef | SetDef | EscapeDef)... . 
 
-           {first_alpha}                             +<=   22
-           {first_lexical}                           +<=   23
-           {first_ignore}                            +<=   24
-           {first_escape}                            +<=   71
+           {first_alpha}                             +<=   26
+           {first_lexical}                           +<=   27
+           {first_ignore}                            +<=   28
+           {first_escape}                            +<=   75
            (default)                                  <=    4
 
-           NonterminalDef                            +<=   75
-           AlphaSymbol                               +=>   10
-           LexicalSymbol                             +=>   11
-           IgnoreSymbol                              +=>   12
-           SetDef                                    +<=   76
-           EscapeDef                                 +<=   77
-           EscapeSymbol                              +=>   13
-           (NonterminalDef | SetDef | EscapeDef)     +<=   79
+           NonterminalDef                            +<=   79
+           AlphaSymbol                               +=>    8
+           LexicalSymbol                             +=>    9
+           IgnoreSymbol                              +=>   10
+           SetDef                                    +<=   80
+           EscapeDef                                 +<=   81
+           EscapeSymbol                              +=>   11
+           (NonterminalDef | SetDef | EscapeDef)     +<=   83
 
-Came from: 9
+Came from: 7
 
 ///////////////////////////// STATE 17 /////////////////////////////
 //
-// *   19  NonterminalDef -> AlphaSymbol ArrowProd . BarProd... [';'] 
-// *   82  ArrowProd... -> ArrowProd . 
+// *   23  NonterminalDef -> AlphaSymbol ArrowProd . BarProd... [';'] 
+// *   84  ArrowProd... -> ArrowProd . 
 
-           '|'                                       +<=   28
-           (default)                                  <=   82
+           '|'                                       +<=   32
+           (default)                                  <=   84
 
-           BarProd                                   +<=   86
-           Bar                                       +=>   26
-           BarProd...                                +=>   27
+           BarProd                                   +<=   88
+           Bar                                       +=>   27
+           BarProd...                                +=>   28
 
-Came from: 10
+Came from: 8
 
 ///////////////////////////// STATE 18 /////////////////////////////
 //
-// *   25  ArrowProd -> Arrow . TailExprList 
-// *   50  SetDef -> AlphaSymbol Arrow . '{' SetExpr '}' 
-// *   51  SetDef -> AlphaSymbol Arrow . '{' SetExpr '}' ';' 
+// *   29  ArrowProd -> Arrow . TailExprList 
+// *   54  SetDef -> AlphaSymbol Arrow . '{' SetExpr '}' 
+// *   55  SetDef -> AlphaSymbol Arrow . '{' SetExpr '}' ';' 
 
-           <alpha>                                   +<=   44
-           <lexical>                                 +<=   46
-           <escape>                                  +<=   45
-           <literal>                                 +<=   47
-           <string>                                  +<=   48
-           <integer>                                 +<=   49
-           '('                                       +<=   39
-           '{'                                       +=>   31
+           <alpha>                                   +<=   48
+           <lexical>                                 +<=   50
+           <escape>                                  +<=   49
+           <literal>                                 +<=   51
+           <string>                                  +<=   52
+           <integer>                                 +<=   53
+           '('                                       +<=   43
+           '{'                                       +=>   32
 
-           TailExprList                              +<=   25
-           TailExpr                                  +<=   88
-           GroupStart                                +=>   28
-           TailSymbol                                +=>   29
-           TailExpr...                               +=>   30
+           TailExprList                              +<=   29
+           TailExpr                                  +<=   90
+           GroupStart                                +=>   29
+           TailSymbol                                +=>   30
+           TailExpr...                               +=>   31
 
-Came from: 10
+Came from: 8
 
 ///////////////////////////// STATE 19 /////////////////////////////
 //
-// *   16  NonterminalDef -> AlphaSymbol ArrowProd... . [';'] 
-// *   83  ArrowProd... -> ArrowProd... . ArrowProd 
-// *   84  [';'] -> . 
+// *   20  NonterminalDef -> AlphaSymbol ArrowProd... . [';'] 
+// *   85  ArrowProd... -> ArrowProd... . ArrowProd 
+// *   86  [';'] -> . 
 
-           '->'                                      +<=   26
-           ';'                                       +<=   85
-           (default)                                  <=   84
+           '->'                                      +<=   30
+           ';'                                       +<=   87
+           (default)                                  <=   86
 
-           ArrowProd                                 +<=   83
+           ArrowProd                                 +<=   85
            Arrow                                     +=>   21
-           [';']                                     +<=   16
+           [';']                                     +<=   20
 
-Came from: 10
+Came from: 8
 
 ///////////////////////////// STATE 20 /////////////////////////////
 //
-// *   20  NonterminalDef -> LexicalSymbol ArrowProd . BarProd... [';'] 
-// *   82  ArrowProd... -> ArrowProd . 
+// *   24  NonterminalDef -> LexicalSymbol ArrowProd . BarProd... [';'] 
+// *   84  ArrowProd... -> ArrowProd . 
 
-           '|'                                       +<=   28
-           (default)                                  <=   82
+           '|'                                       +<=   32
+           (default)                                  <=   84
 
-           BarProd                                   +<=   86
-           Bar                                       +=>   26
-           BarProd...                                +=>   32
+           BarProd                                   +<=   88
+           Bar                                       +=>   27
+           BarProd...                                +=>   33
 
-Came from: 11
+Came from: 9
 
 ///////////////////////////// STATE 21 /////////////////////////////
 //
-// *   25  ArrowProd -> Arrow . TailExprList 
+// *   29  ArrowProd -> Arrow . TailExprList 
 
-           <alpha>                                   +<=   44
-           <lexical>                                 +<=   46
-           <escape>                                  +<=   45
-           <literal>                                 +<=   47
-           <string>                                  +<=   48
-           <integer>                                 +<=   49
-           '('                                       +<=   39
+           <alpha>                                   +<=   48
+           <lexical>                                 +<=   50
+           <escape>                                  +<=   49
+           <literal>                                 +<=   51
+           <string>                                  +<=   52
+           <integer>                                 +<=   53
+           '('                                       +<=   43
 
-           TailExprList                              +<=   25
-           TailExpr                                  +<=   88
-           GroupStart                                +=>   28
-           TailSymbol                                +=>   29
-           TailExpr...                               +=>   30
+           TailExprList                              +<=   29
+           TailExpr                                  +<=   90
+           GroupStart                                +=>   29
+           TailSymbol                                +=>   30
+           TailExpr...                               +=>   31
 
-Came from: 11 12 19 22 24
+Came from: 9 10 19 22 24
 
 ///////////////////////////// STATE 22 /////////////////////////////
 //
-// *   17  NonterminalDef -> LexicalSymbol ArrowProd... . [';'] 
-// *   83  ArrowProd... -> ArrowProd... . ArrowProd 
-// *   84  [';'] -> . 
+// *   21  NonterminalDef -> LexicalSymbol ArrowProd... . [';'] 
+// *   85  ArrowProd... -> ArrowProd... . ArrowProd 
+// *   86  [';'] -> . 
 
-           '->'                                      +<=   26
-           ';'                                       +<=   85
-           (default)                                  <=   84
+           '->'                                      +<=   30
+           ';'                                       +<=   87
+           (default)                                  <=   86
 
-           ArrowProd                                 +<=   83
+           ArrowProd                                 +<=   85
            Arrow                                     +=>   21
-           [';']                                     +<=   17
+           [';']                                     +<=   21
 
-Came from: 11
+Came from: 9
 
 ///////////////////////////// STATE 23 /////////////////////////////
 //
-// *   21  NonterminalDef -> IgnoreSymbol ArrowProd . BarProd... [';'] 
-// *   82  ArrowProd... -> ArrowProd . 
+// *   25  NonterminalDef -> IgnoreSymbol ArrowProd . BarProd... [';'] 
+// *   84  ArrowProd... -> ArrowProd . 
 
-           '|'                                       +<=   28
-           (default)                                  <=   82
+           '|'                                       +<=   32
+           (default)                                  <=   84
 
-           BarProd                                   +<=   86
-           Bar                                       +=>   26
-           BarProd...                                +=>   33
+           BarProd                                   +<=   88
+           Bar                                       +=>   27
+           BarProd...                                +=>   34
 
-Came from: 12
+Came from: 10
 
 ///////////////////////////// STATE 24 /////////////////////////////
 //
-// *   18  NonterminalDef -> IgnoreSymbol ArrowProd... . [';'] 
-// *   83  ArrowProd... -> ArrowProd... . ArrowProd 
-// *   84  [';'] -> . 
+// *   22  NonterminalDef -> IgnoreSymbol ArrowProd... . [';'] 
+// *   85  ArrowProd... -> ArrowProd... . ArrowProd 
+// *   86  [';'] -> . 
 
-           '->'                                      +<=   26
-           ';'                                       +<=   85
-           (default)                                  <=   84
+           '->'                                      +<=   30
+           ';'                                       +<=   87
+           (default)                                  <=   86
 
-           ArrowProd                                 +<=   83
+           ArrowProd                                 +<=   85
            Arrow                                     +=>   21
-           [';']                                     +<=   18
+           [';']                                     +<=   22
 
-Came from: 12
+Came from: 10
 
 ///////////////////////////// STATE 25 /////////////////////////////
 //
-// *   69  EscapeDef -> EscapeSymbol Arrow . Number 
-// *   70  EscapeDef -> EscapeSymbol Arrow . Number ';' 
+// *   73  EscapeDef -> EscapeSymbol Arrow . Number 
+// *   74  EscapeDef -> EscapeSymbol Arrow . Number ';' 
 
-           <integer>                                 +<=   72
+           <integer>                                 +<=   76
 
-           Number                                    +=>   34
+           Number                                    +=>   35
 
-Came from: 13
+Came from: 11
 
 ///////////////////////////// STATE 26 /////////////////////////////
 //
-// *   27  BarProd -> Bar . TailExprList 
+// *   83  (NonterminalDef | SetDef | EscapeDef)... -> (NonterminalDef | SetDef | EscapeDef)... . (NonterminalDef | SetDef | EscapeDef) 
+// *    8  Grammar -> Options TokenProd... PP (NonterminalDef | SetDef | EscapeDef)... . 
 
-           <alpha>                                   +<=   44
-           <lexical>                                 +<=   46
-           <escape>                                  +<=   45
-           <literal>                                 +<=   47
-           <string>                                  +<=   48
-           <integer>                                 +<=   49
-           '('                                       +<=   39
+           {first_alpha}                             +<=   26
+           {first_lexical}                           +<=   27
+           {first_ignore}                            +<=   28
+           {first_escape}                            +<=   75
+           (default)                                  <=    8
 
-           TailExprList                              +<=   27
-           TailExpr                                  +<=   88
-           GroupStart                                +=>   28
-           TailSymbol                                +=>   29
-           TailExpr...                               +=>   30
+           NonterminalDef                            +<=   79
+           AlphaSymbol                               +=>    8
+           LexicalSymbol                             +=>    9
+           IgnoreSymbol                              +=>   10
+           SetDef                                    +<=   80
+           EscapeDef                                 +<=   81
+           EscapeSymbol                              +=>   11
+           (NonterminalDef | SetDef | EscapeDef)     +<=   83
 
-Came from: 17 20 23 27 32 33
+Came from: 14
 
 ///////////////////////////// STATE 27 /////////////////////////////
 //
-// *   19  NonterminalDef -> AlphaSymbol ArrowProd BarProd... . [';'] 
-// *   87  BarProd... -> BarProd... . BarProd 
-// *   84  [';'] -> . 
+// *   31  BarProd -> Bar . TailExprList 
 
-           '|'                                       +<=   28
-           ';'                                       +<=   85
-           (default)                                  <=   84
+           <alpha>                                   +<=   48
+           <lexical>                                 +<=   50
+           <escape>                                  +<=   49
+           <literal>                                 +<=   51
+           <string>                                  +<=   52
+           <integer>                                 +<=   53
+           '('                                       +<=   43
 
-           BarProd                                   +<=   87
-           Bar                                       +=>   26
-           [';']                                     +<=   19
+           TailExprList                              +<=   31
+           TailExpr                                  +<=   90
+           GroupStart                                +=>   29
+           TailSymbol                                +=>   30
+           TailExpr...                               +=>   31
 
-Came from: 17
+Came from: 17 20 23 28 33 34
 
 ///////////////////////////// STATE 28 /////////////////////////////
 //
-// *   34  TailExpr -> GroupStart . List GroupEnd 
+// *   23  NonterminalDef -> AlphaSymbol ArrowProd BarProd... . [';'] 
+// *   89  BarProd... -> BarProd... . BarProd 
+// *   86  [';'] -> . 
 
-           <alpha>                                   +<=   44
-           <lexical>                                 +<=   46
-           <escape>                                  +<=   45
-           <literal>                                 +<=   47
-           <string>                                  +<=   48
-           <integer>                                 +<=   49
-           '('                                       +<=   39
+           '|'                                       +<=   32
+           ';'                                       +<=   87
+           (default)                                  <=   86
 
-           TailExpr                                  +<=   35
-           List                                      +=>   35
-           GroupStart                                +=>   28
-           TailSymbol                                +=>   29
+           BarProd                                   +<=   89
+           Bar                                       +=>   27
+           [';']                                     +<=   23
 
-Came from: 18 21 26 28 30 35 39
+Came from: 17
 
 ///////////////////////////// STATE 29 /////////////////////////////
 //
-// *   31  TailExpr -> TailSymbol . '+' 
-// *   32  TailExpr -> TailSymbol . '*' 
-// *   33  TailExpr -> TailSymbol . '?' 
-// *   30  TailExpr -> TailSymbol . 
+// *   38  TailExpr -> GroupStart . List GroupEnd 
 
-           '+'                                       +<=   31
-           '*'                                       +<=   32
-           '?'                                       +<=   33
-           (default)                                  <=   30
+           <alpha>                                   +<=   48
+           <lexical>                                 +<=   50
+           <escape>                                  +<=   49
+           <literal>                                 +<=   51
+           <string>                                  +<=   52
+           <integer>                                 +<=   53
+           '('                                       +<=   43
 
-Came from: 18 21 26 28 30 35 39
+           TailExpr                                  +<=   39
+           List                                      +=>   36
+           GroupStart                                +=>   29
+           TailSymbol                                +=>   30
+
+Came from: 18 21 27 29 31 36 40
 
 ///////////////////////////// STATE 30 /////////////////////////////
 //
-// *   89  TailExpr... -> TailExpr... . TailExpr 
-// *   29  TailExprList -> TailExpr... . 
+// *   35  TailExpr -> TailSymbol . '+' 
+// *   36  TailExpr -> TailSymbol . '*' 
+// *   37  TailExpr -> TailSymbol . '?' 
+// *   34  TailExpr -> TailSymbol . 
 
-           <alpha>                                   +<=   44
-           <lexical>                                 +<=   46
-           <escape>                                  +<=   45
-           <literal>                                 +<=   47
-           <string>                                  +<=   48
-           <integer>                                 +<=   49
-           '('                                       +<=   39
-           (default)                                  <=   29
+           '+'                                       +<=   35
+           '*'                                       +<=   36
+           '?'                                       +<=   37
+           (default)                                  <=   34
 
-           TailExpr                                  +<=   89
-           GroupStart                                +=>   28
-           TailSymbol                                +=>   29
-
-Came from: 18 21 26
+Came from: 18 21 27 29 31 36 40
 
 ///////////////////////////// STATE 31 /////////////////////////////
 //
-// *   50  SetDef -> AlphaSymbol Arrow '{' . SetExpr '}' 
-// *   51  SetDef -> AlphaSymbol Arrow '{' . SetExpr '}' ';' 
+// *   91  TailExpr... -> TailExpr... . TailExpr 
+// *   33  TailExprList -> TailExpr... . 
 
-           <alpha>                                   +<=   67
-           <escape>                                  +<=   68
-           <literal>                                 +<=   64
-           <string>                                  +<=   65
-           <integer>                                 +<=   66
+           <alpha>                                   +<=   48
+           <lexical>                                 +<=   50
+           <escape>                                  +<=   49
+           <literal>                                 +<=   51
+           <string>                                  +<=   52
+           <integer>                                 +<=   53
+           '('                                       +<=   43
+           (default)                                  <=   33
 
-           SetExpr                                   +=>   36
-           Range                                     +<=   52
-           RangeStart                                +=>   37
-           Character                                 +=>   38
-           CharacterSetName                          +<=   54
+           TailExpr                                  +<=   91
+           GroupStart                                +=>   29
+           TailSymbol                                +=>   30
 
-Came from: 18
+Came from: 18 21 27
 
 ///////////////////////////// STATE 32 /////////////////////////////
 //
-// *   20  NonterminalDef -> LexicalSymbol ArrowProd BarProd... . [';'] 
-// *   87  BarProd... -> BarProd... . BarProd 
-// *   84  [';'] -> . 
+// *   54  SetDef -> AlphaSymbol Arrow '{' . SetExpr '}' 
+// *   55  SetDef -> AlphaSymbol Arrow '{' . SetExpr '}' ';' 
 
-           '|'                                       +<=   28
-           ';'                                       +<=   85
-           (default)                                  <=   84
+           <alpha>                                   +<=   71
+           <escape>                                  +<=   72
+           <literal>                                 +<=   68
+           <string>                                  +<=   69
+           <integer>                                 +<=   70
 
-           BarProd                                   +<=   87
-           Bar                                       +=>   26
-           [';']                                     +<=   20
+           SetExpr                                   +=>   37
+           Range                                     +<=   56
+           RangeStart                                +=>   38
+           Character                                 +=>   39
+           CharacterSetName                          +<=   58
 
-Came from: 20
+Came from: 18
 
 ///////////////////////////// STATE 33 /////////////////////////////
 //
-// *   21  NonterminalDef -> IgnoreSymbol ArrowProd BarProd... . [';'] 
-// *   87  BarProd... -> BarProd... . BarProd 
-// *   84  [';'] -> . 
+// *   24  NonterminalDef -> LexicalSymbol ArrowProd BarProd... . [';'] 
+// *   89  BarProd... -> BarProd... . BarProd 
+// *   86  [';'] -> . 
 
-           '|'                                       +<=   28
-           ';'                                       +<=   85
-           (default)                                  <=   84
+           '|'                                       +<=   32
+           ';'                                       +<=   87
+           (default)                                  <=   86
 
-           BarProd                                   +<=   87
-           Bar                                       +=>   26
-           [';']                                     +<=   21
+           BarProd                                   +<=   89
+           Bar                                       +=>   27
+           [';']                                     +<=   24
 
-Came from: 23
+Came from: 20
 
 ///////////////////////////// STATE 34 /////////////////////////////
 //
-// *   70  EscapeDef -> EscapeSymbol Arrow Number . ';' 
-// *   69  EscapeDef -> EscapeSymbol Arrow Number . 
+// *   25  NonterminalDef -> IgnoreSymbol ArrowProd BarProd... . [';'] 
+// *   89  BarProd... -> BarProd... . BarProd 
+// *   86  [';'] -> . 
 
-           ';'                                       +<=   70
-           (default)                                  <=   69
+           '|'                                       +<=   32
+           ';'                                       +<=   87
+           (default)                                  <=   86
 
-Came from: 25
+           BarProd                                   +<=   89
+           Bar                                       +=>   27
+           [';']                                     +<=   25
+
+Came from: 23
 
 ///////////////////////////// STATE 35 /////////////////////////////
 //
-// *   34  TailExpr -> GroupStart List . GroupEnd 
-// *   36  List -> List . TailExpr 
-// *   37  List -> List . Or TailExpr 
+// *   74  EscapeDef -> EscapeSymbol Arrow Number . ';' 
+// *   73  EscapeDef -> EscapeSymbol Arrow Number . 
 
-           <alpha>                                   +<=   44
-           <lexical>                                 +<=   46
-           <escape>                                  +<=   45
-           <literal>                                 +<=   47
-           <string>                                  +<=   48
-           <integer>                                 +<=   49
-           '('                                       +<=   39
-           ')'                                       +=>   40
-           '|'                                       +<=   38
+           ';'                                       +<=   74
+           (default)                                  <=   73
 
-           TailExpr                                  +<=   36
-           Or                                        +=>   39
-           GroupStart                                +=>   28
-           GroupEnd                                  +<=   34
-           TailSymbol                                +=>   29
-
-Came from: 28
+Came from: 25
 
 ///////////////////////////// STATE 36 /////////////////////////////
 //
-// *   50  SetDef -> AlphaSymbol Arrow '{' SetExpr . '}' 
-// *   51  SetDef -> AlphaSymbol Arrow '{' SetExpr . '}' ';' 
-// *   55  SetExpr -> SetExpr . '|' Range 
-// *   56  SetExpr -> SetExpr . '|' Character 
-// *   57  SetExpr -> SetExpr . '|' CharacterSetName 
-// *   58  SetExpr -> SetExpr . '-' Range 
-// *   59  SetExpr -> SetExpr . '-' Character 
-// *   60  SetExpr -> SetExpr . '-' CharacterSetName 
+// *   38  TailExpr -> GroupStart List . GroupEnd 
+// *   40  List -> List . TailExpr 
+// *   41  List -> List . Or TailExpr 
 
-           '|'                                       +=>   41
-           '-'                                       +=>   42
-           '}'                                       +=>   43
+           <alpha>                                   +<=   48
+           <lexical>                                 +<=   50
+           <escape>                                  +<=   49
+           <literal>                                 +<=   51
+           <string>                                  +<=   52
+           <integer>                                 +<=   53
+           '('                                       +<=   43
+           ')'                                       +=>   41
+           '|'                                       +<=   42
 
-Came from: 31
+           TailExpr                                  +<=   40
+           Or                                        +=>   40
+           GroupStart                                +=>   29
+           GroupEnd                                  +<=   38
+           TailSymbol                                +=>   30
+
+Came from: 29
 
 ///////////////////////////// STATE 37 /////////////////////////////
 //
-// *   61  Range -> RangeStart . '..' RangeEnd 
+// *   54  SetDef -> AlphaSymbol Arrow '{' SetExpr . '}' 
+// *   55  SetDef -> AlphaSymbol Arrow '{' SetExpr . '}' ';' 
+// *   59  SetExpr -> SetExpr . '|' Range 
+// *   60  SetExpr -> SetExpr . '|' Character 
+// *   61  SetExpr -> SetExpr . '|' CharacterSetName 
+// *   62  SetExpr -> SetExpr . '-' Range 
+// *   63  SetExpr -> SetExpr . '-' Character 
+// *   64  SetExpr -> SetExpr . '-' CharacterSetName 
 
-           '..'                                      +=>   44
+           '|'                                       +=>   42
+           '-'                                       +=>   43
+           '}'                                       +=>   44
 
-Came from: 31 41 42
+Came from: 32
 
 ///////////////////////////// STATE 38 /////////////////////////////
 //
-// *   53  SetExpr -> Character . 
-// *   63  RangeStart -> Character . 
+// *   65  Range -> RangeStart . '..' RangeEnd 
 
-           '..'                                       <=   63
-           '|'                                        <=   53
-           '-'                                        <=   53
-           '}'                                        <=   53
+           '..'                                      +=>   45
 
-Came from: 31
+Came from: 32 42 43
 
 ///////////////////////////// STATE 39 /////////////////////////////
 //
-// *   37  List -> List Or . TailExpr 
+// *   57  SetExpr -> Character . 
+// *   67  RangeStart -> Character . 
 
-           <alpha>                                   +<=   44
-           <lexical>                                 +<=   46
-           <escape>                                  +<=   45
-           <literal>                                 +<=   47
-           <string>                                  +<=   48
-           <integer>                                 +<=   49
-           '('                                       +<=   39
+           '..'                                       <=   67
+           '|'                                        <=   57
+           '-'                                        <=   57
+           '}'                                        <=   57
 
-           TailExpr                                  +<=   37
-           GroupStart                                +=>   28
-           TailSymbol                                +=>   29
-
-Came from: 35
+Came from: 32
 
 ///////////////////////////// STATE 40 /////////////////////////////
 //
-// *   41  GroupEnd -> ')' . '+' 
-// *   42  GroupEnd -> ')' . '*' 
-// *   43  GroupEnd -> ')' . '?' 
-// *   40  GroupEnd -> ')' . 
+// *   41  List -> List Or . TailExpr 
 
-           '+'                                       +<=   41
-           '*'                                       +<=   42
-           '?'                                       +<=   43
-           (default)                                  <=   40
+           <alpha>                                   +<=   48
+           <lexical>                                 +<=   50
+           <escape>                                  +<=   49
+           <literal>                                 +<=   51
+           <string>                                  +<=   52
+           <integer>                                 +<=   53
+           '('                                       +<=   43
 
-Came from: 35
+           TailExpr                                  +<=   41
+           GroupStart                                +=>   29
+           TailSymbol                                +=>   30
+
+Came from: 36
 
 ///////////////////////////// STATE 41 /////////////////////////////
 //
-// *   55  SetExpr -> SetExpr '|' . Range 
-// *   56  SetExpr -> SetExpr '|' . Character 
-// *   57  SetExpr -> SetExpr '|' . CharacterSetName 
+// *   45  GroupEnd -> ')' . '+' 
+// *   46  GroupEnd -> ')' . '*' 
+// *   47  GroupEnd -> ')' . '?' 
+// *   44  GroupEnd -> ')' . 
 
-           <alpha>                                   +<=   67
-           <escape>                                  +<=   68
-           <literal>                                 +<=   64
-           <string>                                  +<=   65
-           <integer>                                 +<=   66
-
-           Range                                     +<=   55
-           RangeStart                                +=>   37
-           Character                                 +=>   45
-           CharacterSetName                          +<=   57
+           '+'                                       +<=   45
+           '*'                                       +<=   46
+           '?'                                       +<=   47
+           (default)                                  <=   44
 
 Came from: 36
 
 ///////////////////////////// STATE 42 /////////////////////////////
 //
-// *   58  SetExpr -> SetExpr '-' . Range 
-// *   59  SetExpr -> SetExpr '-' . Character 
-// *   60  SetExpr -> SetExpr '-' . CharacterSetName 
+// *   59  SetExpr -> SetExpr '|' . Range 
+// *   60  SetExpr -> SetExpr '|' . Character 
+// *   61  SetExpr -> SetExpr '|' . CharacterSetName 
 
-           <alpha>                                   +<=   67
-           <escape>                                  +<=   68
-           <literal>                                 +<=   64
-           <string>                                  +<=   65
-           <integer>                                 +<=   66
+           <alpha>                                   +<=   71
+           <escape>                                  +<=   72
+           <literal>                                 +<=   68
+           <string>                                  +<=   69
+           <integer>                                 +<=   70
 
-           Range                                     +<=   58
-           RangeStart                                +=>   37
+           Range                                     +<=   59
+           RangeStart                                +=>   38
            Character                                 +=>   46
-           CharacterSetName                          +<=   60
+           CharacterSetName                          +<=   61
 
-Came from: 36
+Came from: 37
 
 ///////////////////////////// STATE 43 /////////////////////////////
 //
-// *   51  SetDef -> AlphaSymbol Arrow '{' SetExpr '}' . ';' 
-// *   50  SetDef -> AlphaSymbol Arrow '{' SetExpr '}' . 
+// *   62  SetExpr -> SetExpr '-' . Range 
+// *   63  SetExpr -> SetExpr '-' . Character 
+// *   64  SetExpr -> SetExpr '-' . CharacterSetName 
 
-           ';'                                       +<=   51
-           (default)                                  <=   50
+           <alpha>                                   +<=   71
+           <escape>                                  +<=   72
+           <literal>                                 +<=   68
+           <string>                                  +<=   69
+           <integer>                                 +<=   70
 
-Came from: 36
+           Range                                     +<=   62
+           RangeStart                                +=>   38
+           Character                                 +=>   47
+           CharacterSetName                          +<=   64
+
+Came from: 37
 
 ///////////////////////////// STATE 44 /////////////////////////////
 //
-// *   61  Range -> RangeStart '..' . RangeEnd 
+// *   55  SetDef -> AlphaSymbol Arrow '{' SetExpr '}' . ';' 
+// *   54  SetDef -> AlphaSymbol Arrow '{' SetExpr '}' . 
 
-           <literal>                                 +<=   64
-           <string>                                  +<=   65
-           <integer>                                 +<=   66
-
-           RangeEnd                                  +<=   61
-           Character                                 +<=   62
+           ';'                                       +<=   55
+           (default)                                  <=   54
 
 Came from: 37
 
 ///////////////////////////// STATE 45 /////////////////////////////
 //
-// *   56  SetExpr -> SetExpr '|' Character . 
-// *   63  RangeStart -> Character . 
+// *   65  Range -> RangeStart '..' . RangeEnd 
 
-           '..'                                       <=   63
-           '|'                                        <=   56
-           '-'                                        <=   56
-           '}'                                        <=   56
+           <literal>                                 +<=   68
+           <string>                                  +<=   69
+           <integer>                                 +<=   70
 
-Came from: 41
+           RangeEnd                                  +<=   65
+           Character                                 +<=   66
+
+Came from: 38
 
 ///////////////////////////// STATE 46 /////////////////////////////
 //
-// *   59  SetExpr -> SetExpr '-' Character . 
-// *   63  RangeStart -> Character . 
+// *   60  SetExpr -> SetExpr '|' Character . 
+// *   67  RangeStart -> Character . 
 
-           '..'                                       <=   63
-           '|'                                        <=   59
-           '-'                                        <=   59
-           '}'                                        <=   59
+           '..'                                       <=   67
+           '|'                                        <=   60
+           '-'                                        <=   60
+           '}'                                        <=   60
 
 Came from: 42
 
 ///////////////////////////// STATE 47 /////////////////////////////
+//
+// *   63  SetExpr -> SetExpr '-' Character . 
+// *   67  RangeStart -> Character . 
+
+           '..'                                       <=   67
+           '|'                                        <=   63
+           '-'                                        <=   63
+           '}'                                        <=   63
+
+Came from: 43
+
+///////////////////////////// STATE 48 /////////////////////////////
 //
 // *    0  Goal -> Grammar <eof> . 
 

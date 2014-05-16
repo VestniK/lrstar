@@ -80,6 +80,7 @@
 			static void  	O_SORTED (char**s, int n, int *seq);
 			static void  	O_SORTED2(int *s, int n, int *seq);
 			static void  	O_TXT (char**s, int n);
+			static void  	O_TXTN (char**s, int m, int n);
 			static void  	O_TXTSTR (char**s, int n);
 			static void  	PRT_ERR (char *p, int line);
 			static char* 	prt_line (int numb, char *line);

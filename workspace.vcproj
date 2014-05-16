@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="LRSTAR 6.5.020"
+	Name="LRSTAR 6.6.003"
 	ProjectGUID="{EA5645D7-512C-454E-8B96-1D2F01E5F755}"
 	RootNamespace="LALR 6.0.025"
 	TargetFrameworkVersion="131072"
@@ -881,10 +881,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\grm\c.lex"
-				>
-			</File>
-			<File
 				RelativePath="..\grm\c.lgr"
 				>
 			</File>
@@ -943,6 +939,10 @@
 						Name="VCCLCompilerTool"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\skl\lexer.cpp.skl"
+				>
 			</File>
 		</Filter>
 	</Files>

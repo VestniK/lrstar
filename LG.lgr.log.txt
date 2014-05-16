@@ -18,7 +18,7 @@ Medium      rows   cols          matrix        list       vect      total
 T matrix      36 x   28 x 1 =     1,008 ->      848 +      421 =    1,269 
 Total                                           848 +      421 =    1,269
 
-0 min 0.062 sec, 97.488 MB, 0 warnings, 0 errors.
+0 min 0.046 sec, 97.488 MB, 0 warnings, 0 errors.
 
 Skeleton: LGLexer.h.skl
 Output:   LGLexer.h (35 lines)

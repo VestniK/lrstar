@@ -21,8 +21,8 @@
       #undef  T_LEXICAL      
       #undef  T_IGNORE       
       #undef  T_ESCAPE       
-      #undef  T_LITERAL1     
-      #undef  T_LITERAL2     
+      #undef  T_LITERAL      
+      #undef  T_STRING       
       #undef  T_INTEGER      
       #undef  T_EOF          
       #undef  T_ARROW        
@@ -45,8 +45,8 @@
       #define T_LEXICAL           2 // 
       #define T_IGNORE            3 // 
       #define T_ESCAPE            4 // 
-      #define T_LITERAL1          5 // 
-      #define T_LITERAL2          6 // 
+      #define T_LITERAL           5 // 
+      #define T_STRING            6 // 
       #define T_INTEGER           7 // 
       #define T_EOF               8 // 
       #define T_ARROW             9 // 

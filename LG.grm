@@ -4,12 +4,12 @@
 /*--- Terminal Symbols. ------*/
   														    
 	T_ERROR			<error>        => error (0);
-	T_ALPHA			<alpha>        => firstsym  ({first_alpha});
-	T_LEXICAL   	<lexical>      => firstsym  ({first_lexical});
-	T_IGNORE   		<ignore>       => firstsym  ({first_ignore});
-	T_ESCAPE 		<escape>       => firstsym  ({first_escape});
-	T_LITERAL1		<literal>		=> checkcase ({first_literal});	// '...'
-	T_LITERAL2		<string>			=> checkstring ({first_string}, {option_string});	// "..."	
+	T_ALPHA			<alpha>        => firstsym ({first_alpha});
+	T_LEXICAL   	<lexical>      => firstsym ({first_lexical});
+	T_IGNORE   		<ignore>       => firstsym ({first_ignore});
+	T_ESCAPE 		<escape>       => firstsym ({first_escape});
+	T_LITERAL		<literal>		=> firstsym ({first_literal});	
+	T_STRING  		<string>			=> firstsym ({first_string});	
 	T_INTEGER		<integer>		;
 	T_EOF				<eof>				;
 
@@ -32,28 +32,32 @@
 
    Goal           	-> Grammar <eof>								
 
-	Grammar        	-> Options TokenProd...     
+	Grammar        	->	        TokenProd...     
+	               	->         TokenProd... PP    
+	               	->         TokenProd...    (NonterminalDef|SetDef|EscapeDef)...
+	               	->         TokenProd... PP (NonterminalDef|SetDef|EscapeDef)...
+	               	-> Options TokenProd...     
 	               	-> Options TokenProd... PP    
 	               	-> Options TokenProd...    (NonterminalDef|SetDef|EscapeDef)...
 	               	-> Options TokenProd... PP (NonterminalDef|SetDef|EscapeDef)...
 
-  	Options				->													=> PRO_OPTNS(0)
-							->	{option_string}                     => PRO_OPTNS(1)
+  	Options				->	{first_string}		 	   				=> PRO_OPTNS(1)
 													   
 /*--- Token Definitions ---*/
 
 	PP 					-> '%%'											=> EOGI(0)
 
    TokenProd      	-> Token ReturnValue 
-                  	-> Token ReturnValue ';' 
+                  	-> Token ActionCode 
 
-   Token          	-> {first_lexical} ['=>']   				=> ADD_TOKEN (1)
-                     -> {first_literal} ['=>'] 			   	=> ADD_TOKEN (1)
-                     -> {first_string}  ['=>']	 		   	=> ADD_TOKEN (1)
+   Token          	-> {first_lexical}	   					=> ADD_TOKEN  (1)
+                     -> {first_literal}  					   	=> ADD_TOKEN2 (1)
+                     -> {first_string}  	 						=> ADD_TOKEN2 (1)
 
 	ReturnValue	   	-> <integer>                           => ADD_TERMNO (1)
 							-> <alpha>                             => ADD_DEFCON (1)
 							-> <string>				   					=> ADD_STRING (1)
+	ActionCode			-> '{'			          					=> ADD_CODE   (1)
 
 /*--- Nonterminal Definitions ---*/
 
