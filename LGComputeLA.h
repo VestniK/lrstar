@@ -5,17 +5,17 @@
 		class LGComputeLA : public LGAddExtra
 		{
 			public:
-			static int    c_states;
+			static int     c_states;
 
-			static int*   D_red;
-			static int*   la_start;
-			static int*   la_end;
-			static int*   la_symb;
-			static int*   la_red;
+			static int*    D_red;
+			static int*    la_start;
+			static int*    la_end;
+			static int*    la_symb;
+			static int*    la_red;
 
-			static int    n_lookbacks;
-			static int    n_lookah;
-			static int    n_includes;
+			static int     n_lookbacks;
+			static int     n_lookah;
+			static int     n_includes;
 
 			static int		ComputeLA ();
 			

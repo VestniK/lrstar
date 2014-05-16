@@ -60,6 +60,7 @@
 		char* 	 Generate::buffend;
 		int   	 Generate::operation_flag;
 		int   	 Generate::n_origlines;
+		int   	 Generate::n_addedlines;
 		int   	 Generate::max_outbuff;
 								 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -83,7 +84,6 @@
 			EOF_NUMB,   		// EOF terminal number.
 			EOL_NUMB,   		// EOL terminal number.
 			ERR_USED,   		// <error> symbol used in grammar (0 or 1).
-			GENERATOR,  		// Generator (LRSTAR).
 			GRM_FILE,   		// Grammar filename (e.g. C.grm).
 			GRM_NAME,   		// Grammar name (e.g. C).
 			GRM_TEXT,   		// Grammar text (complete file contents). 
@@ -131,7 +131,7 @@
 			PROD_LENG,  		// Production length
 			PROD_REVS,  		// Production reverse code (0 or 1). 
 			PROD_TAIL,  		// Production tail (first tail number).
-			PROGRAM,    		// Program.
+			PROGRAM,    		// Program name (LRSTAR).
 			RESTORE,    		// Restore parser stack code.
 			RMAT_COL,   		// R matrix column index.
 			RMAT_NUMB,  		// R matrix numbers.
@@ -159,25 +159,23 @@
 			LG_BMAT_COL,   	// B matrix column index.
 			LG_BMAT_NUMB,  	// B matrix (0's and 1's). 
 			LG_BMAT_ROW,   	// B matrix row index.
+			LG_CODE,   			// Direct code. 
 			LG_DEF_CONS,   	// Defined constants. 
 			LG_ERR_TOKEN,  	// Error token.
-			LG_GENERATOR,     // Generator (LRSTAR).
 			LG_GRM_FILE,   	// Grammar filename.
 			LG_GRM_NAME,   	// Grammar name.
 			LG_GRM_TEXT,   	// Grammar text (complete file contents). 
 			LG_NUMB_STA,   	// Number of states.
 			LG_NUMB_TERM,  	// Number of terminals.
-			LG_OPTN_CODE,		// Code type lexers, not tables.
+			LG_OPTN_CODE,		// Direct-code lexer. 
 			LG_OPTN_COL,   	// Column number in lexer.
 			LG_OPTN_DEBUG, 	// Debug option.
-			LG_OPTN_EXTRA, 	// Extra-large table-driven lexer.
 			LG_OPTN_LARGE, 	// Large table-driven lexer.
 			LG_OPTN_LINE,  	// Line number in lexer.
 			LG_OPTN_MEDIUM,	// Medium table-driven lexer.
 			LG_OPTN_SMALL, 	// Small table-driven lexer.
 			LG_OUT_FILE,   	// Output filename. 
-			LG_PARSER_CODES,  // Parser skeleton codes.
-			LG_PROGRAM,    	// Program.
+			LG_PROGRAM,    	// Program name (DFASTAR).
 			LG_SKL_FILE,   	// Skeleton filename.
 			LG_STRINGS,    	// String return values.
 			LG_TERM_NUMB,  	// Terminal number for lexer tables.
@@ -207,7 +205,6 @@
 			"eof_numb",   	"dt",	EOF_NUMB,   		"End of file terminal number",
 			"eol_numb",   	"dt",	EOL_NUMB,   		"End of line terminal number",
 			"err_used",   	"dt",	ERR_USED,   		"<error> symbol used in grammar (0 or 1)",
-			"generator", 	"s ",	GENERATOR,  		"Generator (LRSTAR)",
 			"grm",   		"s ",	GRM_NAME,   		"Grammar name (same as grm_name)",
 			"grm_file",   	"s ",	GRM_FILE,   		"Grammar filename",
 			"grm_name",   	"s ",	GRM_NAME,   		"Grammar name",
@@ -258,7 +255,7 @@
 			"prod_leng",   "dt",	PROD_LENG,  		"Production length",
 			"prod_revs",   "dt",	PROD_REVS,  		"Production reverse code (0 or 1)", 
 			"prod_tail",   "dt",	PROD_TAIL,  		"Production tail (first tail number)",
-			"program",     "s ",	PROGRAM,    		"Program name (e.g. LRSTAR)",
+			"program",     "s ",	PROGRAM,    		"Program name (LRSTAR)",
 			"restore",     "dt",	RESTORE,    		"Restore parser stack code (0 or 1)",
 			"rmat_col",    "dt",	RMAT_COL,   		"R matrix column index",
 			"rmat_numb",   "dt",	RMAT_NUMB,  		"R matrix numbers",
@@ -288,25 +285,23 @@
 			"bmat_numb",   "dt",	LG_BMAT_NUMB,   	"B matrix (0's and 1's)", 
 			"bmat_row",    "dt",	LG_BMAT_ROW,    	"B matrix row index",
 			"def_cons",    "dt",	LG_DEF_CONS,    	"Defined constants", 
+			"direct_code", "s",	LG_CODE,    		"Direct code output", 
 			"err_token",   "dt",	LG_ERR_TOKEN,   	"Error token",
-			"generator",   "s ", LG_GENERATOR,   	"Generator (LRSTAR)",
 			"grm",         "s ",	LG_GRM_NAME,    	"Grammar name (same as grm_name)",
 			"grm_file",    "s ",	LG_GRM_FILE,    	"Grammar filename",
 			"grm_name",    "s ",	LG_GRM_NAME,    	"Grammar name",
 			"grm_text",    "s ",	LG_GRM_TEXT,    	"Grammar text (complete file contents)", 
 			"numb_sta",    "dt",	LG_NUMB_STA,    	"Number of states",
-			"numb_term",   "dt",	LG_NUMB_TERM,   	"Number of terminals",
-			"optn_code",   "dt",	LG_OPTN_CODE,   	"Direct-code lexers, not tables.",
+			"numb_term",   "dt",	LG_NUMB_TERM,   	"Number of terminals/characters(256)",
+			"optn_code",   "dt",	LG_OPTN_CODE,    	"Direct code lexers",
 			"optn_col",    "dt",	LG_OPTN_COL,    	"Column number in lexer",
 			"optn_debug",  "dt",	LG_OPTN_DEBUG,  	"Debug option",
-			"optn_extra",  "dt",	LG_OPTN_EXTRA,  	"Extra-large table-driven lexer",
 			"optn_large",  "dt",	LG_OPTN_LARGE,  	"Large table-driven lexer",
 			"optn_line",   "dt",	LG_OPTN_LINE,   	"Line number in lexer",
 			"optn_medium", "dt",	LG_OPTN_MEDIUM, 	"Medium table-driven lexer",
 			"optn_small",  "dt",	LG_OPTN_SMALL,  	"Small table-driven lexer",
 			"out_file",    "s ",	LG_OUT_FILE,    	"Output filename", 
-			"parser",		"s ", LG_PARSER_CODES, 	"Parser skeleton codes",
-			"program",     "s ",	LG_PROGRAM,     	"Program name",
+			"program",     "s ",	LG_PROGRAM,     	"Program name (DFASTAR)",
 			"skl_file",    "s ",	LG_SKL_FILE,    	"Skeleton filename",
 			"strings",     "dt",	LG_STRINGS,     	"String return values",
 			"term_numb",   "dt",	LG_TERM_NUMB,   	"Terminal number for lexer tables",
@@ -348,14 +343,15 @@ int   Generate::GenerateCode (char* sklfid, char* outfid, int verbose)
 			#endif
 		}
 
-      first_err   = 1;
-		n_origlines = 0;
-      staktop     = 0;
-		count       = 1;
-		mult        = 1;
-		plus        = 0;
-      maxtop      = MAXTOP;
-      group_start = NULL;
+      first_err    = 1;
+		n_origlines  = 0;
+		n_addedlines = 0;
+      staktop      = 0;
+		count        = 1;
+		mult         = 1;
+		plus         = 0;
+      maxtop       = MAXTOP;
+      group_start  = NULL;
 		operation_flag = 0;
 
 		strcpy (skl_fid, sklfid);
@@ -388,12 +384,21 @@ int   Generate::GenerateCode (char* sklfid, char* outfid, int verbose)
          }
       }
 
-		fd = open (out_fid, O_CREAT | O_TRUNC | O_WRONLY, S_IREAD | S_IWRITE);
-		if (fd < 0)
+		#ifdef DFASTAR
+		if (optn[LG_DIRECTCODE])
 		{
-			if (++n_errors == 1) prt_log ("\n");
-			prt_log ("Output:   %s  cannot be created!\n", out_fid);
-			return (0);
+			if (!open_code (out_fid)) return 0;
+		}
+		else
+		#endif
+		{
+			fd = open (out_fid, O_CREAT | O_TRUNC | O_WRONLY, S_IREAD | S_IWRITE);
+			if (fd < 0)
+			{
+				if (++n_errors == 1) prt_log ("\n");
+				prt_log ("Output:   %s  cannot be created!\n", out_fid);
+				return (0);
+			}
 		}
 		INIT_VARS ();
       EMIT_ALL (verbose);
@@ -471,12 +476,7 @@ void  PGGenerate::Initialize ()
 
 void  LGGenerate::Initialize ()
 {
-		static int firsttime = 1;
-		if (firsttime)
-		{
-			firsttime = 0;
-			/* nothing */
-		}
+		/* nothing */
 }
 #endif
 
@@ -520,9 +520,18 @@ void  Generate::EMIT_ALL (int verbose)
       DUMP_SKEL (skelbeg, skel, NULL);
       FREE (buffer, max_outbuff);
 		char num[12] = "           ";
-	  	number (n_origlines, num);
+	  	number (n_origlines+n_addedlines, num);
 
-		close (fd);
+		#ifdef DFASTAR
+		if (optn[LG_DIRECTCODE])
+		{
+			close_code();
+		}
+		else
+		#endif
+		{
+			close (fd);
+		}
 		if (verbose > 1) prt_log     ("Output:   %s (%s lines)\n", out_fid, num);
 		else             prt_logonly ("Output:   %s (%s lines)\n", out_fid, num);
 
@@ -2236,11 +2245,23 @@ void  Generate::PUT_FILE (char *buffer, int leng) // If leng maybe > 32767.
 
 int   Generate::OUTPUT (char* buffer, int leng) // If leng <= 32767.
 {
-		if (write (fd, buffer, leng) != leng)
+		#ifdef DFASTAR
+		if (optn[LG_DIRECTCODE])
 		{
-			if (++n_errors == 1) prt_log ("\n");
-			prt_log ("\nError writing to file: '%s'\n\n", out_fid);
-			Terminate (1);
+			char ch = buffer[leng];
+			buffer[leng] = 0;
+			prt_code ("%s", buffer);
+			buffer[leng] = ch;
+		}
+		else
+		#endif
+		{
+			if (write (fd, buffer, leng) != leng)
+			{
+				if (++n_errors == 1) prt_log ("\n");
+				prt_log ("\nError writing to file: '%s'\n\n", out_fid);
+				Terminate (1);
+			}
 		}
 		for (char* p = buffer; p < buffer+leng; p++)
 		{
@@ -2866,14 +2887,13 @@ int   LGGenerate::VALUE (int i)
          case LG_ERR_TOKEN: n = err_ret_numb; break;
                 
          /* Options. */
-         case LG_OPTN_CODE:	n = 0; break;
+         case LG_OPTN_CODE:	n = optn[LG_DIRECTCODE]; break;
          case LG_OPTN_COL:		n = optn[LG_COLNUMB]; break; 
          case LG_OPTN_DEBUG:	n = optn[LG_DEBUG]; break; 
          case LG_OPTN_LINE:	n = optn[LG_LINENUMB]; break; 
          case LG_OPTN_SMALL:	n = optn[LG_TABL_SMALL]; break; 
          case LG_OPTN_MEDIUM:	n = optn[LG_TABL_MEDIUM]; break; 
          case LG_OPTN_LARGE:	n = optn[LG_TABL_LARGE]; break; 
-         case LG_OPTN_EXTRA:	n = optn[LG_TABL_EXTRA]; break; 
 
 			/* Default (erroroneous code) */
 			default: 
@@ -2895,11 +2915,6 @@ void  PGGenerate::EMITSTR (int i)
       charstring[0] = 0;
       switch (code_table[i]->number)
       {
-         case GENERATOR: // Generator. 
-         {
-            strcpy (charstring, "LRSTAR");
-            break;
-         }
          case GRM_NAME: // Grammar name. 
          {
             strcpy (charstring, gfn);
@@ -2957,11 +2972,6 @@ void  LGGenerate::EMITSTR (int i)
       charstring[0] = 0;
       switch (code_table[i]->number)
       {
-         case LG_GENERATOR: // Generator. 
-         {
-            strcpy (charstring, "DFASTAR");
-            break;
-         }
          case LG_GRM_NAME: // Grammar name. 
          {
             strcpy (charstring, gfn);
@@ -3007,6 +3017,11 @@ void  LGGenerate::EMITSTR (int i)
          {
             strcpy (charstring, version);
             break;
+         }
+         case LG_CODE: // Version
+         {
+            n_addedlines = OUTPUT_CODE ();
+				return; // return not break!
          }
 			default:
 			{ 

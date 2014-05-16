@@ -68,6 +68,7 @@
 			static int    	max_n_prods;
 			static char*  	tokenstartstr; 
 			static char*  	tokenendstr; 
+			static char*  	tokenlinestr; 
 			static char*  	linenumbstr; 
 			static char*  	colnumbstr; 
 			static char*  	tabstopstr;
@@ -136,6 +137,7 @@
          static int   	FIRST_CHAR (int, int);
          static int   	FIRST_RANGE (int, int);
          static int   	FIRST_SET (int, int);
+         static int   	DEF_SET (int, int);
 			static void  	CHECK_SET (int s);
          static int   	GEN_SYMB ();
          static int   	GEN_HEAD (int);
@@ -159,9 +161,13 @@
          static int   	ADD_TAIL (int, int);
          static int   	PUSH_UNDEF (int, int);
          static int   	PUSH_TAIL (int, int);
+         static int   	SET_START (int, int);
+         static int   	SET_END (int, int);
+         static int   	MAKE_SETNAME (int, int);
          static int   	ADD_HEAD (int, int);
          static int   	ADD_HEADLEX (int, int);
-         static int   	ADD_HEADESC (int, int);
+         static int   	ADD_HEADIGNORE (int, int);
+         static int   	ADD_HEADSET (int, int);
          static int   	ADD_PROD (int, int);
          static int   	CHECK_PROD (int, int);
          static int   	DEF_TAIL ();
@@ -186,7 +192,6 @@
          static int   	RANGE_ALL (int, int);
          static int   	ADD_RANGE (int, int);
          static int   	SUB_RANGE (int, int);
-         static int   	SET_END (int, int);
          static int   	ADD_PRODADD ();
          static int   	ADD_PRODSUB ();
          static int   	ADD_PRODTO ();

@@ -21,7 +21,6 @@
       #include "fcntl.h"
       #include "ctype.h"
       #include "stdio.h"
-  		#include "wtypes.h"
 
       #include <stdlib.h>
       #include <string.h>
@@ -29,6 +28,7 @@
       #include <stdarg.h>
 
       #ifdef WINDOWS
+      #include "wtypes.h"
       #include <io.h>
       #include "malloc.h"
       #endif
@@ -83,26 +83,30 @@
 			#ifdef DFASTAR
 			LG_ANALYZEONLY,    
 			LG_BACKSLASH,      
+			LG_BLANKGOTOS,
 			LG_COLNUMB,      
 			LG_CONFLICTS,      
 			LG_DEBUG,          
+			LG_DIRECTCODE,     
 			LG_ERRORCOUNT,     
 			LG_GRAMMAR,        
 			LG_INSENSITIVE,
+			LG_KEYWORDIDENT,    
 			LG_LINENUMB,       
 			LG_MINIMIZE,       
-			LG_KEYWORDIDENT,    
+			LG_NUMBCHAR,       
+			LG_OPTIMIZE,
 			LG_QUIET,          
 			LG_REDUCEONLY,     
 			LG_REMOVEDUP,      
+			LG_SORTACTIONS,
 			LG_STATELIST,      
 			LG_STATELISTOPT,      
 			LG_TAB, 
 			LG_TABLES,
 			LG_TABL_SMALL,      
 			LG_TABL_MEDIUM,
-			LG_TABL_LARGE,      
-			LG_TABL_EXTRA,         
+			LG_TABL_LARGE,         
 			LG_TRANSITIONS,    
 			LG_VERBOSE,        
 			LG_WARNINGS,
@@ -142,22 +146,18 @@
       #define ushort    unsigned short
       #define ulong     unsigned long
 
-		#ifndef ULONG_MAX
-		#define ULONG_MAX    0xFFFFFFFF // 32-bit
-		#endif
-
       #define YES                   1 // Yes value.
       #define NO                    0 // No value.
-      #define EOL_MARK             10 // End Of Line marker.
-      #define EOF_MARK             26 // End Of File marker.
 
-   // File Name String Sizes
 		#undef  MAX_PATH
       #define MAX_PATH            260 // Maximum path length.
       #define MAX_DIR             160 // Maximum directory name length, 159.
       #define MAX_FILENAME         64 // Maximum file name length, 63.
       #define MAX_FILETYPE         32 // Maximum file type length, 31.
-      #define MAX_INT      2147483647 // Maximum integer.
+
+		#undef  UINT_MAX
+		#define UINT_MAX     0xFFFFFFFF // 32-bit integer value for hasing.
+		#define MAX_INT      2147483647 // Maximum integer.
       #define EOF_CHAR             26
       #define EOL_CHAR             10
 
@@ -512,7 +512,7 @@
 		extern int    close_lst ();
 
       #ifdef UNIX
-		extern long   filelength (int fd);
+		extern long   _filelength (int fd);
       #endif
 
       extern int    fastcmp (int*, int*, int);
@@ -531,7 +531,7 @@
 		extern void   SaveMaxValues (char* dn, char* fn);
 
 		extern int	  itsakeyword (char* terminal);
-      extern int    inputi ();
+      extern int    inputi (char*);
       extern void   inputt ();
 		extern void   InternalError (int n);
 
@@ -583,7 +583,7 @@
 		extern int    SET_OPTN (char* opt, char* fid, int linenumb);
 		extern int    set_optn (OPTION* option, char* opt, char* fid, int linenumb);
 		extern int    SET_OPTNS (int na, char** arg);
-		extern void   SORTNAMES  (char** start, int n, int* seq);
+		extern void   SORTNAMES (char** start, int n, int* seq);
 		extern void   SORTNAMES2 (char** start, int n, int* seq, int* pos);
 
 		extern void   TRAVERSE (int x);

@@ -1,0 +1,19 @@
+
+Memory Allocation Options (maximum values).
+Modify these values to suit your needs.
+
+"/sym   =    20000"  Symbols
+"/pro   =    50000"  Productions
+"/tail  =   200000"  Tail symbols
+"/ebnf  =    10000"  EBNF symbol space
+"/sta   =   300000"  States
+"/fin   =   300000"  Final items
+"/ker   = 10000000"  Kernel items
+"/ntt   =   200000"  Nonterminal transitions
+"/tt    =  2000000"  Terminal transitions
+"/tta   =  5000000"  Terminal transitions added
+"/la    = 10000000"  Lookaheads
+"/lb    =  2000000"  Lookbacks
+"/inc   =   500000"  Includes
+"/ch    =   500000"  Child nodes in graph
+"/nd    =   100000"  Nondeterministic actions

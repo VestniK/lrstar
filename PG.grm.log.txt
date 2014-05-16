@@ -1,14 +1,14 @@
 
-LRSTAR 5.0.002 Professional Copyright 2013 Paul Mann.
+LRSTAR 6.5.019 Copyright 2014 Paul B Mann.
 
-Input     PG.grm /exp /k /g /ct 
+Input     PG.grm /exp /k /g /c 
 
 Grammar      198 rules, 42 terminals, 96 nonterminals.
 LR(1)        276 states in Minimal LR(1) state machine.
              116 states after implementing shift-reduce actions.
 Conflicts      4 states, 4 shift-reduce, 0 reduce-reduce conflicts.
 
-Grammar is not LALR(1) and not LR(1).
+Grammar is not LALR(1) and not LR(1), 0 extra states were added.
 
             rows   cols          matrix        list       vect      total
 B matrix      40 x   33 x 1 =     1,320 ->      126 +      200 =      326  
@@ -17,30 +17,10 @@ N matrix      16 x   83 x 2 =     2,656 ->    1,232 +      430 =    1,662
 R matrix       6 x    9 x 1 =        49 ->       49 +      274 =      323  
 Total                                         1,775 +    1,062 =    2,837
 
+0 min 0.031 sec, 94.690 MB, 0 warnings, 0 errors.
+
 Skeleton: PGParser.h.skl
 Output:   PGParser.h (259 lines)
 Skeleton: PGParser.cpp.skl
-Output:   PGParser.cpp (1,430 lines)
-
-Symbols                             310  "/sym   =     20,000"    2 % 
-States                              276  "/sta   =    300,000"    0 % 
-Final items                         241  "/fin   =    300,000"    0 % 
-Kernel items                      4,733  "/ker   = 10,000,000"    0 % 
-Nonterminal transitions             399  "/ntt   =    200,000"    0 % 
-Terminal transitions                373  "/tt    =  2,000,000"    0 % 
-Lookaheads                           48  "/la    = 10,000,000"    0 % 
-Lookbacks                         1,085  "/lb    =  2,000,000"    0 % 
-Includes                            399  "/inc   =    500,000"    0 % 
-Child nodes in graph                554  "/ch    =    500,000"    0 % 
-Nondeterministic actions              0  "/nd    =    100,000"    0 % 
-
-0 min 0.046 sec, 95.073 MB, 0 warnings, 0 errors.
-
-/* 3 keywords */
-
-   '<eof>';
-   '<error>';
-   '<keyword>';
-
-/* end of keywords */
+Output:   PGParser.cpp (1,431 lines)
 

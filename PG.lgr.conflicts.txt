@@ -1,4 +1,25 @@
 
 CONFLICTS REPORT:
 
-No conflicts reported!
+///////////////////////////// STATE 159 /////////////////////////////
+
+*  2134 '<eof>' -> '<' 'e' . 'o' 'f' '>' 
+*  2135 '<error>' -> '<' 'e' . 'r' 'r' 'o' 'r' '>' 
+*  2069 letter -> 'e' . 
+
+Conflict on lookahead 'o', goto 794 or reduce 2069, choosing goto 794.
+Conflict on lookahead 'r', goto 795 or reduce 2069, choosing goto 795.
+
+///////////////////////////// STATE 165 /////////////////////////////
+
+*  2136 '<keyword>' -> '<' 'k' . 'e' 'y' 'w' 'o' 'r' 'd' '>' 
+*  2075 letter -> 'k' . 
+
+Conflict on lookahead 'e', goto 796 or reduce 2075, choosing goto 796.
+
+/////////////////////////////////////////////////////////////////////
+
+2 shift-reduce conflicts were found, but resolved by choosing shift.
+
+No reduce-reduce conflicts were found!
+

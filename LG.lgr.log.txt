@@ -1,37 +1,27 @@
 
-DFASTAR 5.0.003 Copyright 2013 Paul Mann.
+DFASTAR 6.5.019 Copyright 2014 Paul B Mann.
 
-Input     LG.lgr /tm /m 
+Input     LG.lgr /tm /m /g /c 
 
-Grammar     1607 rules, 256 terminals, 49 nonterminals.
-               0 reductions added during 3744 traces.
-Lexer         64 states, after converting to a DFA.
-              11 states removed, 247 comparisons.
-              53 states, in final DFA state machine.
+LG.lex file: reading ...
+LG.lgr file: reading ...
+
+Grammar     1650 rules, 256 terminals, 50 nonterminals.
+               0 reductions added during 4237 traces.
 Conflicts      0 conflict states, 0 shift-reduce, 0 reduce-reduce.
+              66 states, after converting to a DFA.
+              12 states removed, 276 comparisons.
+               1 state added for 170 illegal characters.
+              55 states, in final DFA state machine.
 
-            rows   cols          matrix        list      vect      total
-T matrix      34 x   28 x 1 =       952 ->      829 +     415 =    1,244 
-Total                                           829 +     415 =    1,244
+Medium      rows   cols          matrix        list       vect      total
+T matrix      36 x   28 x 1 =     1,008 ->      848 +      421 =    1,269 
+Total                                           848 +      421 =    1,269
+
+0 min 0.062 sec, 97.488 MB, 0 warnings, 0 errors.
 
 Skeleton: LGLexer.h.skl
 Output:   LGLexer.h (35 lines)
 Skeleton: LGLexer.cpp.skl
-Output:   LGLexer.cpp (202 lines)
+Output:   LGLexer.cpp (203 lines)
 
-Symbols                             306  "/sym   =     10,000"    3 % 
-Productions                       1,605  "/pro   =     50,000"    3 % 
-Tail symbols                      1,656  "/tail  =    200,000"    1 % 
-EBNF symbol space                   475  "/ebnf  =     10,000"    5 % 
-States                            5,535  "/sta   =    100,000"    6 % 
-Final items                       5,506  "/fin   =    100,000"    6 % 
-Kernel items                      5,583  "/ker   =    100,000"    6 % 
-Nonterminal transitions              93  "/ntt   =     10,000"    1 % 
-Terminal transitions              5,441  "/tt    =    100,000"    5 % 
-Terminal transitions added        2,034  "/tta   =  5,000,000"    0 % 
-Lookaheads                            0  "/la    =  2,000,000"    0 % 
-Lookbacks                         5,505  "/lb    =  2,000,000"    0 % 
-Includes                             93  "/inc   =    200,000"    0 % 
-Child nodes in graph             11,013  "/ch    =    200,000"    6 % 
-
-0 min 0.046 sec, 33.523 MB, 0 warnings, 0 errors.

@@ -484,7 +484,7 @@ void  PGComputeLA::REPORT_CONFLICTS (int state, int sr, int rr)
 		   }			
 			int ns = f_camefrom[state+1] - f_camefrom[state]; // Number of states coming here.
 			if (optn[PG_CONFLICTS])
-				prt_con ("\nConflict impact: (%d states come here) x (%d conflicts) = %d.\n", ns, nc, ns*nc);
+				prt_con ("\nConflict impact: (%d states come here) x (%d conflicts) = %d.\n\n", ns, nc, ns*nc);
 			rr_impacts += ns*nc;
       }
       if (sr) // Do shift-reduce conflicts. 		
@@ -514,7 +514,7 @@ void  PGComputeLA::REPORT_CONFLICTS (int state, int sr, int rr)
 		   }
 			int ns = f_camefrom[state+1] - f_camefrom[state]; // Number of states coming here.
 			if (optn[PG_CONFLICTS] && !optn[PG_REDUCEONLY])
-				prt_con ("\nConflict impact: (%d states come here) x (%d conflicts) = %d.\n", ns, nc, ns*nc);
+				prt_con ("\nConflict impact: (%d states come here) x (%d conflicts) = %d.\n\n", ns, nc, ns*nc);
 			sr_impacts += ns*nc;
       }
 		if (sr + rr > 0) impacted_states++;

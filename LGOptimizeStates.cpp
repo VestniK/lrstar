@@ -95,9 +95,9 @@ void  LGOptimizeStates::ILLEGAL_CHARS ()
 		illegal_char_state = 0; // 0 means we have done optimization (for LGPrintStates).
 		if (n > 0) // Any illegal characters?
 		{	
-			if (optn[LG_VERBOSE] > 1)
-			prt_log ("Added    %7d error state for %d characters in state 0.\n", 1, n);
-			if (optn[LG_VERBOSE] > 1)
+			if (optn[LG_DIRECTCODE] == 0)
+			prt_log ("         %7d state added for %d illegal characters.\n", 1, n);
+		/*	if (optn[LG_VERBOSE] > 1)
 			{
 				char* str = "";
 				if (n != 1) str = "s";
@@ -113,7 +113,7 @@ void  LGOptimizeStates::ILLEGAL_CHARS ()
 					}
 				}
 				prt_logonly ("\n\n");
-			}
+			}  */
 
 			illegal_char_state   = n_states; 
 			accept_state         = 0; // This should be zero for LGPrintStates.
@@ -153,7 +153,9 @@ void  LGOptimizeStates::ILLEGAL_CHARS ()
 			tt_end[0] = n_totalterm;
 			n_states++;
 		}
-		prt_log ("         %7d states, in final DFA state machine.\n", n_states);
+		if (optn[LG_DIRECTCODE] == 0)
+		     prt_log ("         %7d states, in final DFA state machine.\n", n_states);
+		else prt_log ("         %7d states, in final DFA state machine.\n", n_states-1);
 		FREE (buffer, n_terms);
 }
   
@@ -256,7 +258,6 @@ int   LGOptimizeStates::REMOVE_NT_TRANS ()
 			if (active[s] == 0) st_type[s] = 0; // For renumbering the states later.
 		}
 
-		if (optn[LG_VERBOSE] <= 1) nosl++; // Add one state for error state created later.
 		if (optn[LG_VERBOSE])
 	  	prt_log ("         %7d states, after converting to a DFA.\n", nosl);	// +1 for error state creatd later.
 		FREE (nt_problem, n_heads);

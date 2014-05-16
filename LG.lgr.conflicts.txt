@@ -1,4 +1,4 @@
 
 CONFLICTS REPORT:
 
-No conflicts reported!
+No conflicts were found!

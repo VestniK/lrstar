@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="LRSTAR 6.3.012"
+	Name="LRSTAR 6.5.020"
 	ProjectGUID="{EA5645D7-512C-454E-8B96-1D2F01E5F755}"
 	RootNamespace="LALR 6.0.025"
 	TargetFrameworkVersion="131072"
@@ -305,6 +305,82 @@
 				CommandLine="copy &quot;DFASTAR_Release\dfastar.exe&quot; &quot;..\bin\&quot;&#x0D;&#x0A;&#x0D;&#x0A;&#x0D;&#x0A;&#x0D;&#x0A;&#x0D;&#x0A;"
 			/>
 		</Configuration>
+		<Configuration
+			Name="DFAC_Release|Win32"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				UseUnicodeResponseFiles="false"
+				AdditionalOptions="/D _CRT_SECURE_NO_DEPRECATE /D WINDOWS /D DFAC"
+				Optimization="2"
+				InlineFunctionExpansion="2"
+				EnableIntrinsicFunctions="true"
+				FavorSizeOrSpeed="1"
+				OmitFramePointers="false"
+				WholeProgramOptimization="true"
+				StructMemberAlignment="3"
+				DefaultCharIsUnsigned="false"
+				UsePrecompiledHeader="0"
+				CallingConvention="1"
+				CompileAs="0"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalOptions="/LTCG &#x0D;&#x0A;"
+				OutputFile="$(OutDir)\dfastar.exe"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+				CommandLine="copy &quot;DFASTAR_Release\dfastar.exe&quot; &quot;..\bin\&quot;&#x0D;&#x0A;&#x0D;&#x0A;&#x0D;&#x0A;&#x0D;&#x0A;&#x0D;&#x0A;"
+			/>
+		</Configuration>
 	</Configurations>
 	<References>
 	</References>
@@ -492,6 +568,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\PG.grm.warnings.txt"
+					>
+				</File>
+				<File
+					RelativePath=".\PG.lex"
+					>
+				</File>
+				<File
 					RelativePath=".\PG.lgr"
 					>
 				</File>
@@ -509,6 +593,10 @@
 				</File>
 				<File
 					RelativePath=".\PG.lgr.states.txt"
+					>
+				</File>
+				<File
+					RelativePath=".\pg.lgr.warnings.txt"
 					>
 				</File>
 			</Filter>
@@ -616,6 +704,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\LGGenerateCode.cpp"
+					>
+				</File>
+				<File
 					RelativePath=".\LGLexer.cpp"
 					>
 				</File>
@@ -664,6 +756,14 @@
 					>
 				</File>
 				<File
+					RelativePath=".\LG.grm.warnings.txt"
+					>
+				</File>
+				<File
+					RelativePath=".\LG.lex"
+					>
+				</File>
+				<File
 					RelativePath=".\LG.lgr"
 					>
 				</File>
@@ -683,20 +783,62 @@
 					RelativePath=".\LG.lgr.states.txt"
 					>
 				</File>
+				<File
+					RelativePath=".\lg.lgr.warnings.txt"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<Filter
-			Name="1. Make File"
+			Name="1. Make Files"
 			>
 			<File
-				RelativePath=".\make.bat"
+				RelativePath=".\make_dfastar.bat"
+				>
+				<FileConfiguration
+					Name="LRSTAR_Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="LRSTAR_Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="DFASTAR_Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						CommandLine="make_dfastar&#x0D;&#x0A;"
+						Outputs="LG.grm.log.txt"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="DFASTAR_Release|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						CommandLine="make_dfastar&#x0D;&#x0A;"
+						Outputs="LG.grm.log.txt"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\make_lrstar.bat"
 				>
 				<FileConfiguration
 					Name="LRSTAR_Debug|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="make&#x0D;&#x0A;"
+						CommandLine="make_lrstar&#x0D;&#x0A;"
 						Outputs="PG.grm.log.txt"
 					/>
 				</FileConfiguration>
@@ -705,26 +847,24 @@
 					>
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="make&#x0D;&#x0A;"
+						CommandLine="make_lrstar&#x0D;&#x0A;"
 						Outputs="PG.grm.log.txt"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="DFASTAR_Debug|Win32"
+					ExcludedFromBuild="true"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="make&#x0D;&#x0A;"
-						Outputs="PG.grm.log.txt"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="DFASTAR_Release|Win32"
+					ExcludedFromBuild="true"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="make&#x0D;&#x0A;"
-						Outputs="PG.grm.log.txt"
 					/>
 				</FileConfiguration>
 			</File>
@@ -734,30 +874,10 @@
 			</File>
 		</Filter>
 		<Filter
-			Name="5. Test Files"
+			Name="5. Grm Files"
 			>
 			<File
 				RelativePath="..\grm\c.grm"
-				>
-			</File>
-			<File
-				RelativePath="..\grm\c.grm.conflicts.txt"
-				>
-			</File>
-			<File
-				RelativePath="..\grm\c.grm.grammar.txt"
-				>
-			</File>
-			<File
-				RelativePath="..\grm\c.grm.log.txt"
-				>
-			</File>
-			<File
-				RelativePath="..\grm\c.grm.states.txt"
-				>
-			</File>
-			<File
-				RelativePath="..\grm\c.grm.warnings.txt"
 				>
 			</File>
 			<File
@@ -787,6 +907,42 @@
 			<File
 				RelativePath="..\grm\c.lgr.warnings.txt"
 				>
+			</File>
+			<File
+				RelativePath="..\skl\lexer.cpp"
+				>
+				<FileConfiguration
+					Name="LRSTAR_Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="LRSTAR_Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="DFASTAR_Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="DFASTAR_Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
 			</File>
 		</Filter>
 	</Files>

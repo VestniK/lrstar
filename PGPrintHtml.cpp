@@ -2,7 +2,7 @@
 #ifdef LRSTAR
 
       #include "ComGlobal.h"
-		#include	"PGPrintHtml.h"
+		#include "PGGlobal.h"
 
       FILE* fp;
       int   head_on;
@@ -30,7 +30,7 @@ void  PGPrintHtml::PrintHtml ()
       {  
          n_errors++;
          prt_log ("\nFile %s cannot be created.\n", fid);
-         Terminate (1);
+         PG::Terminate (1);
       }
    
 		fprintf (fp, "<head>\n");

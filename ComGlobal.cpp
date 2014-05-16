@@ -11,7 +11,7 @@
   		#include "conio.h"
 		#endif					
 
-	// 1 = upper, 2 = lower, 4 = '_', 8 = digit, 16 = quote ('"') 
+	// 1 = upper, 2 = lower, 4 = '_', 8 = digit, 16 = quote ("|') 
 		uchar charcode[256] = 
 		{
 			  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -190,9 +190,9 @@ char* mystrupr (char* s)
 #ifdef UNIX
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
-//		filelength function supplied by Vasko Mitanov, Feb 2012.               //
+//		_filelength function supplied by Vasko Mitanov, Feb 2012.               //
 
-long	filelength (int fd)
+long	_filelength (int fd)
 {
 		struct stat st;
 		fstat(fd, &st);
@@ -397,43 +397,43 @@ int   GetMaxValues (char* dn, char* fn)
 		}
 
       input_end = input_start + nb;					// Set end-of-buffer pointer.
-      *(input_end)   = EOL_MARK;
-      *(input_end+1) = EOF_MARK;
+      *(input_end)   = EOL_CHAR;
+      *(input_end+1) = EOF_CHAR;
 
 		p = input_start;
 		do
 		{
-FindOpt: while (*p != '"' && *p != EOF_MARK && *p != '\n') p++;
+FindOpt: while (*p != '"' && *p != EOF_CHAR && *p != '\n') p++;
 			if (*p == '\n') 
 			{
 				p++;
 				linenumb++;
 				goto FindOpt;
 			}
-			if (*p == EOF_MARK) goto Ret;
+			if (*p == EOF_CHAR) goto Ret;
 			if (*(p+1) != '/')
 			{
 				p++;  // skip over "
-Loop:			while (*p != '"' && *p != EOF_MARK && *p != '\n') p++;
+Loop:			while (*p != '"' && *p != EOF_CHAR && *p != '\n') p++;
 				if (*p == '\n') 
 				{
 					p++;
 					linenumb++;
 					goto FindOpt;
 				}
-				if (*p == EOF_MARK) goto Ret;
+				if (*p == EOF_CHAR) goto Ret;
 				p++; // skip over ending "
 				goto FindOpt;
 			}
 			char* q = p+1;
-Scan:		while (*q != '"' && *q != EOF_MARK && *p != '\n') q++;
+Scan:		while (*q != '"' && *q != EOF_CHAR && *p != '\n') q++;
 			if (*q == '\n') 
 			{
 				p = ++q;
 				linenumb++;
 				goto FindOpt;
 			}
-			if (*q == EOF_MARK) goto Ret;
+			if (*q == EOF_CHAR) goto Ret;
 			*(++q) = 0; // Mark
          if (SET_OPTN_MA (p, exefid, linenumb) == 0) 
 			{ 
@@ -1571,9 +1571,10 @@ void  prt_num (char* desc, int n, char* name, int max)
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
 
-int   inputi ()
+int   inputi (char* end_symbol)
 {
       int nb;												/* Number of bytes read.      */
+      int len;												/* Length of end_symbol.      */
 
 		filedesc = open (grmfid, 0);					/* Open the file.             */
 		if (filedesc < 0)									/* If open error.             */
@@ -1582,43 +1583,42 @@ int   inputi ()
 			prt_log ("File %s not found.\n\n", grmfid);
 			return 0; // Error
 		}
+		len = strlen(end_symbol);
 		filesize = _filelength (filedesc);
-		ALLOC (input_start, filesize+10);
-		*input_start = '\n';                      /* Put EOL in input area.    */
 
-		nb = read (filedesc, input_start+1, filesize);
-		if (nb <= 0)                           	/* If read error.            */
+		ALLOC (input_start, filesize + len + 10);
+		*input_start++ = '\n';                    // Put EOL at the beggining.    
+
+		nb = read (filedesc, input_start, filesize);
+		if (nb <= 0)                           	// If read error.            
 		{
 			n_errors++;
 			prt_log ("Read error on file %s, or it's empty.\n\n", grmfid);
 			return 0; // Error
 		}
-		input_end = input_start + nb;					/* Set end-of-buffer pointer.*/
-		if (*input_end == 26) input_end--;
-		if (*input_end != '\n') *++input_end = '\n';
-		*++input_end = 26;								// Parser needs 2 EOFs.
-		*++input_end = 26;
-		*++input_end = 0;
-		close (filedesc);									/* Close input file.         */
 
-	// Count the number of lines in the input file.
+		input_end = input_start + nb;					// Set end-of-buffer pointer.
+		strncpy (input_end, end_symbol, len);
+		input_end += len;
+		*input_end++ = '\n';
+		*input_end++ = 26;								// Parser needs 2 EOFs.
+		*input_end++ = 26;
+		*input_end++ = 0;									// ??
+		close (filedesc);									// Close input file.         
 
-	//	if (line_ptr == 0) // Not defined yet?
-	//	{
-			n_lines = 0;
-			char* p = input_start + 1;
-			while (*p != EOF_MARK)
-			{
-				while (*p != '\n') p++;
-				n_lines++;
-				p++;
-			}
-  			ALLOC (line_ptr, n_lines+5);  // Allow extra lines at end.
-			for (int i = 0; i < n_lines+5; i++)
-			{
-				line_ptr[i] = NULL;
-			}
-	//	}
+		n_lines = 0;
+		char* p = input_start;
+		while (*p != EOF_CHAR)
+		{
+			while (*p != '\n') p++;
+			n_lines++;
+			p++;
+		}
+		ALLOC (line_ptr, n_lines+5);  // Allow extra lines at end.
+		for (int i = 0; i < n_lines+5; i++)
+		{
+			line_ptr[i] = NULL;
+		}
 		return 1; // OK
 }
 
@@ -1627,7 +1627,7 @@ int   inputi ()
 
 void  inputt (void)
 {
-//    FREE (input_start, filesize+10);	// Free input buffer space.
+//    FREE (input_start-1, filesize+10);	// Free input buffer space.
 //	  	FREE (line_ptr, n_lines+5);
 }
 

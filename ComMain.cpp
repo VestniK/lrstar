@@ -2,10 +2,12 @@
 		#ifdef LRSTAR
       char* program = "LRSTAR";
 		#endif
+
 		#ifdef DFASTAR
       char* program = "DFASTAR";
 		#endif
-      char* version = "6.3.012";
+
+      char* version = "6.5.020";
       char* copywrt = "Copyright 2014 Paul B Mann";
 
 		#ifdef  _DEBUG
@@ -18,13 +20,12 @@
 
 		#ifdef LRSTAR
 		#include "PGGlobal.h"
-
       OPTION PGOption[]= // Parser Generator Options
 		{
 			"a",			"Analyze the grammar only",									PG_ANALYZEONLY,      0,
 			"ast",		"Parser will build an AST",									PG_ASTCONST,			1,
 		//	"bm",		   "Boolean matrix (0=none,1=bytes,2=bits)",					PG_BOOLMATRIX,			2,
-			"c",			"Conflict report file",											PG_CONFLICTS,			0,
+			"c",			"Conflict report",												PG_CONFLICTS,			0,
 		  	"clr",		"Canonical LR(1) parser",										PG_CLR_PARSER,			0,
 			"ct",			"Conflict traceback information",							PG_CONFLICTTRACE,	   0,
 			"d",			"Debug option for generated parser",						PG_DEBUG,			   0,
@@ -57,26 +58,29 @@
 
 		#ifdef DFASTAR
 		#include "LGGlobal.h"
-
       OPTION LGOption[]= // Lexer Generator Options
 		{
 			"a",			"Analyze the grammar only",	   							LG_ANALYZEONLY,		0,
+			"c",			"Conflict report (all conflicts)",							LG_CONFLICTS,			0,
 			"col",		"Column number counting in lexer",							LG_COLNUMB,			   0,
 			"d",			"Debug option for generated lexer",							LG_DEBUG,			   0,
+			"dc",			"Direct-code lexer",												LG_DIRECTCODE,		   0,		
 			"e",			"Error count limit for grammar errors",					LG_ERRORCOUNT,	      256,
 			"g",     	"Grammar listing",  												LG_GRAMMAR,          0,
 			"i",			"Case insensitive lexer ('a'='A')",							LG_INSENSITIVE,		0,
 			"line",  	"Line number counting in lexer",								LG_LINENUMB,         1,
 			"m",			"Minimize lexer-table size",									LG_MINIMIZE,			1,
+		//	"nc",			"Number of characters (128,256)",							LG_NUMBCHAR,			256,
 			"ki",     	"Keyword and <identifier> recognition",					LG_KEYWORDIDENT,	   1,
 			"q",			"Quiet mode, minimal screen display",						LG_QUIET,				0,   
 			"r",    		"Remove duplicate states",										LG_REMOVEDUP,			1,
 			"s",    		"State machine for conflicts report",		   			LG_STATELIST,			0,
 			"so",   		"Optimized state machine",										LG_STATELISTOPT,		0,
 			"tab",		"Tab setting in grammar (2,3,4)",							LG_TAB,					3,
-			"ts",    	"Table-driven small lexers",									LG_TABL_SMALL,		   0,      
-			"tm",    	"Table-driven medium lexers (10% faster)",				LG_TABL_MEDIUM,		1,   
-			"v",     	"Verbose mode, output more information",					LG_VERBOSE,		      1,
+			"ts",    	"Table-driven small",											LG_TABL_SMALL,		   0,      
+			"tm",    	"Table-driven medium",											LG_TABL_MEDIUM,		0,   
+			"tl",    	"Table-driven large",											LG_TABL_LARGE,		   0, 
+			"v",     	"Verbose, output more information",							LG_VERBOSE,		      1,
 			"w",     	"Warnings listing",												LG_WARNINGS,			0,  
 			"",			"",																	0,				         0
 		};
@@ -129,7 +133,7 @@ int   main (int na, char *arg[])
 			strcat (grmfid, gfn);
 			strcat (grmfid, gft);
 			strcpy (GFT, gft);
-			strlwr (GFT);
+			mystrlwr (GFT);
 			if (strcmp (GFT, ".grm") != 0)
 			{
 				n_errors++;
@@ -144,7 +148,7 @@ int   main (int na, char *arg[])
 			strcat (grmfid, gfn);
 			strcat (grmfid, gft);
 			strcpy (GFT, gft);
-			strlwr (GFT);
+			mystrlwr (GFT);
 			if (strcmp (GFT, ".lgr") != 0)
 			{
 				if (strcmp (GFT, ".lex") != 0)
@@ -189,18 +193,12 @@ int   main (int na, char *arg[])
 				#ifdef UNIX
 				if (arg[i][0] == '-') break;  // Options start.
 				#endif
-				GetSkeletonFilename (arg[i], i++, na); 
-				GetOutputFilename   (arg[i], i++, na); 
+				if (GetSkeletonFilename (arg[i], i++, na) == 0) Terminate (0);
+				if (GetOutputFilename   (arg[i], i++, na) == 0) Terminate (0);
 			}
 
-			if (get_fid (arg[0], dn, fn, ft) == 0) 
-			{
-				Terminate (0);
-			}
-			if (GetMaxValues (dn, "lrstar.txt") == 0) 
-			{
-				Terminate (0);
-			}
+			if (get_fid (arg[0], dn, fn, ft)    == 0) Terminate (0);
+			if (GetMaxValues (dn, "lrstar.txt") == 0) Terminate (0);
 
 			#ifdef LRSTAR
 			int verbose = optn[PG_VERBOSE];
@@ -211,6 +209,7 @@ int   main (int na, char *arg[])
 			int verbose = optn[LG_VERBOSE];
     		if (LG::Main (na, arg))
 			#endif
+
 			{
     			int i = 2; 
 				int n = 0;
@@ -337,11 +336,7 @@ void  InitOptions ()
 		#ifdef DFASTAR
 	// Define invisible LG options ...
 		optn [LG_TABLES]        = 1;
-      optn [LG_BACKSLASH]    	= 0;   
-      optn [LG_CONFLICTS]    	= 1;   
-	   optn [LG_REDUCEONLY]    = 1; // Should be "1" else user will be confused by all the SR conflicts.  
-      optn [LG_TABL_LARGE]   	= 0;   
-      optn [LG_TABL_EXTRA]    = 0;   
+      optn [LG_BACKSLASH]    	= 0;  
       optn [LG_TRANSITIONS] 	= 1;   
 		#endif
 }

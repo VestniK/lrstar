@@ -10,8 +10,8 @@
 			>
 			<DebugSettings
 				Command="$(TargetPath)"
-				WorkingDirectory="..\test"
-				CommandArguments="atlas /d /g=2 /rr /k /w /v=2"
+				WorkingDirectory="..\grm"
+				CommandArguments="c"
 				Attach="false"
 				DebuggerType="3"
 				Remote="1"
@@ -39,7 +39,7 @@
 			<DebugSettings
 				Command="$(TargetPath)"
 				WorkingDirectory="..\grm"
-				CommandArguments="c"
+				CommandArguments="c ..\skl\parser.cpp.skl ..\skl\parser.cpp /v=2"
 				Attach="false"
 				DebuggerType="3"
 				Remote="1"
@@ -67,7 +67,7 @@
 			<DebugSettings
 				Command="$(TargetPath)"
 				WorkingDirectory="..\grm"
-				CommandArguments="c"
+				CommandArguments="c ..\skl\lexer.cpp.skl ..\skl\lexer.cpp /dc"
 				Attach="false"
 				DebuggerType="3"
 				Remote="1"
@@ -95,7 +95,7 @@
 			<DebugSettings
 				Command="$(TargetPath)"
 				WorkingDirectory="..\grm"
-				CommandArguments="c"
+				CommandArguments="c ..\skl\lexer.cpp.skl ..\skl\lexer.cpp /dc "
 				Attach="false"
 				DebuggerType="3"
 				Remote="1"
@@ -107,6 +107,34 @@
 				Environment=""
 				EnvironmentMerge="true"
 				DebuggerFlavor="0"
+				MPIRunCommand=""
+				MPIRunArguments=""
+				MPIRunWorkingDirectory=""
+				ApplicationCommand=""
+				ApplicationArguments=""
+				ShimCommand=""
+				MPIAcceptMode=""
+				MPIAcceptFilter=""
+			/>
+		</Configuration>
+		<Configuration
+			Name="DFAC_Release|Win32"
+			>
+			<DebugSettings
+				Command="$(TargetPath)"
+				WorkingDirectory=""
+				CommandArguments=""
+				Attach="false"
+				DebuggerType="3"
+				Remote="1"
+				RemoteMachine="PAULBMANN"
+				RemoteCommand=""
+				HttpUrl=""
+				PDBPath=""
+				SQLDebugging=""
+				Environment=""
+				EnvironmentMerge="true"
+				DebuggerFlavor=""
 				MPIRunCommand=""
 				MPIRunArguments=""
 				MPIRunWorkingDirectory=""

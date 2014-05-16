@@ -47,7 +47,7 @@ int   LGComputeLA::ComputeLA () /* Compute Look-Aheads */
 		else 
 		{
          prt_con ("\nCONFLICTS REPORT:\n\n");
-			prt_con ("'C' option was not specified.\n\n");
+			prt_con ("'c' option was not specified.\n\n");
 		}
       c_states    = 0;
       sr_con      = 0;
@@ -207,10 +207,16 @@ DoLA:			for (t = 0; t < numberofterms; t++)	// For all terminal symbols.
 Next:    if (sr+rr > 0) 
 			{
 				c_states++; 
-				if (sr) sr_con++;
-				if (rr) rr_con++;
-				if (sr && !optn[LG_REDUCEONLY]) prt_con ("\n");
-				else if (rr) prt_con ("\n");
+				if (sr) 
+				{
+					sr_con++;
+					if (!optn[LG_REDUCEONLY]) prt_con ("\n");
+				}
+				if (rr) 
+				{
+					rr_con++;
+					prt_con ("\n");
+				}
 			}
       }						 
 		la_start[n_states] = n_lookah;
@@ -345,10 +351,10 @@ void  LGComputeLA::prt_rrcon (int& nc, int s, int t)
 			n_fatals++;
 			if (optn [LG_CONFLICTS])
 			{
-				if (nc == 0)
+				if (nc == 0) // First time for this state?
 				{
 					PRT_STA (s);
-					prt_con ("\n");
+					prt_log ("FATAL CONFLICTS in state %d, see conflict report file.\n", s);
 				}
 	  			st_type[s] = MR_STATE;
 				prt_con ("Fatal conflict on LA  %s, ", term_name[t]);
@@ -359,7 +365,7 @@ void  LGComputeLA::prt_rrcon (int& nc, int s, int t)
 				{
 					prt_con ("\nMaximum error count (%d) reached.\n", max_errors);
 					prt_log ("Maximum error count (%d) reached.\n", max_errors);
-					Terminate (1);
+					LG::Terminate (1);
 				}
 				nc++;
 			}

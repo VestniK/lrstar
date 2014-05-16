@@ -156,8 +156,8 @@ Loop:       n_changed = 0;
 					}
 				}  
 			}
-         if (optn[PG_VERBOSE] > 1)
-         prt_log ("        %8d nonterminal transitions were removed by optimization.\n", total);
+      // if (optn[PG_VERBOSE] > 1)
+      // prt_log ("        %8d nonterminal transitions were removed by optimization.\n", total);
 		}
 }
 

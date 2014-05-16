@@ -27,6 +27,7 @@
 			static int  BLD_B (int opt1, char *mark);
 			static int  BLD_T (int opt1, int opt2, char *mark);
 			static int  BLD_TDFA ();
+			static int  BLD_LARGE ();
 			static int  MRG_ROWE1B (char **matrix, int *row, int n_states);
 			static int  MRG_ROWE2T (int **matrix, int *row, int n_states);
 			static int  MRG_ROWZ (int *start, int *end, int *list, int *symb, int **matrix, int *row, int n_states, int n_terms, int opt);

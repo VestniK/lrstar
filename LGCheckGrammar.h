@@ -11,6 +11,7 @@
 			static void C_LENG ();
 			static void C_NULLS ();
 			static void C_HEADSYM ();
+			static void CHECK_LEXICALS ();
 			static void P_UNDEFINED ();
 			static void P_NULL_TOKENS ();
 			static void P_USELESS_PROD ();

@@ -29,7 +29,7 @@ int   LG::Main (int na, char** arg) /* Display program information. */
 								if (!optn[LG_ANALYZEONLY])
 								{
 									CreateTables();
-									Terminate (0);
+									LG::Terminate (1);
 									return 1;
 								}
 							}
@@ -38,7 +38,7 @@ int   LG::Main (int na, char** arg) /* Display program information. */
 				}
 			}
 		}
-		Terminate (0);
+		LG::Terminate (0);
 		return 0;
 }
 
@@ -79,7 +79,7 @@ int   LG::Start (int na, char *arg []) /* Display program information. */
 		if (filedesc >= 0)				// .lex file found!
 		{
 			prt_log ("%s.lex file: reading ...\n", gfn);
-			if (!inputi ()) return 0;
+			if (!inputi ("%%")) return 0;
 			lex_input_start = input_start;
 			lex_input_end   = input_end;
 			lex_line_ptr    = line_ptr;
@@ -92,7 +92,7 @@ int   LG::Start (int na, char *arg []) /* Display program information. */
 			strcpy (grmfid, gdn);
 			strcat (grmfid, gfn);
 			strcat (grmfid, gft);
-			if (!inputi ()) return 0;
+			if (!inputi ("")) return 0;
 			lex_input_start = 0;
 			lex_input_end   = 0;
 			lex_line_ptr    = 0;

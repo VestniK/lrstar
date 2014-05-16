@@ -6,25 +6,25 @@
       #include "LGActions.h"
 		#include "LGGlobal.h"
 
-		char**  LGActions::Defcon_term;
-		char**  LGActions::head_name;
-		int*    LGActions::head_sym;
-		int*    LGActions::head_line; 
-		int*    LGActions::term_line; 
-		int*    LGActions::prod_len;
-		int*    LGActions::prod_line;
-		int*    LGActions::nullable;
-		int     LGActions::n_nulls;
-		int     LGActions::n_constants;
-		int     LGActions::N_prods;
-		int     LGActions::n_prods;
-		int     LGActions::N_tails;
-		int     LGActions::n_tails;
-		int     LGActions::amt_space;
-		int*    LGActions::Tail;
-      int*    LGActions::F_tail;
-		char**  LGActions::term_name;
-		int*    LGActions::term_type;
+		char**  	LGActions::Defcon_term;
+		char**  	LGActions::head_name;
+		int*    	LGActions::head_sym;
+		int*    	LGActions::head_line; 
+		int*    	LGActions::term_line; 
+		int*    	LGActions::prod_len;
+		int*    	LGActions::prod_line;
+		int*    	LGActions::nullable;
+		int     	LGActions::n_nulls;
+		int     	LGActions::n_constants;
+		int     	LGActions::N_prods;
+		int     	LGActions::n_prods;
+		int     	LGActions::N_tails;
+		int     	LGActions::n_tails;
+		int     	LGActions::amt_space;
+		int*    	LGActions::Tail;
+      int*    	LGActions::F_tail;
+		char**  	LGActions::term_name;
+		int*    	LGActions::term_type;
 
 		char**   LGActions::str_start;
 	   int*     LGActions::defcon_value;
@@ -73,6 +73,7 @@
 
 		char*  	LGActions::tokenstartstr; 
 		char*  	LGActions::tokenendstr; 
+		char*  	LGActions::tokenlinestr; 
 		char*  	LGActions::linenumbstr; 
 		char*  	LGActions::colnumbstr; 
 		char*  	LGActions::tabstopstr;
@@ -111,8 +112,8 @@
 		int*   	LGActions::st_type;
 		int*   	LGActions::tt_goto2;
 
-		#define TAIL_SYMBOL 0
-		#define HEAD_SYMBOL 1
+		#define  TAIL_SYMBOL 0
+		#define  HEAD_SYMBOL 1
 
 		enum re_operator
 		{
@@ -181,13 +182,13 @@ int   LGActions::error (int t, int a) // New version
 
 int   LGActions::checkcase (int t, int a)                                   
 {
+		char*p;
 		int rc = firstsym (t, a);
 		if (optn [LG_INSENSITIVE])
 		{
-			char*p;
 			for (p = T_start+1; p < T_end-1; p++)
 			{
-				*p = lower[*p];
+				*p = lower[*p]; // Set each character to lower case and later add upper case. 
 			}
 		}
 		return (rc);
@@ -199,14 +200,17 @@ int   LGActions::checkcase (int t, int a)
 
 int   LGActions::checkstring (int t, int a)                                   
 {
+		char*p;
 		int rc = firstsym (t, a);
 		if (rc != t) // {first_string}
 		{
-			if (get_lookahead() != T_RETURN) return (arg_numb[a+1]); // 2nd arg: {option_string}.
+			if (get_lookahead() != T_RETURN) 
+			{
+				return (arg_numb[a+1]); // 2nd arg: {option_string}.
+			}
 		}
 		if (optn [LG_INSENSITIVE])
 		{
-			char*p;
 			for (p = T_start+1; p < T_end-1; p++)
 			{
 				*p = lower[*p];
@@ -228,7 +232,7 @@ int   LGActions::EOGI (int t, int a)
 			strcpy (grmfid, gdn);
 			strcat (grmfid, gfn);
 			strcat (grmfid, gft);
-			if (!inputi ()) return 0;
+			if (!inputi ("")) return 0;
 			init_lexer ();
 		}
 		else // %% found in .lgr file!
@@ -254,7 +258,7 @@ int   LGActions::firstsym (int t, int a) // New version
 			if (token.column < 7) 
 			{
 				prt_error ("'%s' is out of place, must start before column 6", token.start, token.end, token.line);
-				Terminate (0);
+				LG::Terminate (0);
 				return (0);
 			}
 		}
@@ -272,7 +276,7 @@ int   LGActions::arrow (int t, int a) // New version
 		if (arrow_col < 4)
 		{
 			prt_error ("'%s' cannot start before column 4", token.start, token.end, token.line);
-			Terminate (0);
+			LG::Terminate (0);
 			return (0);	
 		}
 		if (line_pos == 1) return (t);
@@ -281,7 +285,7 @@ int   LGActions::arrow (int t, int a) // New version
 			if (prev_token == HEAD_SYMBOL) return (t);
 		}
 		prt_error ("'%s' is out of place, must be the first symbol on the next line", token.start, token.end, token.line);
-		Terminate (0);
+		LG::Terminate (0);
 		return 0;
 }										 
 
@@ -363,37 +367,26 @@ int	LGActions::CheckOptions ()
 		if (optn[LG_ERRORCOUNT] == 0)	        optn[LG_ERRORCOUNT] = 1000; 
    	else if (optn[LG_ERRORCOUNT] > 10000) optn[LG_ERRORCOUNT] = 1000; 
 
-		if (optn[LG_TABL_SMALL]) optn[LG_TABL_MEDIUM] = 0;
-
-		if (optn[LG_TABL_EXTRA]) // tx
+		if (optn [LG_CONFLICTS] == 1) // 'c' specified?
 		{
-			optn[LG_MINIMIZE]    = 0;
-			optn[LG_TABL_SMALL]  = 0;
-			optn[LG_TABL_MEDIUM] = 0;
-			optn[LG_TABL_LARGE]  = 0;
-			optn[LG_TABL_EXTRA]  = 1;
-		}
-		else if (optn[LG_TABL_LARGE]) // tl 
-		{
-			optn[LG_MINIMIZE]    = 0;
-			optn[LG_TABL_SMALL]  = 0;
-			optn[LG_TABL_MEDIUM] = 0;
-			optn[LG_TABL_LARGE]  = 1;
-			optn[LG_TABL_EXTRA]  = 0;
-		}
-		else if (optn[LG_TABL_MEDIUM]) // tm 
-		{
-			optn[LG_TABL_SMALL]  = 0;
-			optn[LG_TABL_MEDIUM] = 1;
-			optn[LG_TABL_LARGE]  = 0;
-			optn[LG_TABL_EXTRA]  = 0;
+		   optn [LG_REDUCEONLY]  = 0; 
 		}
 		else
 		{
-			optn[LG_TABL_SMALL]  = 1;
-			optn[LG_TABL_MEDIUM] = 0;
-			optn[LG_TABL_LARGE]  = 0;
-			optn[LG_TABL_EXTRA]  = 0;
+	      optn [LG_CONFLICTS]   = 1;   
+		   optn [LG_REDUCEONLY]  = 1; // Should be "1" else user will be confused by all the SR conflicts.  
+		}
+
+		int n_outputs = 0;
+		if (optn[LG_TABL_SMALL])	n_outputs++;  
+		if (optn[LG_TABL_MEDIUM])	n_outputs++;
+		if (optn[LG_TABL_LARGE])	n_outputs++;
+		if (optn[LG_DIRECTCODE])	n_outputs++;
+		if (n_outputs == 0) optn[LG_TABL_MEDIUM] = 1;
+		if (n_outputs >  1)
+		{
+         n_errors++;
+			printf ("Use only one of the following options: ts, tm, tl, dc.\n\n");
 		}
 
 		if (optn[LG_QUIET]) optn[LG_VERBOSE] = 0;
@@ -404,7 +397,13 @@ int	LGActions::CheckOptions ()
          printf ("State machine option should be 'S' or 'SO', but not both.\n\n");
 		}
 
-		max_char_set    = 256;
+		if (optn[LG_NUMBCHAR] ==   0) optn[LG_NUMBCHAR] = 256; // If undefined.
+		if (optn[LG_NUMBCHAR] != 128 && optn[LG_NUMBCHAR] != 256)
+		{
+         n_errors++;
+         printf ("Option 'nc' must be 128 or 256.\n\n");
+		}
+		max_char_set    = optn[LG_NUMBCHAR];
 		max_errors      = optn[LG_ERRORCOUNT];
 		option_grammar  = optn[LG_GRAMMAR];
 		option_warnings = optn[LG_WARNINGS];
@@ -440,7 +439,7 @@ int   LGActions::init ()
       max_lev   = 1000; // maximum ebnd nesting levels per production.
 
 		n_cells     = 2*max_symbs;
-		hash_divide  = (uint)0xFFFFFFFF / n_cells + 1;
+		hash_divide  = UINT_MAX / n_cells + 1;
 
       ALLOC (sym_start, max_symbs);
       ALLOC (sym_leng,  max_symbs);
@@ -518,7 +517,6 @@ int   LGActions::MAKE_TERMINALS ()
          }    
          ADD_TERMINAL();
       }
-
 		T_start = "$end";
 		T_end   = T_start + 4;
 		ADD_TERMINAL ();
@@ -682,6 +680,7 @@ int   LGActions::ADD_TOKEN (int p, int a)
 {
 		ADD_PROD(p, a);
 		ADD_TAIL(p, a);
+		sym_type[curr_symb] |= OUTPUTSYM;			
 		return (0);
 }
 
@@ -723,7 +722,15 @@ int   LGActions::ADD_HEADLEX (int p, int a)
 		return (rc);
 }
 
-int   LGActions::ADD_HEADESC (int p, int a)
+int   LGActions::ADD_HEADIGNORE (int p, int a)
+{
+		int rc = ADD_HEAD(p,a);
+		sym_type [curr_head] |= IGNORESYM;
+//		printf ("%s [%d] type = %d\n", sym_start[curr_head], curr_head, sym_type[curr_head]);
+		return (rc);
+}
+
+int   LGActions::ADD_HEADSET (int p, int a)
 {
 		int rc = ADD_HEAD(p,a);
 		sym_type [curr_head] |= SETNAME;
@@ -753,7 +760,7 @@ int   LGActions::ADD_HEAD (int p, int a)
 				else
 				{
 					prt_error ("Number of productions may exceed the maximum, please double the maximum number", T_start, T_end, T_line);
-					Terminate (0);
+					LG::Terminate (0);
 				}
 			}
 		}	
@@ -885,7 +892,7 @@ int   LGActions::ADD_SETNAME (int p, int a)
 		}
       else if (sym_type[curr_head] & NONTERMINAL)
       {
-			prt_error ("Set name '%s' was previously defined", T_start, T_end, T_line);
+			prt_error ("Character set '%s' was previously defined", T_start, T_end, T_line);
       }
       sym_type [curr_head] |= (SETNAME|NONTERMINAL); 
       sym_numb [curr_head] = n_heads;
@@ -967,23 +974,36 @@ int   LGActions::RANGE_TOP(int p, int a) // ? operator
 
 int   LGActions::get_char()
 {
-      if (*T_start != '\'') 
+      if (*T_start == '\'' || *T_start == '"') 
+		{
+			if (T_end - T_start > 3)
+			{	
+				prt_error ("at %s, literal is more than one character in length", T_start, T_end, T_line);
+				return (-1);
+			}
+			return (*(T_start+1));
+		}
+		else
 		{
 			char*p = T_start;
 			int number = atoi (p);
 			if (number >= max_char_set)
 			{
-				prt_error ("Symbol '%s' is outside the allowable range of 0..255", T_start, T_end, T_line);
+				sprintf (string, "Symbol '%%s' is outside the allowable range of 0..%d", max_char_set-1);
+				prt_error (string, T_start, T_end, T_line);
 				return (-1);
 			}
 			return (number);
       }
-		if (T_end - T_start > 3)
-		{	
-			prt_error ("at %s, literal is more than one character in length", T_start, T_end, T_line);
-			return (-1);
-		}
-      return (*(T_start+1));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+
+int   LGActions::DEF_SET (int p, int a)
+{
+	  	sym_type [curr_head] |= SETNAME;
+      return (0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1016,7 +1036,7 @@ int   LGActions::FIRST_SET(int p, int a)
 {
       int rc = 0;
       curr_symb = SYMNUMB ();
-	   sym_type[curr_symb] |= SETNAME; 
+	   sym_type[curr_symb] |= SETNAMEREF; 
 		if (sym_line[curr_symb] == 0) 
 		{
 			sym_line[curr_symb] = T_line;
@@ -1026,7 +1046,6 @@ int   LGActions::FIRST_SET(int p, int a)
          prt_error ("at '%s', defined constants cannot be used in grammar rules", T_start, T_end, T_line);
 			rc = 1;
 		}
-		sym_type [curr_head] |= SETNAME;
 		Tail [n_tails++] = curr_symb;
 		return (rc);
 }
@@ -1038,7 +1057,7 @@ int   LGActions::ADD_SET(int p, int a)
 {
       int rc = 0;
       curr_symb = SYMNUMB ();
-      sym_type [curr_symb] |= SETNAME; 
+      sym_type [curr_symb] |= SETNAMEREF; 
 		if (sym_line[curr_symb] == 0) 
 		{
 			sym_line[curr_symb] = T_line;
@@ -1060,7 +1079,7 @@ int   LGActions::SUB_SET(int p, int a)
 {
       int rc = 0;
       curr_symb = SYMNUMB ();
-      sym_type [curr_symb] |= SETNAME; 
+      sym_type [curr_symb] |= SETNAMEREF; 
 		if (sym_line[curr_symb] == 0) 
 		{
 			sym_line[curr_symb] = T_line;
@@ -1087,45 +1106,29 @@ int   LGActions::SUB_RANGE(int p, int a)
       return (0);
 }
 
-////////////////////////////////////////////////////////////////////////////////
-//                                                                            //
+static char*	set_start;
+static char*	set_end;
 
-int   LGActions::SET_END(int p, int a)
+int   LGActions::SET_START (int p, int a)
 {
-      int i; 
-      char token[16];
-      char *TS, *TE;
-      int first = 1;
-      for (i = 0; i < max_char_set; i++) 
-      {
-         if (char_set[i] == 1)
-         {
-            if (!first) ADD_PROD(p,a);
-            else first = 0;
-            TS = T_start; 
-            TE = T_end;
-            if (i >= 33 && i <= 126) 
-            {
-					token[0] = '\'';
-					token[1] = i;
-					token[2] = '\'';
-					T_start = token;
-					T_end = token + 3;
-            }
-            else // xxx type
-            {
-					sprintf (token, "%d\0", i);
-               T_start = token;
-					if (i <    10) T_end = T_start + 1;
-					else if (i <   100) T_end = T_start + 2;
-					else if (i <  1000) T_end = T_start + 3;
-					else if (i < 10000) T_end = T_start + 4;
-					else           T_end = T_start + 5;
-            }
-            ADD_TAIL(p,a);
-         }
-      }
-      for (i = 0; i < max_char_set; i++) char_set[i] = 0;
+		set_start = T_start;
+      return (0);
+}
+
+int   LGActions::SET_END (int p, int a)
+{
+		set_end = T_end;
+      return (0);
+}
+
+int   LGActions::MAKE_SETNAME (int p, int a)
+{
+		if (*T_start != '[') 
+		{
+			T_start = set_start;
+			T_end   = set_end;
+		}
+		PUSH_TAIL (p, a);
       return (0);
 }
 
@@ -1377,6 +1380,7 @@ int   LGActions::GEN_SYMB ()
 {
       char *start;
       int  *sp, leng, ns;
+
       ebnflevel--;
       start = ebnfspace;
       for (sp = *ebnflevel; sp < ebnfcode; sp++)
@@ -1526,7 +1530,7 @@ int   LGActions::term ()
          }  
       } 
 
-   // Check for lexical setnames. 
+   /* Check for lexical setnames. This is handled by the grammar now, LG.grm.
       for (h = 0; h < n_heads; h++) 
       {
          s = sym_indx[h];
@@ -1535,27 +1539,12 @@ int   LGActions::term ()
 			//	sym_type[s] &= ~LEXICON; // Remove LEXICON type 
 				if (sym_type[s] & SETNAME)
 				{
-					prt_error ("at '%s', a lexical symbol cannot be a setname", sym_start[s], 0, sym_line[s]);
+					prt_error ("at %s, a lexical symbol cannot be a character set", sym_start[s], 0, sym_line[s]);
 				}
 			}
-      }    
-
-   // Check setnames for more than 1 symbol in a rule. 
-      for (h = 0; h < n_heads; h++) // Have to do this in nonterminal order.
-      {
-         s = sym_indx[h];
-			if (sym_type[s] & SETNAME)
-			{
-				for (p = sym_prod1[s]; p < sym_prod2[s]; p++) 
-				{
-					int nt = F_tail[p+1] - F_tail[p];
-					if (nt > 1)
-					{
-						prt_error ("'%s' cannot be a setname, it has a rule with more than one tail symbol", sym_start[s], 0, sym_line[s]);
-					}
-				}  
-			}
       }  
+		if (n_errors) LG::Terminate(93);
+	*/  
 
 	  	if (optn[LG_VERBOSE] > 2)
 	  	printf ("Expanding sets ...\n");
@@ -1684,7 +1673,7 @@ int   LGActions::term ()
 
 void  LGActions::EXPAND_SETS () /* Expand set productions. */
 {
-		int s, p, t, sym;
+		int s, p, t, sym, h;
 
 	// Make L_tail ...
 		ALLOC (L_tail, max_prods);
@@ -1706,28 +1695,22 @@ void  LGActions::EXPAND_SETS () /* Expand set productions. */
 		if (n_setnames == 0) return;
 
 	//	printf ("\n");
-	// Check setnames in set expressions ...
+	// Check setnames references ...
 		for (s = 0; s < n_symbs; s++)
 		{
-			if (sym_type[s] & SETNAME)
+			if (sym_type[s] & SETNAMEREF)
 			{
-			// printf ("Checking: %s\n", sym_start[s]);
-				for (p = sym_prod1[s]; p < sym_prod2[s]; p++)
+				if (!(sym_type[s] & SETNAME))
 				{
-					for (t = F_tail[p]; t < F_tail[p+1]; t++)
+					if (sym_type[s] & NONTERMINAL)
 					{
-						sym = Tail[t];
-					// printf ("Tail = %s\n", sym_start[sym]);
-						if ((sym > max_char_set) && !(sym_type[sym] & SETNAME))
-						{
-							prt_error ("'%s' is not a set name", sym_start[sym], 0, sym_line[s]);
-							break;
-						}
+						sprintf (string, "'%s', when used in a character set, must be defined as: %s -> { ... }", sym_start[s], sym_start[s]);
+						prt_error (string, sym_start[s], 0, sym_line[s]);
 					}
 				}
 			}
 		}
-		if (n_errors) Terminate(0);
+		if (n_errors) LG::Terminate(0);
 
 	//	printf ("\n");
 	// Check for cycles in set definitions ...
@@ -1859,7 +1842,7 @@ void  LGActions::CHECK_SET (int s)
 					prt_log ("%s -> ", sym_start [onstack[j]]);
 				}
 				prt_log ("%s\n\n", sym_start [onstack[i]]);
-				Terminate(0);
+				LG::Terminate(0);
 			}
 		}
 		onstack [n_onstack++] = s;
@@ -2178,6 +2161,12 @@ int   LGActions::EXIST ()
 
 		i = 0;
 		p = T_start;					
+		q = T_end-1;					
+		if (*p == '\"' && *q == '\"')
+		{
+			*p = '\'';
+			*q = '\'';
+		}
 		hash = length = (T_end-T_start); // Set hash to length. 
 
       do									      // Assume length != 0
@@ -2188,7 +2177,7 @@ int   LGActions::EXIST ()
       }
       while (++p < T_end);
 
-      cell = hash % n_cells; 			// Get first cell.
+      cell = hash % n_cells; 				// Get first cell.
 		i = sym_vect [cell];					// Get symbol index.
 
 		while (i >= 0)

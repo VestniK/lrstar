@@ -129,7 +129,7 @@ int   PGBuildLR1::BuildLR1 () /* Build Canonical LR1 States */
       max_lrkernels = max_kernels;  // ? 
 
       max_hashes  = 2*max_states + 1;
-      hash_div    = (uint)0xFFFFFFFF / max_hashes + 1;
+      hash_div    = UINT_MAX / max_hashes + 1;
 
       ALLOC (ntt_item,     max_ntt    );
       ALLOC (accessor,     max_states );

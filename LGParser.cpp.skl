@@ -193,11 +193,6 @@
 
 /*--- Argument Variables. ---------------------------------------------------*/
 
-@def_cons?;...
-   // Defined Constants
-      @def_cons.1|#define %20s %5d // %T||\n      |;
-@@
-
    // Action argument numbers 
 		@arg_numb.t; LGParser::arg_numb[@arg_numb.d;] = 
       {
@@ -415,7 +410,7 @@ void  LGParser::syntax_error (int t)
       {
          short x = *token.start;
          if (x < 0) x += 256;
-         prt_log ("at %d %s\n", x,  term_symb[t]);
+         prt_log ("at (%d) %s\n", x,  term_symb[t]);
       }
       else
       {
@@ -432,7 +427,9 @@ void  LGParser::syntax_error (int t)
          {
             c = *token.end; 
             *token.end = 0;
-            prt_log ("at %s %s\n", token.start, term_symb[t]);
+				int x = *(token.start+1);
+				if (x < 0) x += 256;
+            prt_log ("at %s (%d) %s\n", token.start, x, term_symb[t]);
             *token.end = c;
          }
       }	
@@ -519,7 +516,7 @@ void	LGParser::collect (int x) // Collect terminals that cause a transition or r
 		{
   			if (Bm [Br[x] + Bc[t]] & Bmask[t])				// Accept this terminal?
 			{
-				if (T_list[t] == 0)
+				if (T_list[t] == 0 && t != T_PERCENT)
 				{
 					T_list[t] = 1;										// Mark it done, in case of SR conflict.
 					y = Tm [Tr[x] + Tc[t]];							// Get action?

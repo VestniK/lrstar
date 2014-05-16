@@ -31,9 +31,9 @@ void  @grm_name;Lexer::init_lexer (char* input_start)
 		tab = optn[PG_TAB]; 
 		line_pos    = 0;
 		line_numb   = 1;
-		token.end   = input_start+1;
-		line_start  = input_start+1;
-	  	line_ptr[1] = input_start+1;
+		token.end   = input_start;
+		line_start  = input_start;
+	  	line_ptr[1] = input_start;
 		line_start_numb = 1;
 }
 
@@ -215,8 +215,7 @@ void  @grm_name;Lexer::prt_line ()
             if (*p == '\t') *q++ = ' ';
             else            *q++ = *p;
             p++;
-				if (++len >= 255) 
-					InternalError(99);
+				if (++len == 255) break;
          }
 		   *q = 0;
 		   prt_log ("%05d %s\n\n", line_start_numb, line);

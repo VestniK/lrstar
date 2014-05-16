@@ -1,4 +1,216 @@
 
-GRAMMAR LISTING:
+/* LG grammar */
 
-'g' option was not specified.
+/* Options */
+
+/* Declarations */
+
+   0       T_ERROR                   <error>                   => error(0);
+   1       T_ALPHA                   <alpha>                   => firstsym({first_alpha});
+   2       T_LEXICAL                 <lexical>                 => firstsym({first_lexical});
+   3       T_IGNORE                  <ignore>                  => firstsym({first_ignore});
+   4       T_ESCAPE                  <escape>                  => firstsym({first_escape});
+   5       T_LITERAL1                <literal>                 => checkcase({first_literal});
+   6       T_LITERAL2                <string>                  => checkstring({first_string},{option_string});
+   7       T_INTEGER                 <integer>                 ;
+   8       T_EOF                     <eof>                     ;
+   9       T_ARROW                   '->'                      => arrow();
+  10       T_RETURN                  '=>'                      ;
+  11       T_LEFTP                   '('                       ;
+  12       T_RIGHTP                  ')'                       ;
+  13       T_PLUS                    '+'                       ;
+  14       T_STAR                    '*'                       ;
+  15       T_QUEST                   '?'                       ;
+  16       T_DOTS                    '..'                      ;
+  17       T_BAR                     '|'                       ;
+  18       T_DASH                    '-'                       ;
+  19       T_LCB                     '{'                       ;
+  20       T_RCB                     '}'                       ;
+  21       T_SEMI                    ';'                       ;
+  22       T_PERCENT                 '%%'                      ;
+
+  23       {first_alpha}             ;
+  24       {first_lexical}           ;
+  25       {first_ignore}            ;
+  26       {first_escape}            ;
+  27       {first_literal}           ;
+  28       {first_string}            ;
+  29       {option_string}           ;
+
+/* Operator Precedence */
+
+/* Rules */
+
+   0       Goal
+       0       -> Grammar <eof>
+                ;
+   1       Grammar
+       1       -> Options TokenProd...
+       2       -> Options TokenProd... PP
+       3       -> Options TokenProd... (NonterminalDef | SetDef | EscapeDef)...
+       4       -> Options TokenProd... PP (NonterminalDef | SetDef | EscapeDef)...
+                ;
+   2       Options
+       5       ->                                                                => PRO_OPTNS(0)
+       6       -> {option_string}                                                => PRO_OPTNS(1)
+                ;
+   3       PP
+       7       -> '%%'                                                           => EOGI(0)
+                ;
+   4       TokenProd
+       8       -> Token ReturnValue
+       9       -> Token ReturnValue ';'
+                ;
+   5       Token
+      10       -> {first_lexical} ['=>']                                         => ADD_TOKEN(1)
+      11       -> {first_literal} ['=>']                                         => ADD_TOKEN(1)
+      12       -> {first_string} ['=>']                                          => ADD_TOKEN(1)
+                ;
+   6       ReturnValue
+      13       -> <integer>                                                      => ADD_TERMNO(1)
+      14       -> <alpha>                                                        => ADD_DEFCON(1)
+      15       -> <string>                                                       => ADD_STRING(1)
+                ;
+   7       NonterminalDef
+      16       -> AlphaSymbol ArrowProd... [';']
+      17       -> LexicalSymbol ArrowProd... [';']
+      18       -> IgnoreSymbol ArrowProd... [';']
+      19       -> AlphaSymbol ArrowProd BarProd... [';']
+      20       -> LexicalSymbol ArrowProd BarProd... [';']
+      21       -> IgnoreSymbol ArrowProd BarProd... [';']
+                ;
+   8       AlphaSymbol
+      22       -> {first_alpha}                                                  => ADD_HEAD(1)
+                ;
+   9       LexicalSymbol
+      23       -> {first_lexical}                                                => ADD_HEADLEX(1)
+                ;
+  10       IgnoreSymbol
+      24       -> {first_ignore}                                                 => ADD_HEADIGNORE(1)
+                ;
+  11       ArrowProd
+      25       -> Arrow TailExprList
+                ;
+  12       Arrow
+      26       -> '->'                                                           => ADD_PROD()
+                ;
+  13       BarProd
+      27       -> Bar TailExprList
+                ;
+  14       Bar
+      28       -> '|'                                                            => ADD_PROD()
+                ;
+  15       TailExprList
+      29       -> TailExpr...                                                    => POP_ALL()
+                ;
+  16       TailExpr
+      30       -> TailSymbol
+      31       -> TailSymbol '+'                                                 => PUSH_PLUS()
+      32       -> TailSymbol '*'                                                 => PUSH_ASTER()
+      33       -> TailSymbol '?'                                                 => PUSH_QUEST()
+      34       -> GroupStart List GroupEnd
+                ;
+  17       List
+      35       -> TailExpr
+      36       -> List TailExpr
+      37       -> List Or TailExpr
+                ;
+  18       Or
+      38       -> '|'                                                            => PUSH_OR()
+                ;
+  19       GroupStart
+      39       -> '('                                                            => PUSH_GBEG()
+                ;
+  20       GroupEnd
+      40       -> ')'                                                            => PUSH_GEND()
+      41       -> ')' '+'                                                        => PUSH_GPLUS()
+      42       -> ')' '*'                                                        => PUSH_GASTER()
+      43       -> ')' '?'                                                        => PUSH_GQUEST()
+                ;
+  21       TailSymbol
+      44       -> <alpha>                                                        => PUSH_TAIL(1)
+      45       -> <escape>                                                       => PUSH_TAIL(1)
+      46       -> <lexical>                                                      => PUSH_TAIL(1)
+      47       -> <literal>                                                      => PUSH_TAIL(1)
+      48       -> <string>                                                       => PUSH_TAIL(1)
+      49       -> <integer>                                                      => PUSH_TAIL(1)
+                ;
+  22       SetDef
+      50       -> AlphaSymbol Arrow '{' SetExpr '}'                              => DEF_SET()
+      51       -> AlphaSymbol Arrow '{' SetExpr '}' ';'                          => DEF_SET()
+                ;
+  23       SetExpr
+      52       -> Range                                                          => FIRST_RANGE(1)
+      53       -> Character                                                      => FIRST_CHAR(1)
+      54       -> CharacterSetName                                               => FIRST_SET(1)
+      55       -> SetExpr '|' Range                                              => ADD_RANGE(3)
+      56       -> SetExpr '|' Character                                          => ADD_CHAR(3)
+      57       -> SetExpr '|' CharacterSetName                                   => ADD_SET(3)
+      58       -> SetExpr '-' Range                                              => SUB_RANGE(3)
+      59       -> SetExpr '-' Character                                          => SUB_CHAR(3)
+      60       -> SetExpr '-' CharacterSetName                                   => SUB_SET(3)
+                ;
+  24       Range
+      61       -> RangeStart '..' RangeEnd
+                ;
+  25       RangeEnd
+      62       -> Character                                                      => RANGE_END(1)
+                ;
+  26       RangeStart
+      63       -> Character                                                      => RANGE_START(1)
+                ;
+  27       Character
+      64       -> <literal>
+      65       -> <string>
+      66       -> <integer>
+                ;
+  28       CharacterSetName
+      67       -> <alpha>
+      68       -> <escape>
+                ;
+  29       EscapeDef
+      69       -> EscapeSymbol Arrow Number
+      70       -> EscapeSymbol Arrow Number ';'
+                ;
+  30       EscapeSymbol
+      71       -> {first_escape}                                                 => ADD_HEADSET(1)
+                ;
+  31       Number
+      72       -> <integer>                                                      => FIRST_CHAR(1)
+                ;
+  32       TokenProd...
+      73       -> TokenProd
+      74       -> TokenProd... TokenProd
+                ;
+  33       (NonterminalDef | SetDef | EscapeDef)
+      75       -> NonterminalDef
+      76       -> SetDef
+      77       -> EscapeDef
+                ;
+  34       (NonterminalDef | SetDef | EscapeDef)...
+      78       -> (NonterminalDef | SetDef | EscapeDef)
+      79       -> (NonterminalDef | SetDef | EscapeDef)... (NonterminalDef | SetDef | EscapeDef)
+                ;
+  35       ['=>']
+      80       ->
+      81       -> '=>'
+                ;
+  36       ArrowProd...
+      82       -> ArrowProd
+      83       -> ArrowProd... ArrowProd
+                ;
+  37       [';']
+      84       ->
+      85       -> ';'
+                ;
+  38       BarProd...
+      86       -> BarProd
+      87       -> BarProd... BarProd
+                ;
+  39       TailExpr...
+      88       -> TailExpr
+      89       -> TailExpr... TailExpr
+                ;
+
+/* End of LG grammar */
+

@@ -41,7 +41,7 @@ int   PGTokenAction::eof (int t) // New version
 		{
 			prt_error ("Code block starts here with { or %%{ but has no matching end } or %%} before the end-of-file", 
 				codeblockstart, 0, codeblockline);
-			Terminate(0);
+			PG::Terminate(0);
 		}
       return (t); // t = 0, a = 0 usually (passed as argument)
 }
@@ -88,7 +88,7 @@ int   PGTokenAction::firstsym (int t) // New version
 					if (token.column > arrow_column)
 					{
 						prt_error ("%s is too far right or 'tab' option is wrong", token.start, token.end, token.line); 
-						Terminate (0);
+						PG::Terminate (0);
 						return (0);
 					}
 					head_column = token.column;
@@ -113,7 +113,7 @@ int   PGTokenAction::firstsym (int t) // New version
 						}
 						prt_error ("%s has ambiguous position or 'tab' option is wrong. If tail: move right.\nIf head: move left, or preceed with ';', or follow with '->' on the same line", 
 						token.start, token.end, token.line); 
-						Terminate (0);
+						PG::Terminate (0);
 						return (0);
 					}
 					else // Tail symbol position!
@@ -122,7 +122,7 @@ int   PGTokenAction::firstsym (int t) // New version
 						{
 							prt_error ("%s looks like a tail symbol continuing the previous rule, but is preceeded by a blank line", 
 							token.start, token.end, token.line); 
-							Terminate (0);
+							PG::Terminate (0);
 							return (0);
 						}
 						return t;
@@ -133,13 +133,13 @@ int   PGTokenAction::firstsym (int t) // New version
 			{
 				prt_error ("%s looks like a tail symbol continuing the previous rule, but is preceeded by a blank line", 
 				token.start, token.end, token.line); 
-				Terminate (0);
+				PG::Terminate (0);
 				return (0);
 			}
 			if (token.column <= head_column)
 			{
 				prt_error ("%s looks like a tail symbol but is too far left or 'tab' option is wrong", token.start, token.end, token.line); 
-				Terminate (0);
+				PG::Terminate (0);
 				return (0);
 			}
 		}
@@ -165,7 +165,7 @@ int   PGTokenAction::arrow (int t) // New version
 		if (goal_symbol == 0)
       {
 			prt_error ("Goal symbol is not defined yet", token.start, token.end, token.line);
-			Terminate (0);
+			PG::Terminate (0);
 			return 0;
       }
 		arrow_length = strlen (term_symb[t]) - 2;	// Subtract the single quotes.
@@ -183,7 +183,7 @@ int   PGTokenAction::arrow (int t) // New version
 		}
 		prt_error ("'%s' must be the first symbol on a line or second (if preceeded by a head symbol)", 
 		token.start, token.end, token.line);
-		Terminate (0);
+		PG::Terminate (0);
 		return 0;
 }
 

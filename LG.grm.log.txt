@@ -1,43 +1,26 @@
 
-LRSTAR 5.0.002 Professional Copyright 2013 Paul Mann.
+LRSTAR 6.5.019 Copyright 2014 Paul B Mann.
 
-Input     LG.grm /k /exp /c 
+Input     LG.grm /k /exp /c /g /s /d 
 
-Grammar       96 rules, 30 terminals, 35 nonterminals.
-LR(1)        130 states in Minimal LR(1) state machine.
-              58 states after implementing shift-reduce actions.
+Grammar       90 rules, 30 terminals, 40 nonterminals.
+LR(1)        119 states in Minimal LR(1) state machine.
+              48 states after implementing shift-reduce actions.
 Conflicts      0 states, 0 shift-reduce, 0 reduce-reduce conflicts.
 
-Grammar is LR(0).
+Grammar is LALR(1), 0 extra states were added.
 
             rows   cols          matrix        list       vect      total
-B matrix      24 x   24 x 1 =       576 ->       58 +      118 =      176  
-T matrix       5 x   21 x 1 =       105 ->       85 +       88 =      173  
-N matrix       6 x   29 x 1 =       174 ->      149 +      154 =      303  
-R matrix      10 x    5 x 1 =        47 ->       47 +       88 =      135  
-Total                                           339 +      448 =      787
+B matrix      22 x   22 x 1 =       484 ->       48 +      108 =      156  
+T matrix       5 x   21 x 1 =       105 ->       86 +       78 =      164  
+N matrix       9 x   33 x 1 =       297 ->      153 +      138 =      291  
+R matrix       5 x    5 x 1 =        22 ->       22 +       78 =      100  
+Total                                           309 +      402 =      711
+
+0 min 0.015 sec, 94.611 MB, 1 warning, 0 errors.
 
 Skeleton: LGParser.h.skl
 Output:   LGParser.h (124 lines)
 Skeleton: LGParser.cpp.skl
-Output:   LGParser.cpp (860 lines)
-
-Symbols                             135  "/sym   =     20,000"    1 % 
-States                              130  "/sta   =    300,000"    0 % 
-Final items                         113  "/fin   =    300,000"    0 % 
-Kernel items                      2,220  "/ker   = 10,000,000"    0 % 
-Nonterminal transitions             125  "/ntt   =    200,000"    0 % 
-Terminal transitions                157  "/tt    =  2,000,000"    0 % 
-Lookaheads                          113  "/la    = 10,000,000"    0 % 
-Lookbacks                           326  "/lb    =  2,000,000"    0 % 
-Includes                            125  "/inc   =    500,000"    0 % 
-Child nodes in graph                125  "/ch    =    500,000"    0 % 
-Nondeterministic actions              0  "/nd    =    100,000"    0 % 
-
-0 min 0.015 sec, 94.1009 MB, 0 warnings, 0 errors.
-
-/* 0 keywords */
-
-
-/* end of keywords */
+Output:   LGParser.cpp (829 lines)
 

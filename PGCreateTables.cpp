@@ -560,7 +560,7 @@ int   PGCreateTables::MRG_ROWE2T (int **matrix, int n_terms, int *row, int n_sta
 		n_cells = 2*n_states;
 		ALLOC (vector, n_cells);
 		FASTINI (-1, vector, n_cells);
-		hash_divide = (uint)0xFFFFFFFF / n_cells + 1;
+		hash_divide = UINT_MAX / n_cells + 1;
 
 	//	nc = 0; // number of collisions = 0.
       for (s = 0; s < n_states; s++) // For all states ...

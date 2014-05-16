@@ -33,8 +33,11 @@ int   LGCreateTables::CreateTables ()
       char *m;
 		int s, nx = 1;
 
-		tt_states = n_states; // pbm 20070907
-
+		if (optn[LG_DIRECTCODE])
+		{
+			prt_log ("\n");
+			return 1;
+		}
 		err_ret_numb = 0;
   	  	for (s = 0; s < n_states; s++)
 		{
@@ -43,12 +46,15 @@ int   LGCreateTables::CreateTables ()
 				D_red[s] = ret_numb[D_red[s]];
 			}
 		}
+		tt_states = n_states; // pbm 20070907
 
       m = " ";
       total0 = total1 = total2 = 0;
 		char* tablesize;
-		if (optn[LG_TABL_SMALL]) tablesize = "      ";
-		else                     tablesize = "      ";
+		if      (optn[LG_TABL_SMALL])  tablesize = "Small ";
+		else if (optn[LG_TABL_MEDIUM]) tablesize = "Medium";
+		else if (optn[LG_TABL_LARGE])  tablesize = "Large ";
+		else                           tablesize = "??????";
       if (optn[LG_VERBOSE])
            prt_log     ("\n%6s      rows   cols          matrix        list       vect      total\n", tablesize);
       else prt_logonly ("\n%6s      rows   cols          matrix        list       vect      total\n", tablesize);
@@ -57,9 +63,17 @@ int   LGCreateTables::CreateTables ()
 			BLD_B (0, m);
 			BLD_T (0, 0, m);
 		}
-		else // T_MATRIX 
+		else if (optn[LG_TABL_MEDIUM])
 		{
 			BLD_TDFA ();
+		}
+		else if (optn[LG_TABL_LARGE])
+		{
+			BLD_LARGE ();
+		}
+		else
+		{
+			InternalError (500);
 		}
 		char n1[16] = "               ";
 		char n2[16] = "               ";
@@ -201,7 +215,7 @@ int   LGCreateTables::BLD_TDFA () /* Build Terminal DFA Matrix. */
       ALLOC (T_col,  n_terms);
       ALLOC (Matrix, tt_states);    
 
-		if (optn[LG_TABL_EXTRA]) 
+		if (optn[LG_TABL_LARGE]) 
 		{
 			T_rows = MRG_ROWE2T (Matrix, T_row, tt_states);
 			for (i = 0; i < n_terms; i++) T_col[i] = i;
@@ -214,24 +228,9 @@ int   LGCreateTables::BLD_TDFA () /* Build Terminal DFA Matrix. */
 		}
       org_size = T_rows * T_cols;
 
-		if (optn[LG_TABL_LARGE])
-		{
-			int max;
-			max = n_terms*tt_states;
-			for (i = 0; i < tt_states; i++) 
-			{
-				if (D_red[i] > max) max = D_red[i];
-			}
-			if (max > 32767) multiplier = 4; // int
-			else if (max >   127) multiplier = 2; // short
-			else             multiplier = 1; // char
-		}
-		else
-		{
-			if (tt_states > 65535) multiplier = 4; // int  
-			else if (tt_states >   255) multiplier = 2; // ushort
-			else                   multiplier = 1; // uchar
-		}
+		if (tt_states > 65535) multiplier = 4; // int  
+		else if (tt_states >   255) multiplier = 2; // ushort
+		else                   multiplier = 1; // uchar
 
 		T_total = multiplier*org_size;
 		char num[12] = "           ";
@@ -240,28 +239,14 @@ int   LGCreateTables::BLD_TDFA () /* Build Terminal DFA Matrix. */
 		else               prt_logonly ("x%5ld x %d =%10s", T_cols, multiplier, num);
 		total0 += T_total;
 
-		if (optn[LG_TABL_LARGE]) 
-		{
-			ALLOC (T_matrix, org_size);
-			T_size = DISP_EQ2T (Matrix, T_matrix, T_row, T_rows, T_cols, tt_states);
-			for (r = 0; r < T_rows; r++) FREE (Matrix [r], n_terms);
-			FREE (Matrix, tt_states);
-			for (i = 0; i < T_size; i++) 
-			{
-				if (T_matrix[i] > 0) T_matrix[i] = T_cols*T_matrix[i];
-			}
-		}
-		else
-		{
-			ALLOC (T_matrix, org_size);
-			FASTINI (0, T_matrix, org_size);
-			if (optn[LG_MINIMIZE] > 0)
-			     T_size = DISP_EQ2  (Matrix, T_matrix, T_row, T_rows, T_cols, tt_states, 0);
-			else T_size = DISP_EQ2T (Matrix, T_matrix, T_row, T_rows, T_cols, tt_states);
-			for (r = 0; r < T_rows; r++) FREE (Matrix [r], n_terms);
-			FREE (Matrix, tt_states);
-			REALLOC (T_matrix, org_size, T_size);
-		}
+		ALLOC (T_matrix, org_size);
+		FASTINI (0, T_matrix, org_size);
+		if (optn[LG_MINIMIZE] > 0)
+		     T_size = DISP_EQ2  (Matrix, T_matrix, T_row, T_rows, T_cols, tt_states, 0);
+		else T_size = DISP_EQ2T (Matrix, T_matrix, T_row, T_rows, T_cols, tt_states);
+		for (r = 0; r < T_rows; r++) FREE (Matrix [r], n_terms);
+		FREE (Matrix, tt_states);
+		REALLOC (T_matrix, org_size, T_size);
 
 		if (optn[LG_INSENSITIVE])
 		{
@@ -272,16 +257,60 @@ int   LGCreateTables::BLD_TDFA () /* Build Terminal DFA Matrix. */
 		}
 
 		int vectors = 0;
-		if (!optn[LG_TABL_LARGE])
-		{
-			vectors += get_type (T_row, tt_states) * tt_states; // row vector
-			vectors += get_type (T_col, n_terms)   * n_terms;   // column vector
-			vectors += get_type (D_red, tt_states) * tt_states; // terminal vector
-		}
-		else if (!optn[LG_TABL_EXTRA])
-		{
-			vectors += get_type (T_col, n_terms)   * n_terms;   // column vector
-		}
+		vectors += get_type (T_row, tt_states) * tt_states; // row vector
+		vectors += get_type (T_col, n_terms)   * n_terms;   // column vector
+		vectors += get_type (D_red, tt_states) * tt_states; // terminal vector
+      OUT_TOT (multiplier*T_size, vectors, "");
+      return  (multiplier*T_size + vectors);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//                                                                                                 //
+
+int   LGCreateTables::BLD_LARGE () /* Build Terminal Matrix for Large Tables. */
+{
+		char num[12] = "           ";
+      int  r, s, multiplier, org_size, i;
+
+      if (optn[LG_VERBOSE]) prt_log     ("T matrix");
+	   else                  prt_logonly ("T matrix");
+
+		T_rows = tt_states;
+		T_cols = n_terms;
+      org_size = T_rows * T_cols;
+		if      (org_size > 65535) multiplier = 4;	// int  
+		else if (org_size >   255) multiplier = 2;	// ushort
+		else                       multiplier = 1;	// uchar
+		T_total = multiplier*org_size;
+		number (T_total, num); // Gives 9 digits.
+
+      if (optn[LG_VERBOSE]) prt_log     ("  %6d ", T_rows);
+		else                  prt_logonly ("  %6d ", T_rows);
+
+      if (optn[LG_VERBOSE]) prt_log     ("x%5ld x %d =%10s", T_cols, multiplier, num);
+		else                  prt_logonly ("x%5ld x %d =%10s", T_cols, multiplier, num);
+
+		total0 += T_total;
+		T_size = org_size;
+		ALLOC (T_matrix, org_size);
+		FASTINI (0, T_matrix, org_size);
+
+      for (s = 0; s < n_states; s++)
+      {
+         for (int i = tt_start [s]; i < tt_end [s]; i++)
+         {
+				T_matrix [s*T_cols + tt_symb[i]] = tt_action[i]*T_cols; 
+         }
+			if (optn[LG_INSENSITIVE])
+			{
+				for (int i = 'a'; i <= 'z'; i++)
+				{
+					T_matrix [s*T_cols + i-32] = T_matrix [s*T_cols + i]; // Copy action for lower to upper.
+				}
+			}
+      }
+
+		int vectors = 0;
       OUT_TOT (multiplier*T_size, vectors, "");
       return  (multiplier*T_size + vectors);
 }
@@ -334,65 +363,46 @@ int   LGCreateTables::MRG_ROWE2T (int **matrix, int *row, int n_states)
       nr = 0;
       ALLOC (buffer, n_terms);
       ALLOC (count,  n_states);
-		if (!optn[LG_TABL_LARGE])
-		{
-			n_cells = 2*n_states;
-  			ALLOC (vector, n_cells);
-			FASTINI (-1, vector, n_cells);
-			hash_divide = (uint)0xFFFFFFFF / n_cells + 1;
-		}
+		n_cells = 2*n_states;
+		ALLOC (vector, n_cells);
+		FASTINI (-1, vector, n_cells);
+		hash_divide = UINT_MAX / n_cells + 1;
 
 	//	nc = 0; // number of collisions = 0.
       for (s = 0; s < n_states; s++) // For all states ...
       {
-			if (optn[LG_TABL_LARGE]) 
+			count[s] = 0;
+			hash = MAX_INT;
+			for (t = 0; t < n_terms; t++) buffer[t] = 0;	 
+			for (i = tt_start[s]; i < tt_end[s]; i++)
 			{
-				value = -D_red[s];
-				for (t = 0; t < n_terms; t++) buffer[t] = value;	 
-				for (i = tt_start[s]; i < tt_end[s]; i++)
+				if (tt_action[i] != 0)
+				{
+					count[s]++;
+					t = tt_symb[i];				
+					buffer[t] = tt_action[i];				
+			  		hash += tt_action[i]*i;
+				}
+			}
+			cell = hash % n_cells; 			// Get first cell.
+			r = vector [cell];					// Get symbol index.
+			while (r >= 0)
+			{
+				if (count[s] != count[r]) goto Cont;
+  				for (i = tt_start[s]; i < tt_end[s]; i++) // Compare rows.
 				{
 					if (tt_action[i] != 0)
 					{
-						t = tt_symb[i];				
-						buffer[t] = tt_action[i];				
+						t = tt_symb[i];		
+						if (buffer[t] != matrix[r][t]) goto Cont;
 					}
 				}
+				goto Old;
+Cont:			cell = (hash *= 65549) / hash_divide;	// Get new cell number.
+				r = vector[cell];		   					// Get row index.
+			//	nc++;	// number of collisions.
 			}
-			else						
-			{
-				count[s] = 0;
-				hash = MAX_INT;
-				for (t = 0; t < n_terms; t++) buffer[t] = 0;	 
-				for (i = tt_start[s]; i < tt_end[s]; i++)
-				{
-					if (tt_action[i] != 0)
-					{
-						count[s]++;
-						t = tt_symb[i];				
-						buffer[t] = tt_action[i];				
-				  		hash += tt_action[i]*i;
-					}
-				}
-				cell = hash % n_cells; 			// Get first cell.
-				r = vector [cell];					// Get symbol index.
-				while (r >= 0)
-				{
-					if (count[s] != count[r]) goto Cont;
-	  				for (i = tt_start[s]; i < tt_end[s]; i++) // Compare rows.
-					{
-						if (tt_action[i] != 0)
-						{
-							t = tt_symb[i];		
-							if (buffer[t] != matrix[r][t]) goto Cont;
-						}
-					}
-					goto Old;
-Cont:				cell = (hash *= 65549) / hash_divide;	// Get new cell number.
-					r = vector[cell];		   					// Get row index.
-				//	nc++;	// number of collisions.
-				}
-				vector[cell] = nr;
-			}
+			vector[cell] = nr;
          r = nr++;
 			ALLOC (matrix[r], n_terms); // Create a new row ...
 			for (t = 0; t < n_terms; t++)
@@ -404,12 +414,9 @@ Old:     row[s] = r; // Define row pointer.
 
       FREE (buffer, n_terms);	 
       FREE (count,  n_states);	 
-		if (!optn[LG_TABL_LARGE])
-		{
-			FREE (vector, n_cells);
-		}
+		FREE (vector, n_cells);
       if (optn[LG_VERBOSE]) prt_log     ("  %6d ", nr);
-		else               prt_logonly ("  %6d ", nr);
+		else                  prt_logonly ("  %6d ", nr);
       return (nr);
 }
 
@@ -901,7 +908,7 @@ Loop:		for (j = 0; j < nc; j++)
 				size = i + nc;
 			   int div = size - nc;
 				if (div < nc) div = nc;   
-	    		hash_divide = (uint)0xFFFFFFFF / div + 1;
+	    		hash_divide = UINT_MAX / div + 1;
 			}
 			i = (hash *= 65549) / hash_divide; 
       }

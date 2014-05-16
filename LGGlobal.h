@@ -16,12 +16,15 @@
       #define TERMINAL        2
       #define NONTERMINAL     4
       #define SETNAME         8
-      #define LEXICON        16
-      #define CONSTANT       32
-      #define GENERATED      64
-      #define STRING        128
-      #define UNREACHABLE   256
-      #define LEXFILE       512
+      #define SETNAMEREF     16
+      #define LEXICON        32
+      #define CONSTANT       64
+      #define GENERATED     128
+      #define STRING        256
+      #define UNREACHABLE   512
+      #define LEXFILE      1024
+      #define IGNORESYM    2048
+      #define OUTPUTSYM    4096
 
       #define MAXPRODLENG	 256	// Maximum number of symbols per production.
 

@@ -1,2 +1,6 @@
 
-0 warnings.
+LG.grm(0009) :  T_IGNORE     <ignore>       => firstsym  ({first_ignore});
+LG.grm(0009) : ..............^^^^^^^^.....................................
+LG.grm(0009) : Warning: Terminal symbol <ignore> was declared but not used anywhere.
+
+1 warning.
