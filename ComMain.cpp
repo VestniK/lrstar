@@ -199,8 +199,10 @@ int   main (int na, char *arg[])
 				#ifdef UNIX
 				if (arg[i][0] == '-') break;  // Options start.
 				#endif
-				if (GetSkeletonFilename (arg[i], i++, na) == 0) Terminate (0);
-				if (GetOutputFilename   (arg[i], i++, na) == 0) Terminate (0);
+				if (GetSkeletonFilename (arg[i], i, na) == 0) Terminate (0);
+                                ++i;
+				if (GetOutputFilename   (arg[i], i, na) == 0) Terminate (0);
+                                ++i;
 			}
 
 #if defined WINDOWS
