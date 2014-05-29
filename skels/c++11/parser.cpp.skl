@@ -24,8 +24,8 @@ public:
 };
 @numb_node?;...
 
-Node::Node(StackFrame *start, int reductionSize):
-    children(linkup(start, reductionSize)),
+Node::Node(const StackFrame *start, size_t size):
+    children(linkup(start, size)),
     next(nullptr)
 {
 }
@@ -38,11 +38,11 @@ void Node::walk(Visitor *visitor)
     this->seeOff(visitor);
 }
 
-std::shared_ptr<Node> Node::linkup(StackFrame *start, int reductionSize)
+std::shared_ptr<Node> Node::linkup(const StackFrame *start, size_t size)
 {
     std::shared_ptr<Node> first = nullptr;
     std::shared_ptr<Node> last = nullptr;
-    for (StackFrame *frame = start; frame < start + reductionSize; ++frame) {
+    for (const StackFrame *frame = start; frame < start + size; ++frame) {
         if (!frame->node)
             continue;
         assert((first && last) || (!first && !last));
@@ -57,6 +57,9 @@ std::shared_ptr<Node> Node::linkup(StackFrame *start, int reductionSize)
     }
     return first;
 }
+
+@node_name.1|void Visitor::visit(%s *node) {visit(static_cast<Node*>(node))\;}||\n    |;
+@node_name.1|void Visitor::leave(%s *node) {leave(static_cast<Node*>(node))\;}||\n    |;
 @@
 
 const size_t Parser::stackIncrementStep = 1024;
@@ -148,7 +151,7 @@ void Parser::reduce(int prodRule)
 @numb_pact?;...
     if (parseActions && parseActionNumber[prodRule] >= 0) {
         switch (parseActionNumber[prodRule]) {
-            @pact_func.1|case %d: parseActions->%s(prodRule, &stack[stackTop], ProdLen[prodRule]+1)\; break\;||\n            |;
+            @pact_func.1|case %d: parseActions->%s(&stack[stackTop], ProdLen[prodRule]+1)\; break\;||\n            |;
         }
     }
 @@
@@ -170,7 +173,7 @@ void Parser::reduce(int prodRule)
 @numb_nact?;...
     if (nodeActions) {
         switch (nodeActionNumber[prodRule]) {
-            @nact_func.1|case %d: nodeActions->on%s(dynamic_cast<%s *>(stack[stackTop].node.get()))\; break\;||\n            |;
+            @nact_func.1|case %d: nodeActions->on%s(std::dynamic_pointer_cast<%s>(stack[stackTop].node))\; break\;||\n            |;
         }
     }
 @@

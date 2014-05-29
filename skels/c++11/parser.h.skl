@@ -55,8 +55,8 @@ public:
 
     virtual void visit(Node *) {}
     virtual void leave(Node *) {}
-    @node_name.1|virtual void visit(%s *) {}||\n    |;
-    @node_name.1|virtual void leave(%s *) {}||\n    |;
+    @node_name.1|virtual void visit(%s *)\;||\n    |;
+    @node_name.1|virtual void leave(%s *)\;||\n    |;
 
 protected:
     Visitor() {}
@@ -72,11 +72,11 @@ protected:
 class Node
 {
 public:
-    Node(StackFrame *start, int reductionSize);
+    Node(const StackFrame *start, size_t size);
     virtual ~Node() {}
 
     void walk(Visitor *visitor);
-    static std::shared_ptr<Node> linkup(StackFrame *start, int reductionSize);
+    static std::shared_ptr<Node> linkup(const StackFrame *start, size_t size);
 
 protected:
     virtual void accept(Visitor *visitor) = 0;
@@ -93,7 +93,7 @@ class NodeActions
 public:
     virtual ~NodeActions() {}
 
-    @nact_func.1|virtual void on%s(%s *node) = 0\;||\n    |;
+    @nact_func.1|virtual void on%s(std::shared_ptr<%s> node) = 0\;||\n    |;
 };
 @@
 @@
@@ -115,7 +115,7 @@ class ParseActions
 public:
     virtual ~ParseActions() {}
 
-    @pact_func.1|virtual void %s(int productionNum, const StackFrame *reductionStart, int reductionSize) = 0\;||\n    |;
+    @pact_func.1|virtual void %s(const StackFrame *start, size_t size) = 0\;||\n    |;
 };
 @@
 
