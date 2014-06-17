@@ -85,10 +85,10 @@ Parser::~Parser()
 }
 
 @numb_node?;...
-std::shared_ptr<Node> Parser::parse(const char *input) throw(ParseError)
+std::shared_ptr<Node> Parser::parse(const char *input)
 @@
 @numb_node!;...
-void Parser::parse(const char *input) throw(ParseError)
+void Parser::parse(const char *input)
 @@
 {
     lexer.start(input);
