@@ -125,320 +125,323 @@
       36       -> '->' GoalTails RuleActions [';']                               =*> prod_(1) prod_(,,)
                 ;
   17       GoalTails
-      37       -> TailExpr EOF                                                   *> tails_() tails_(,,)
+      37       -> TailPosition EOF                                               *> tails_() tails_(,,)
                 ;
   18       EOF
-      38       -> '<eof>'                                                        =*> tail_(1) tail_(,,)
-                ;
-  19       NonterminalDef
-      39       -> HeadSymbol ColonFirst [';']                                    *> headdef_(1) headdef_(,,)
-      40       -> HeadSymbol ColonFirst BarRules [';']                           *> headdef_(1) headdef_(,,)
-      41       -> HeadSymbol ArrowFirst [';']                                    *> headdef_(1) headdef_(,,)
-      42       -> HeadSymbol ArrowFirst BarRules [';']                           *> headdef_(1) headdef_(,,)
-      43       -> HeadSymbol ArrowFirst ArrowRules [';']                         *> headdef_(1) headdef_(,,)
-      44       -> HeadSymbol OtherFirst [';']                                    *> headdef_(1) headdef_(,,)
-      45       -> HeadSymbol OtherFirst ArrowRules [';']                         *> headdef_(1) headdef_(,,)
-                ;
-  20       HeadSymbol
-      46       -> {head_symbol}                                                  => headsymbol_(1)
-                ;
-  21       ColonFirst
-      47       -> ':' TailExprList RuleActions                                   =*> prod_(1) prod_(,,)
-                ;
-  22       ArrowFirst
-      48       -> '->' TailExprList RuleActions                                  =*> prod_(1) prod_(,,)
-                ;
-  23       OtherFirst
-      49       -> '~>' TailExprList RuleActions                                  =*> prod_(1) prod_(,,)
-      50       -> '/->' TailExprList RuleActions                                 =*> prod_(1) prod_(,,)
-      51       -> '/~>' TailExprList RuleActions                                 =*> prod_(1) prod_(,,)
-                ;
-  24       BarRules
-      52       -> BarRule...
-                ;
-  25       BarRule
-      53       -> Bar TailExprList RuleActions                                   =*> prod_(1) prod_(,,)
-                ;
-  26       Bar
-      54       -> '|'                                                            => arrow_(1)
-                ;
-  27       ArrowRules
-      55       -> ArrowRule...
-                ;
-  28       ArrowRule
-      56       -> Arrow TailExprList RuleActions                                 =*> prod_(1) prod_(,,)
-                ;
-  29       Arrow
-      57       -> '->'
-      58       -> '~>'
-      59       -> '/->'
-      60       -> '/~>'
-                ;
-  30       TailExprList
-      61       ->                                                                *> tails_() tails_(,,)
-      62       -> TailPosition...                                                *> tails_() tails_(,,)
-                ;
-  31       TailPosition
-      63       -> TailExpr                                                       => tailposition_()
-                ;
-  32       TailExpr
-      64       -> Tail
-      65       -> Tail '+'                                                       *> repeat_() repeat_(,,)
-      66       -> Tail '...'                                                     *> repeat_() repeat_(,,)
-      67       -> TailAst                                                        *> repeat_() repeat_(,,)
-      68       -> TailQuest
-      69       -> Tail SepExpr                                                   *> repeatsep_() repeatsep_(,,)
-      70       -> Tail SepExprRev                                                *> repeatseprev_() repeatseprev_(,,)
-      71       -> Group
-      72       -> Group '+'                                                      *> repeat_() repeat_(,,)
-      73       -> Group '...'                                                    *> repeat_() repeat_(,,)
-      74       -> Group '~'                                                      *> reverse_() reverse_(,,)
-      75       -> Group '~..'                                                    *> repeatrev_() repeatrev_(,,)
-      76       -> Group SepExpr                                                  *> repeatsep_() repeatsep_(,,)
-      77       -> Group SepExprRev                                               *> repeatseprev_() repeatseprev_(,,)
-      78       -> OGroup '?'                                                     *> repeat_() repeat_(,,)
-      79       -> OGroup '*'                                                     *> repeat_() repeat_(,,)
-      80       -> OptGroup
-      81       -> OptGroup '~'                                                   *> reverse_() reverse_(,,)
-      82       -> OptGroup '...'                                                 *> repeat_() repeat_(,,)
-      83       -> OptGroup '~..'                                                 *> repeatrev_() repeatrev_(,,)
-      84       -> OptGroup SepExpr                                               *> repeatsep_() repeatsep_(,,)
-      85       -> OptGroup SepExprRev                                            *> repeatseprev_() repeatseprev_(,,)
-                ;
-  33       SepExpr
-      86       -> '/' Sep '+'                                                    *> sepexpr_() sepexpr_(,,)
-      87       -> '/' Sep '...'                                                  *> sepexpr_() sepexpr_(,,)
-                ;
-  34       SepExprRev
-      88       -> '/' Sep '~..'                                                  *> sepexprrev_() sepexprrev_(,,)
-                ;
-  35       TailAst
-      89       -> TailAst2                                                       *> optgroup_() optgroup_(,,)
-                ;
-  36       TailAst2
-      90       -> Tail '*'                                                       *> tails_() tails_(,,)
-                ;
-  37       TailQuest
-      91       -> TailQuest2                                                     *> optgroup_() optgroup_(,,)
-                ;
-  38       TailQuest2
-      92       -> Tail '?'                                                       *> tails_() tails_(,,)
-                ;
-  39       Group
-      93       -> '(' GroupTails ')'                                             *> group_() group_(,,)
-                ;
-  40       OGroup
-      94       -> '(' GroupTails ')'                                             *> optgroup_() optgroup_(,,)
+      38       -> EOF2                                                           => tailposition_()
+                ;
+  19       EOF2
+      39       -> '<eof>'                                                        =*> tail_(1) tail_(,,)
+                ;
+  20       NonterminalDef
+      40       -> HeadSymbol ColonFirst [';']                                    *> headdef_(1) headdef_(,,)
+      41       -> HeadSymbol ColonFirst BarRules [';']                           *> headdef_(1) headdef_(,,)
+      42       -> HeadSymbol ArrowFirst [';']                                    *> headdef_(1) headdef_(,,)
+      43       -> HeadSymbol ArrowFirst BarRules [';']                           *> headdef_(1) headdef_(,,)
+      44       -> HeadSymbol ArrowFirst ArrowRules [';']                         *> headdef_(1) headdef_(,,)
+      45       -> HeadSymbol OtherFirst [';']                                    *> headdef_(1) headdef_(,,)
+      46       -> HeadSymbol OtherFirst ArrowRules [';']                         *> headdef_(1) headdef_(,,)
+                ;
+  21       HeadSymbol
+      47       -> {head_symbol}                                                  => headsymbol_(1)
+                ;
+  22       ColonFirst
+      48       -> ':' TailExprList RuleActions                                   =*> prod_(1) prod_(,,)
+                ;
+  23       ArrowFirst
+      49       -> '->' TailExprList RuleActions                                  =*> prod_(1) prod_(,,)
+                ;
+  24       OtherFirst
+      50       -> '~>' TailExprList RuleActions                                  =*> prod_(1) prod_(,,)
+      51       -> '/->' TailExprList RuleActions                                 =*> prod_(1) prod_(,,)
+      52       -> '/~>' TailExprList RuleActions                                 =*> prod_(1) prod_(,,)
+                ;
+  25       BarRules
+      53       -> BarRule...
+                ;
+  26       BarRule
+      54       -> Bar TailExprList RuleActions                                   =*> prod_(1) prod_(,,)
+                ;
+  27       Bar
+      55       -> '|'                                                            => arrow_(1)
+                ;
+  28       ArrowRules
+      56       -> ArrowRule...
+                ;
+  29       ArrowRule
+      57       -> Arrow TailExprList RuleActions                                 =*> prod_(1) prod_(,,)
+                ;
+  30       Arrow
+      58       -> '->'
+      59       -> '~>'
+      60       -> '/->'
+      61       -> '/~>'
+                ;
+  31       TailExprList
+      62       ->                                                                *> tails_() tails_(,,)
+      63       -> TailPosition...                                                *> tails_() tails_(,,)
+                ;
+  32       TailPosition
+      64       -> TailExpr                                                       => tailposition_()
+                ;
+  33       TailExpr
+      65       -> Tail
+      66       -> Tail '+'                                                       *> repeat_() repeat_(,,)
+      67       -> Tail '...'                                                     *> repeat_() repeat_(,,)
+      68       -> TailAst                                                        *> repeat_() repeat_(,,)
+      69       -> TailQuest
+      70       -> Tail SepExpr                                                   *> repeatsep_() repeatsep_(,,)
+      71       -> Tail SepExprRev                                                *> repeatseprev_() repeatseprev_(,,)
+      72       -> Group
+      73       -> Group '+'                                                      *> repeat_() repeat_(,,)
+      74       -> Group '...'                                                    *> repeat_() repeat_(,,)
+      75       -> Group '~'                                                      *> reverse_() reverse_(,,)
+      76       -> Group '~..'                                                    *> repeatrev_() repeatrev_(,,)
+      77       -> Group SepExpr                                                  *> repeatsep_() repeatsep_(,,)
+      78       -> Group SepExprRev                                               *> repeatseprev_() repeatseprev_(,,)
+      79       -> OGroup '?'                                                     *> repeat_() repeat_(,,)
+      80       -> OGroup '*'                                                     *> repeat_() repeat_(,,)
+      81       -> OptGroup
+      82       -> OptGroup '~'                                                   *> reverse_() reverse_(,,)
+      83       -> OptGroup '...'                                                 *> repeat_() repeat_(,,)
+      84       -> OptGroup '~..'                                                 *> repeatrev_() repeatrev_(,,)
+      85       -> OptGroup SepExpr                                               *> repeatsep_() repeatsep_(,,)
+      86       -> OptGroup SepExprRev                                            *> repeatseprev_() repeatseprev_(,,)
+                ;
+  34       SepExpr
+      87       -> '/' Sep '+'                                                    *> sepexpr_() sepexpr_(,,)
+      88       -> '/' Sep '...'                                                  *> sepexpr_() sepexpr_(,,)
+                ;
+  35       SepExprRev
+      89       -> '/' Sep '~..'                                                  *> sepexprrev_() sepexprrev_(,,)
+                ;
+  36       TailAst
+      90       -> TailAst2                                                       *> optgroup_() optgroup_(,,)
+                ;
+  37       TailAst2
+      91       -> Tail '*'                                                       *> tails_() tails_(,,)
+                ;
+  38       TailQuest
+      92       -> TailQuest2                                                     *> optgroup_() optgroup_(,,)
+                ;
+  39       TailQuest2
+      93       -> Tail '?'                                                       *> tails_() tails_(,,)
+                ;
+  40       Group
+      94       -> '(' GroupTails ')'                                             *> group_() group_(,,)
                 ;
-  41       OptGroup
-      95       -> '[' GroupTails ']'                                             *> optgroup_() optgroup_(,,)
+  41       OGroup
+      95       -> '(' GroupTails ')'                                             *> optgroup_() optgroup_(,,)
                 ;
-  42       GroupTails
-      96       -> GroupExprList [OrGroupExprList]...
+  42       OptGroup
+      96       -> '[' GroupTails ']'                                             *> optgroup_() optgroup_(,,)
                 ;
-  43       GroupExprList
-      97       -> TailExpr...                                                    *> tails_() tails_(,,)
+  43       GroupTails
+      97       -> GroupExprList [OrGroupExprList]...
                 ;
-  44       OrGroupExprList
-      98       -> '|' TailExpr...                                                *> tails_() tails_(,,)
+  44       GroupExprList
+      98       -> TailExpr...                                                    *> tails_() tails_(,,)
                 ;
-  45       Tail
-      99       -> <alpha>                                                        =*> tail_(1) tail_(,,)
-     100       -> <literal>                                                      =*> tail_(1) tail_(,,)
-     101       -> <lexical>                                                      =*> tail_(1) tail_(,,)
-     102       -> <semantic>                                                     =*> tail_(1) tail_(,,)
-     103       -> '<error>'                                                      =*> tail_(1) tail_(,,)
-     104       -> '<keyword>'                                                    =*> tailkw_(1) tailkw_(,,)
+  45       OrGroupExprList
+      99       -> '|' TailExpr...                                                *> tails_() tails_(,,)
                 ;
-  46       Sep
-     105       -> <alpha>                                                        =*> sep_(1) sep_(,,)
-     106       -> <lexical>                                                      =*> sep_(1) sep_(,,)
-     107       -> <literal>                                                      =*> sep_(1) sep_(,,)
-     108       -> Group
+  46       Tail
+     100       -> <alpha>                                                        =*> tail_(1) tail_(,,)
+     101       -> <literal>                                                      =*> tail_(1) tail_(,,)
+     102       -> <lexical>                                                      =*> tail_(1) tail_(,,)
+     103       -> <semantic>                                                     =*> tail_(1) tail_(,,)
+     104       -> '<error>'                                                      =*> tail_(1) tail_(,,)
+     105       -> '<keyword>'                                                    =*> tailkw_(1) tailkw_(,,)
                 ;
-  47       TokenAction
-     109       -> '=>' TokenActionSpec                                           *> token_action_(1) token_action_(,,)
+  47       Sep
+     106       -> <alpha>                                                        =*> sep_(1) sep_(,,)
+     107       -> <lexical>                                                      =*> sep_(1) sep_(,,)
+     108       -> <literal>                                                      =*> sep_(1) sep_(,,)
+     109       -> Group
                 ;
-  48       RuleActions
-     110       ->
-     111       -> ParseAction                                                    *> rule_actions_() rule_actions_(,,)
-     112       -> MakeNode                                                       *> rule_actions_() rule_actions_(,,)
-     113       -> MakeNodeWithAction                                             *> rule_actions_() rule_actions_(,,)
-     114       -> ParseActionMakeNode                                            *> rule_actions_() rule_actions_(,,)
-     115       -> ParseActionMakeNodeWA                                          *> rule_actions_() rule_actions_(,,)
+  48       TokenAction
+     110       -> '=>' TokenActionSpec                                           *> token_action_(1) token_action_(,,)
                 ;
-  49       ParseAction
-     116       -> '=>' ParseActionSpec                                           *> parse_action_(1) parse_action_(,,)
+  49       RuleActions
+     111       ->
+     112       -> ParseAction                                                    *> rule_actions_() rule_actions_(,,)
+     113       -> MakeNode                                                       *> rule_actions_() rule_actions_(,,)
+     114       -> MakeNodeWithAction                                             *> rule_actions_() rule_actions_(,,)
+     115       -> ParseActionMakeNode                                            *> rule_actions_() rule_actions_(,,)
+     116       -> ParseActionMakeNodeWA                                          *> rule_actions_() rule_actions_(,,)
                 ;
-  50       MakeNode
-     117       -> '+>' NodeSpec                                                  =*> make_node_(1) make_node_(,,)
+  50       ParseAction
+     117       -> '=>' ParseActionSpec                                           *> parse_action_(1) parse_action_(,,)
                 ;
-  51       MakeNodeWithAction
-     118       -> '*>' NodeSpec BlankNodeAction                                  =*> make_node_wa_(1) make_node_wa_(,,)
-     119       -> '*>' NodeSpec NodeAction                                       =*> make_node_wa_(1) make_node_wa_(,,)
+  51       MakeNode
+     118       -> '+>' NodeSpec                                                  =*> make_node_(1) make_node_(,,)
                 ;
-  52       ParseActionMakeNode
-     120       -> '=+>' PANodeSpec BlankParseAction                              =*> parse_action_make_node_(1) parse_action_make_node_(,,)
+  52       MakeNodeWithAction
+     119       -> '*>' NodeSpec BlankNodeAction                                  =*> make_node_wa_(1) make_node_wa_(,,)
+     120       -> '*>' NodeSpec NodeAction                                       =*> make_node_wa_(1) make_node_wa_(,,)
                 ;
-  53       ParseActionMakeNodeWA
-     121       -> '=*>' PANodeSpec BlankParseAction BlankNodeAction              =*> parse_action_make_node_wa_(1) parse_action_make_node_wa_(,,)
-     122       -> '=*>' PANodeSpec BlankParseAction NodeAction                   =*> parse_action_make_node_wa_(1) parse_action_make_node_wa_(,,)
+  53       ParseActionMakeNode
+     121       -> '=+>' PANodeSpec BlankParseAction                              =*> parse_action_make_node_(1) parse_action_make_node_(,,)
                 ;
-  54       TokenActionSpec
-     123       -> TokenActionName Args                                           =*> token_action_spec_(1) token_action_spec_(,,)
+  54       ParseActionMakeNodeWA
+     122       -> '=*>' PANodeSpec BlankParseAction BlankNodeAction              =*> parse_action_make_node_wa_(1) parse_action_make_node_wa_(,,)
+     123       -> '=*>' PANodeSpec BlankParseAction NodeAction                   =*> parse_action_make_node_wa_(1) parse_action_make_node_wa_(,,)
                 ;
-  55       TokenActionName
-     124       -> <alpha>                                                        => token_action_name_(1)
+  55       TokenActionSpec
+     124       -> TokenActionName Args                                           =*> token_action_spec_(1) token_action_spec_(,,)
                 ;
-  56       ParseActionSpec
-     125       -> ParseActionName Args                                           =*> parse_action_spec_(1) parse_action_spec_(,,)
+  56       TokenActionName
+     125       -> <alpha>                                                        => token_action_name_(1)
                 ;
-  57       ParseActionName
-     126       -> <alpha>                                                        => parse_action_name_(1)
+  57       ParseActionSpec
+     126       -> ParseActionName Args                                           =*> parse_action_spec_(1) parse_action_spec_(,,)
                 ;
-  58       BlankParseAction
-     127       ->                                                                =*> blank_parse_action_(1) blank_parse_action_(,,)
+  58       ParseActionName
+     127       -> <alpha>                                                        => parse_action_name_(1)
                 ;
-  59       NodeSpec
-     128       -> NodeName NNArgs                                                =*> node_spec_(1) node_spec_(,,)
+  59       BlankParseAction
+     128       ->                                                                =*> blank_parse_action_(1) blank_parse_action_(,,)
                 ;
-  60       NodeName
-     129       -> <alpha>                                                        => node_name_(1)
-     130       ->                                                                => blank_node_name_(1)
+  60       NodeSpec
+     129       -> NodeName NNArgs                                                =*> node_spec_(1) node_spec_(,,)
                 ;
-  61       PANodeSpec
-     131       -> PANodeName NNArgs                                              =*> pa_node_spec_(1) pa_node_spec_(,,)
+  61       NodeName
+     130       -> <alpha>                                                        => node_name_(1)
+     131       ->                                                                => blank_node_name_(1)
                 ;
-  62       PANodeName
-     132       -> <alpha>                                                        => pa_node_name_(1)
-     133       ->                                                                => pa_blank_node_name_(1)
+  62       PANodeSpec
+     132       -> PANodeName NNArgs                                              =*> pa_node_spec_(1) pa_node_spec_(,,)
                 ;
-  63       NodeAction
-     134       -> NodeActionName NAArgs                                          =*> node_action_(1) node_action_(,,)
+  63       PANodeName
+     133       -> <alpha>                                                        => pa_node_name_(1)
+     134       ->                                                                => pa_blank_node_name_(1)
                 ;
-  64       NodeActionName
-     135       -> <alpha>                                                        => node_action_name_(1)
+  64       NodeAction
+     135       -> NodeActionName NAArgs                                          =*> node_action_(1) node_action_(,,)
                 ;
-  65       BlankNodeAction
-     136       -> BlankNodeActionName NAArgs                                     =*> node_action_(1) node_action_(,,)
+  65       NodeActionName
+     136       -> <alpha>                                                        => node_action_name_(1)
                 ;
-  66       BlankNodeActionName
-     137       ->                                                                => blank_node_action_name_(1)
+  66       BlankNodeAction
+     137       -> BlankNodeActionName NAArgs                                     =*> node_action_(1) node_action_(,,)
                 ;
-  67       Args
-     138       ->                                                                =*> args_() args_(,,)
-     139       -> '(' ')'                                                        =*> args_() args_(,,)
-     140       -> '(' Arg/','... ')'                                             =*> args_() args_(,,)
+  67       BlankNodeActionName
+     138       ->                                                                => blank_node_action_name_(1)
                 ;
-  68       NNArgs
-     141       ->                                                                =*> args_() args_(,,)
-     142       -> '(' ')'                                                        =*> args_() args_(,,)
-     143       -> '(' FirstArg [',' (Arg | NoArg)]... ')'                        =*> args_() args_(,,)
+  68       Args
+     139       ->                                                                =*> args_() args_(,,)
+     140       -> '(' ')'                                                        =*> args_() args_(,,)
+     141       -> '(' Arg/','... ')'                                             =*> args_() args_(,,)
                 ;
-  69       NAArgs
-     144       -> NoArg NoArg NoArg                                              =*> args_() args_(,,)
-     145       -> '(' NoArg NoArg NoArg ')'                                      =*> args_() args_(,,)
-     146       -> '(' NAArg ',' NAArg ',' NAArg ')'                              =*> args_() args_(,,)
+  69       NNArgs
+     142       ->                                                                =*> args_() args_(,,)
+     143       -> '(' ')'                                                        =*> args_() args_(,,)
+     144       -> '(' FirstArg [',' (Arg | NoArg)]... ')'                        =*> args_() args_(,,)
                 ;
-  70       NAArg
-     147       -> Arg
-     148       -> NoArg
+  70       NAArgs
+     145       -> NoArg NoArg NoArg                                              =*> args_() args_(,,)
+     146       -> '(' NoArg NoArg NoArg ')'                                      =*> args_() args_(,,)
+     147       -> '(' NAArg ',' NAArg ',' NAArg ')'                              =*> args_() args_(,,)
                 ;
-  71       NoArg
-     149       ->                                                                =*> arg_null_() arg_null_(,,)
+  71       NAArg
+     148       -> Arg
+     149       -> NoArg
                 ;
-  72       FirstArg
-     150       -> ArgNum                                                         => arg_first_()
+  72       NoArg
+     150       ->                                                                =*> arg_null_() arg_null_(,,)
                 ;
-  73       Arg
-     151       -> ArgVar
-     152       -> ArgNum
-     153       -> ArgExpr
+  73       FirstArg
+     151       -> ArgNum                                                         => arg_first_()
                 ;
-  74       ArgVar
-     154       -> <alpha>                                                        =*> arg_alpha_(1) arg_alpha_(,,)
-     155       -> <lexical>                                                      =*> arg_terminal_(1) arg_terminal_(,,)
-     156       -> <semantic>                                                     =*> arg_terminal_(1) arg_terminal_(,,)
-     157       -> <literal>                                                      =*> arg_terminal_(1) arg_terminal_(,,)
-     158       -> <string>                                                       =*> arg_string_(1) arg_string_(,,)
-     159       -> '<eof>'                                                        =*> arg_terminal_(1) arg_terminal_(,,)
-     160       -> '<error>'                                                      =*> arg_terminal_(1) arg_terminal_(,,)
+  74       Arg
+     152       -> ArgVar
+     153       -> ArgNum
+     154       -> ArgExpr
                 ;
-  75       ArgNum
-     161       -> <integer>                                                      =*> arg_integer_(1) arg_integer_(,,)
+  75       ArgVar
+     155       -> <alpha>                                                        =*> arg_alpha_(1) arg_alpha_(,,)
+     156       -> <lexical>                                                      =*> arg_terminal_(1) arg_terminal_(,,)
+     157       -> <semantic>                                                     =*> arg_terminal_(1) arg_terminal_(,,)
+     158       -> <literal>                                                      =*> arg_terminal_(1) arg_terminal_(,,)
+     159       -> <string>                                                       =*> arg_string_(1) arg_string_(,,)
+     160       -> '<eof>'                                                        =*> arg_terminal_(1) arg_terminal_(,,)
+     161       -> '<error>'                                                      =*> arg_terminal_(1) arg_terminal_(,,)
                 ;
-  76       ArgExpr
-     162       -> ArgExprNum ('|' ArgExprNum)...                                 =*> arg_expr_() arg_expr_(,,)
+  76       ArgNum
+     162       -> <integer>                                                      =*> arg_integer_(1) arg_integer_(,,)
                 ;
-  77       ArgExprNum
-     163       -> <integer>                                                      =*> arg_expr_integer_(1) arg_expr_integer_(,,)
-     164       -> <alpha>                                                        =*> arg_expr_alpha_(1) arg_expr_alpha_(,,)
+  77       ArgExpr
+     163       -> ArgExprNum ('|' ArgExprNum)...                                 =*> arg_expr_() arg_expr_(,,)
                 ;
-  78       ConstDecl...
-     165       -> ConstDecl
-     166       -> ConstDecl... ConstDecl
+  78       ArgExprNum
+     164       -> <integer>                                                      =*> arg_expr_integer_(1) arg_expr_integer_(,,)
+     165       -> <alpha>                                                        =*> arg_expr_alpha_(1) arg_expr_alpha_(,,)
                 ;
-  79       TokenDecl...
-     167       -> TokenDecl
-     168       -> TokenDecl... TokenDecl
+  79       ConstDecl...
+     166       -> ConstDecl
+     167       -> ConstDecl... ConstDecl
                 ;
-  80       OperPrecLine...
-     169       -> OperPrecLine
-     170       -> OperPrecLine... OperPrecLine
+  80       TokenDecl...
+     168       -> TokenDecl
+     169       -> TokenDecl... TokenDecl
                 ;
-  81       Operator...
-     171       -> Operator
-     172       -> Operator... Operator
+  81       OperPrecLine...
+     170       -> OperPrecLine
+     171       -> OperPrecLine... OperPrecLine
                 ;
-  82       [NonterminalDef]...
-     173       ->
-     174       -> [NonterminalDef]... NonterminalDef
+  82       Operator...
+     172       -> Operator
+     173       -> Operator... Operator
                 ;
-  83       [';']
-     175       ->
-     176       -> ';'
+  83       [NonterminalDef]...
+     174       ->
+     175       -> [NonterminalDef]... NonterminalDef
                 ;
-  84       BarRule...
-     177       -> BarRule
-     178       -> BarRule... BarRule
+  84       [';']
+     176       ->
+     177       -> ';'
                 ;
-  85       ArrowRule...
-     179       -> ArrowRule
-     180       -> ArrowRule... ArrowRule
+  85       BarRule...
+     178       -> BarRule
+     179       -> BarRule... BarRule
                 ;
-  86       TailPosition...
-     181       -> TailPosition
-     182       -> TailPosition... TailPosition
+  86       ArrowRule...
+     180       -> ArrowRule
+     181       -> ArrowRule... ArrowRule
                 ;
-  87       [OrGroupExprList]...
-     183       ->
-     184       -> [OrGroupExprList]... OrGroupExprList
+  87       TailPosition...
+     182       -> TailPosition
+     183       -> TailPosition... TailPosition
                 ;
-  88       TailExpr...
-     185       -> TailExpr
-     186       -> TailExpr... TailExpr
+  88       [OrGroupExprList]...
+     184       ->
+     185       -> [OrGroupExprList]... OrGroupExprList
                 ;
-  89       Arg/','...
-     187       -> Arg
-     188       -> Arg/','... ',' Arg
+  89       TailExpr...
+     186       -> TailExpr
+     187       -> TailExpr... TailExpr
                 ;
-  90       (Arg | NoArg)
-     189       -> Arg
-     190       -> NoArg
+  90       Arg/','...
+     188       -> Arg
+     189       -> Arg/','... ',' Arg
                 ;
-  91       (',' (Arg | NoArg))
-     191       -> ',' (Arg | NoArg)
+  91       (Arg | NoArg)
+     190       -> Arg
+     191       -> NoArg
                 ;
-  92       [',' (Arg | NoArg)]...
-     192       ->
-     193       -> [',' (Arg | NoArg)]... (',' (Arg | NoArg))
+  92       (',' (Arg | NoArg))
+     192       -> ',' (Arg | NoArg)
                 ;
-  93       ('|' ArgExprNum)
-     194       -> '|' ArgExprNum
+  93       [',' (Arg | NoArg)]...
+     193       ->
+     194       -> [',' (Arg | NoArg)]... (',' (Arg | NoArg))
                 ;
-  94       ('|' ArgExprNum)...
-     195       -> ('|' ArgExprNum)
-     196       -> ('|' ArgExprNum)... ('|' ArgExprNum)
+  94       ('|' ArgExprNum)
+     195       -> '|' ArgExprNum
+                ;
+  95       ('|' ArgExprNum)...
+     196       -> ('|' ArgExprNum)
+     197       -> ('|' ArgExprNum)... ('|' ArgExprNum)
                 ;
 
 /* End of PG grammar */

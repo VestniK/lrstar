@@ -692,11 +692,11 @@ char* LGParser::prt_line (char* ls, int ln)
 void	LGParser::prt_pointer (char* ls, int ln, char* token) 
 {
       int  i = 0;
-		char *p, string[256];
+		char *p, string[10000];
       for (p = ls; p < token; p++)   
       {
 			string[i++] = '-';
-			if (i == 255) break;
+			if (i == 9999) break;
       }
       string[i++] = 0;
       prt_log ("%s(%04d) : %s^ ", grmfid, ln, string);

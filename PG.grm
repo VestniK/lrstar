@@ -98,9 +98,10 @@
    GoalSymbolRule		-> ':'  GoalTails RuleActions [';']                     =*> prod_(1)
                      -> '->' GoalTails RuleActions [';']                     =*> prod_(1)
 							;
-   GoalTails         -> TailExpr EOF                                          *> tails_
+   GoalTails         -> TailPosition EOF                                      *> tails_
 							;
-   EOF            	-> '<eof>'      												     =*> tail_(1)
+	EOF               -> EOF2																	=> tailposition_
+   EOF2            	-> '<eof>'      												     =*> tail_(1)
 							;
    NonterminalDef	   -> HeadSymbol ColonFirst            [';']                *> headdef_(1)
                      -> HeadSymbol ColonFirst BarRules   [';']                *> headdef_(1)

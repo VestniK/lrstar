@@ -972,7 +972,7 @@ int   @grm_name;Parser::linkup (int p)
 void  @grm_name;Parser::syntax_error (char *symb)
 {
       int  col, ln1, ln2;
-      char string[256], *ls1, *ls2, *le1, *le2, *p, c;
+      char string[10000], *ls1, *ls2, *le1, *le2, *p, c;
 
       n_errors++;
 

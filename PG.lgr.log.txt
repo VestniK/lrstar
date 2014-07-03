@@ -34,4 +34,4 @@ Lookbacks                         5,953  "/lb    =  2,000,000"    0 %
 Includes                            126  "/inc   =    200,000"    0 % 
 Child nodes in graph             11,883  "/ch    =    200,000"    6 % 
 
-0 min 0.046 sec, 33.608 MB, 0 warnings, 0 errors.
+0 min 0.078 sec, 33.608 MB, 0 warnings, 0 errors.

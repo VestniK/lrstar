@@ -223,6 +223,7 @@ int   LGActions::EOGI (int t, int a)
 {
 		if (lexer_input == 0) // %% found in .lex file?
 		{
+			prt_log ("%s.lgr file: reading ...\n\n", gfn);
 			strcpy (gft, ".lgr");
 			strcpy (grmfid, gdn);
 			strcat (grmfid, gfn);

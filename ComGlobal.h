@@ -423,7 +423,7 @@
 
       EXTERN int    time1;
       EXTERN int    time2;
-		EXTERN char   string [1024];
+		EXTERN char   string [10000];
 
       EXTERN int    filesize;          
 		EXTERN int	  filedesc;
@@ -583,7 +583,8 @@
 		extern int    SET_OPTN (char* opt, char* fid, int linenumb);
 		extern int    set_optn (OPTION* option, char* opt, char* fid, int linenumb);
 		extern int    SET_OPTNS (int na, char** arg);
-		extern void   SORTNAMES (char** start, int n, int* seq, int* pos);
+		extern void   SORTNAMES  (char** start, int n, int* seq);
+		extern void   SORTNAMES2 (char** start, int n, int* seq, int* pos);
 
 		extern void   TRAVERSE (int x);
 		extern void   Terminate (int n);

@@ -78,8 +78,8 @@ int   LGCheckGrammar::CheckGrammar ()
 
 void  LGCheckGrammar::C_LENG () /* Compute maximum symbol length. */
 {
-      max_headl = 23 - optn[LG_TAB];
-      max_terml = 23 - optn[LG_TAB];
+      max_headl = 38 - optn[LG_TAB];
+      max_terml = 38 - optn[LG_TAB];
 }
 
 ///////////////////////////////////////////////////////////////////////////////

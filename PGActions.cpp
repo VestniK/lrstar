@@ -2882,7 +2882,7 @@ Check:               if (np->child->child->id == GROUP_ || np->child->child->id 
                            }
                            else // if (np->prev != NULL)
                            {
-                              np->prev->child = np->child->child;    // Make parent's child point at tail.
+                              np->prev->next = np->child->child;     // Make prev's next point at tail.
                               np->child->child->prev = np->prev;     // Change parent of tail.
                            }
                            np->child->child->next = np->next;        // Change next of tail.

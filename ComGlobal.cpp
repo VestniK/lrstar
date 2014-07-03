@@ -861,29 +861,12 @@ void  SORT (int *start, int *end) /* Integer bubble sort. */
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
-//    SORT2 - Sort two vectors of length n.                                  //
+//    SORT2 - Sort one vector of length n.                                   //
       
 void  SORT2 (int* value, int* seq, int n) 
 {
-/*    Sort in place, both vectors.  Destroys the original order, but seq 
-		contains the original order, in this example: 
-
-      for (s = 0; s < n_states; s++) // Define value and seq (1..n_states)
-      {
-         seq [s] = s;
-			value [s] = end [s] - start [s];  
-      }
-      SORT2 (value, seq, n_states);		// put in ascending order
-      for (s = 0; s < n_states; s++)	// print in ascending order
-		{
-			printf ("%5d\n", value[s]);
-		}
-      SORT2 (seq, value, n_states);		// put back in original order
-      for (s = 0; s < n_states; s++)	// print in original order
-		{
-			printf ("%5d\n", value[s]);
-		}
-*/
+//    Sort in place.  Destroys the original order, but seq contains the original order. 
+  
       int *last;
       int *v1, *v2, vt;
       int *s1, *s2, st;
@@ -972,7 +955,61 @@ void  SORT3 (int* a, int* b, int* c, int n)
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
 
-void  SORTNAMES (char** start, int n, int* seq, int* pos)
+void  SORTNAMES (char** name, int n, int* seq)
+{
+   /* seq - the sorted sequence:
+	         name[seq[0]] gives the first name in the sorted list.
+
+				example:
+				name[0] = "c", seq[0] = 3
+				name[1] = "d", seq[1] = 2
+				name[2] = "b", seq[2] = 0
+				name[3] = "a", seq[3] = 1
+	 */
+
+      char **P, *P_temp;
+      int  *L, L_temp, seq_temp, i, j, leng, c;
+
+      ALLOC (P, n);
+      ALLOC (L, n);
+      for (i = 0; i < n; i++)
+      {
+         P[i]   = name[i];
+         L[i]   = strlen (name[i]);
+         seq[i] = i;
+      }
+      for (i = 1; i < n; i++)	// Bubble sort algorithm.
+      {
+         P_temp   = P[i];
+         L_temp   = L[i];
+         seq_temp = seq[i];
+         j        = i - 1;
+         do
+         {
+            leng = L[j];
+            if (L_temp < L[j]) leng = L_temp;
+            c = strncmp (P_temp, P[j], leng);
+            if (c < 0 || (c == 0 && L_temp < L[j]))
+            {
+               P[j+1]   = P[j];
+               L[j+1]	= L[j];
+               seq[j+1]	= seq[j];
+               P[j]		= P_temp;
+               L[j]		= L_temp;
+               seq[j]	= seq_temp;
+            }
+            else break;
+         }
+         while (--j >= 0);
+      }
+      FREE (L, n);
+      FREE (P, n);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+
+void  SORTNAMES2 (char** start, int n, int* seq, int* pos)
 {
    /* seq - the sorted sequence:
 	         start[seq[0]] gives the first name in the sorted list.
@@ -1646,11 +1683,12 @@ void  prt_message (char* msgtype, char* msg, char* tokenstart, char* tokenend, i
       int   column;			// column where token starts.
 		char* linestart;		// Line start pointer.
 		char* lineend;	   	// Line end pointer.
-		char  line[512];		// Line string to be printed.
+		char  line[10000];	// Line string to be printed.
 		int   linelength;		// Line length. 
 		int   tokenlength;	// Token length. 
 
 	// Check line number ...
+
 		if (tokenlinenumb > 0) // Line number defined?
 		{
 			linestart = line_ptr [tokenlinenumb];							// Get Line start.
@@ -1699,7 +1737,7 @@ void  prt_message (char* msgtype, char* msg, char* tokenstart, char* tokenend, i
 	// Check line start ...
 		if (linestart != NULL)
 		{
-			if (lineend > linestart + 127) lineend = linestart + 127;	
+			if (lineend > linestart + 9999) lineend = linestart + 9999;	
 
 		// Remove trailing whitespace.
 			lineend--;															// Backup to '\n'

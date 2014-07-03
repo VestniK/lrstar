@@ -11,7 +11,7 @@
 			<DebugSettings
 				Command="$(TargetPath)"
 				WorkingDirectory="..\test"
-				CommandArguments="db2"
+				CommandArguments="atlas /d /g=2 /rr /k /w /v=2"
 				Attach="false"
 				DebuggerType="3"
 				Remote="1"
@@ -38,8 +38,8 @@
 			>
 			<DebugSettings
 				Command="$(TargetPath)"
-				WorkingDirectory="..\test"
-				CommandArguments="db2 /m"
+				WorkingDirectory="..\grm"
+				CommandArguments="c"
 				Attach="false"
 				DebuggerType="3"
 				Remote="1"
@@ -66,8 +66,8 @@
 			>
 			<DebugSettings
 				Command="$(TargetPath)"
-				WorkingDirectory="..\test"
-				CommandArguments="calc.lgr"
+				WorkingDirectory="..\grm"
+				CommandArguments="c"
 				Attach="false"
 				DebuggerType="3"
 				Remote="1"
@@ -94,8 +94,8 @@
 			>
 			<DebugSettings
 				Command="$(TargetPath)"
-				WorkingDirectory="..\test"
-				CommandArguments="db2 "
+				WorkingDirectory="..\grm"
+				CommandArguments="c"
 				Attach="false"
 				DebuggerType="3"
 				Remote="1"

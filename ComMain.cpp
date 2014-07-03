@@ -5,7 +5,7 @@
 		#ifdef DFASTAR
       char* program = "DFASTAR";
 		#endif
-      char* version = "6.3.008";
+      char* version = "6.3.011";
       char* copywrt = "Copyright 2014 Paul B Mann";
 
 		#ifdef  _DEBUG
@@ -147,9 +147,12 @@ int   main (int na, char *arg[])
 			strlwr (GFT);
 			if (strcmp (GFT, ".lgr") != 0)
 			{
-				n_errors++;
-				printf ("\nInput file '%s' does not have a filetype of '.lgr'\n\n", grmfid);
-				quit (0);
+				if (strcmp (GFT, ".lex") != 0)
+				{
+					n_errors++;
+					printf ("\nInput file '%s' does not have a filetype of '.lex' or '.lgr'\n\n", grmfid);
+					quit (0);
+				}
 			}
 			#endif
 

@@ -3,7 +3,7 @@
 		#include "ComGlobal.h"
 		#include "PGCheckGrammar.h"
 
-      typedef struct
+      typedef struct LRKERNEL
       {
          ushort item; // Item.
          ushort LA;   // Lookahead. 

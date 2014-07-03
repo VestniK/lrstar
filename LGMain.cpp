@@ -78,6 +78,7 @@ int   LG::Start (int na, char *arg []) /* Display program information. */
 		filedesc = open (grmfid, 0);	// Open .lex file first. 
 		if (filedesc >= 0)				// .lex file found!
 		{
+			prt_log ("%s.lex file: reading ...\n", gfn);
 			if (!inputi ()) return 0;
 			lex_input_start = input_start;
 			lex_input_end   = input_end;
@@ -85,6 +86,8 @@ int   LG::Start (int na, char *arg []) /* Display program information. */
 		}
 		else
 		{
+			prt_log ("%s.lex file: not found.\n", gfn);
+			prt_log ("%s.lgr file: reading ...\n\n", gfn);
 			strcpy (gft, ".lgr");
 			strcpy (grmfid, gdn);
 			strcat (grmfid, gfn);

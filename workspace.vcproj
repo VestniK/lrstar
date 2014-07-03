@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="LRSTAR 6.4.001"
+	Name="LRSTAR 6.3.011"
 	ProjectGUID="{EA5645D7-512C-454E-8B96-1D2F01E5F755}"
 	RootNamespace="LALR 6.0.025"
 	TargetFrameworkVersion="131072"
@@ -157,7 +157,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy &quot;LRSTAR_Release\lrstar.exe&quot; &quot;..\lrstar\bin\&quot;&#x0D;&#x0A;copy &quot;LRSTAR_Release\lrstar.exe&quot; &quot;..\test\&quot;&#x0D;&#x0A;&#x0D;&#x0A;&#x0D;&#x0A;&#x0D;&#x0A;&#x0D;&#x0A;"
+				CommandLine="copy &quot;LRSTAR_Release\lrstar.exe&quot; &quot;..\bin\&quot;&#x0D;&#x0A;&#x0D;&#x0A;&#x0D;&#x0A;&#x0D;&#x0A;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -302,7 +302,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy &quot;DFASTAR_Release\dfastar.exe&quot; &quot;..\lrstar\bin\&quot;&#x0D;&#x0A;copy &quot;DFASTAR_Release\dfastar.exe&quot; &quot;..\test\&quot;&#x0D;&#x0A;&#x0D;&#x0A;&#x0D;&#x0A;&#x0D;&#x0A;&#x0D;&#x0A;"
+				CommandLine="copy &quot;DFASTAR_Release\dfastar.exe&quot; &quot;..\bin\&quot;&#x0D;&#x0A;&#x0D;&#x0A;&#x0D;&#x0A;&#x0D;&#x0A;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>
@@ -733,87 +733,55 @@
 			Name="5. Test Files"
 			>
 			<File
-				RelativePath="..\test\Calc.grm"
+				RelativePath="..\grm\c.grm"
 				>
 			</File>
 			<File
-				RelativePath="..\test\calc.lex"
+				RelativePath="..\grm\c.grm.conflicts.txt"
 				>
 			</File>
 			<File
-				RelativePath="..\test\Calc.lgr"
+				RelativePath="..\grm\c.grm.grammar.txt"
 				>
 			</File>
 			<File
-				RelativePath="..\test\calc.lgr.conflicts.txt"
+				RelativePath="..\grm\c.grm.log.txt"
 				>
 			</File>
 			<File
-				RelativePath="..\test\calc.lgr.grammar.txt"
+				RelativePath="..\grm\c.grm.states.txt"
 				>
 			</File>
 			<File
-				RelativePath="..\test\calc.lgr.log.txt"
+				RelativePath="..\grm\c.grm.warnings.txt"
 				>
 			</File>
 			<File
-				RelativePath="..\test\calc.lgr.states.txt"
+				RelativePath="..\grm\c.lex"
 				>
 			</File>
 			<File
-				RelativePath="..\test\calc.lgr.warnings.txt"
+				RelativePath="..\grm\c.lgr"
 				>
 			</File>
 			<File
-				RelativePath="..\test\db2.grm"
+				RelativePath="..\grm\c.lgr.conflicts.txt"
 				>
 			</File>
 			<File
-				RelativePath="..\test\db2.grm.conflicts.txt"
+				RelativePath="..\grm\c.lgr.grammar.txt"
 				>
 			</File>
 			<File
-				RelativePath="..\test\db2.grm.grammar.txt"
+				RelativePath="..\grm\c.lgr.log.txt"
 				>
 			</File>
 			<File
-				RelativePath="..\test\db2.grm.log.txt"
+				RelativePath="..\grm\c.lgr.states.txt"
 				>
 			</File>
 			<File
-				RelativePath="..\test\db2.grm.states.txt"
-				>
-			</File>
-			<File
-				RelativePath="..\test\db2.grm.warnings.txt"
-				>
-			</File>
-			<File
-				RelativePath="..\test\db2.lex"
-				>
-			</File>
-			<File
-				RelativePath="..\test\db2.lgr"
-				>
-			</File>
-			<File
-				RelativePath="..\test\db2.lgr.conflicts.txt"
-				>
-			</File>
-			<File
-				RelativePath="..\test\db2.lgr.grammar.txt"
-				>
-			</File>
-			<File
-				RelativePath="..\test\db2.lgr.log.txt"
-				>
-			</File>
-			<File
-				RelativePath="..\test\db2.lgr.states.txt"
-				>
-			</File>
-			<File
-				RelativePath="..\test\db2.lgr.warnings.txt"
+				RelativePath="..\grm\c.lgr.warnings.txt"
 				>
 			</File>
 		</Filter>

@@ -68,9 +68,9 @@ void  PGCheckGrammar::C_LENG () /* Compute maximum symbol length. */
             fix_backslash (term_name [i]);
          }
       }
-      max_headl = 23 - optn[PG_TAB];
-      max_terml = 23 - optn[PG_TAB]; 
-		max_symbl = 23 - optn[PG_TAB];
+      max_headl = 38 - optn[PG_TAB];
+      max_terml = 38 - optn[PG_TAB]; 
+		max_symbl = 38 - optn[PG_TAB];
 }
 
 ///////////////////////////////////////////////////////////////////////////////
