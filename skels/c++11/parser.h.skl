@@ -10,6 +10,9 @@
 #include <cstdint>
 #include <cstdlib>
 #include <exception>
+@numb_node?;...
+#include <functional>
+@@
 #include <memory>
 #include <vector>
 
@@ -62,6 +65,28 @@ protected:
     Visitor() {}
 };
 
+template<class T>
+class TopDownFuncVisitor: public Visitor
+{
+public:
+    TopDownFuncVisitor(std::function<void(T*)> func): func(func) {}
+
+    virtual void visit(T *node) override {func(node);}
+private:
+    std::function<void(T*)> func;
+};
+
+template<class T>
+class BottomUpFuncVisitor: public Visitor
+{
+public:
+    BottomUpFuncVisitor(std::function<void(T*)> func): func(func) {}
+
+    virtual void leave(T *node) override {func(node);}
+private:
+    std::function<void(T*)> func;
+};
+
 // TODO think how to uppercase grammar name. Dicumented .u format specifier doesn't work.
 #define @grm_name;_NODE \
     protected:\
@@ -69,13 +94,36 @@ protected:
         virtual void seeOff(@grm_name;::Visitor *visitor) override {visitor->leave(this);}\
     private:\
 
-class Node
+class Node: public std::enable_shared_from_this<Node>
 {
 public:
     Node(const StackFrame *start, size_t size);
     virtual ~Node() {}
 
-    void walk(Visitor *visitor);
+    void walk(Visitor *visitor, int depth = -1);
+
+    template<class T>
+    void walkTopDown(std::function<void(T*)> func, int depth = -1)
+    {
+        TopDownFuncVisitor<T> visitor(func);
+        walk(&visitor, depth);
+    }
+
+    template<class T>
+    void walkBottomUp(std::function<void(T*)> func, int depth = -1)
+    {
+        BottomUpFuncVisitor<T> visitor(func);
+        walk(&visitor, depth);
+    }
+
+    template<class T>
+    std::vector<T*> getChildren(int depth = 1)
+    {
+        std::vector<T*> res;
+        walkTopDown<T>([&res](T *node) {res.push_back(node);}, depth);
+        return res;
+    }
+
     static std::shared_ptr<Node> linkup(const StackFrame *start, size_t size);
 
 protected:

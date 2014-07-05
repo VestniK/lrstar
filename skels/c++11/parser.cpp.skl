@@ -30,11 +30,13 @@ Node::Node(const StackFrame *start, size_t size):
 {
 }
 
-void Node::walk(Visitor *visitor)
+void Node::walk(Visitor *visitor, int depth)
 {
     this->accept(visitor);
-    for (Node *currChild = children.get(); currChild != nullptr; currChild = currChild->next.get())
-        currChild->walk(visitor);
+    if (depth != 0) {
+        for (Node *currChild = children.get(); currChild != nullptr; currChild = currChild->next.get())
+            currChild->walk(visitor, depth - 1);
+    }
     this->seeOff(visitor);
 }
 
@@ -167,7 +169,7 @@ void Parser::reduce(int prodRule)
     }
 @numb_node?;...
     switch (nodeNumber[prodRule]) {
-        @node_name.1|case %d: stack[stackTop].node = std::shared_ptr<Node>(new %s(&stack[stackTop], ProdLen[prodRule]+1))\; break\;||\n        |;
+        @node_name.1|case %d: stack[stackTop].node = std::make_shared<%s>(&stack[stackTop], ProdLen[prodRule]+1)\; break\;||\n        |;
         default: stack[stackTop].node = Node::linkup(&stack[stackTop], ProdLen[prodRule]+1); break;
     }
 @numb_nact?;...
