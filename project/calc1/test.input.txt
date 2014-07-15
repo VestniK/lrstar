@@ -1,0 +1,16 @@
+  
+program test
+{
+      if a == 0 
+      then 
+         if x == 0 
+         then b = 10;     
+         else b = 20;     
+         endif
+      else 
+         if x == 1 
+         then b = 30;     
+         else b = 40;     
+         endif
+      endif
+}

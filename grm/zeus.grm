@@ -1,0 +1,353 @@
+
+/* ZEUS GRAMMAR
+   from - Toward a Standard Hardware Description Language
+   by -   Karl J. Lieberherr
+   in -   IEEE Design & Test
+   Grammar by Paul Mann, Feb 1985.
+*/
+
+   Start
+      -> HardwareCompilationUnit <eof>
+
+   HardwareCompilationUnit
+      -> HardwareDefinitionModule
+      -> HardwareImplementationModule
+
+   HardwareDefinitionModule
+      -> DEFINITION HARDWARE_MODULE <identifier> ';' ImportList DefinitionList END <identifier> '.'
+
+   HardwareImplementationModule
+      -> IMPLEMENTATION HardwareModuleDecl
+
+   HardwareModuleDecl
+      -> HARDWARE_MODULE <identifier> ';' ImportList        Body END <identifier> Period
+      -> HARDWARE_MODULE <identifier> ';' ImportList Export Body END <identifier> Period
+
+   DefinitionList
+      ->
+      -> DefinitionList Definition
+
+   Definition
+      -> ConstDecl
+      -> TypeDecl
+
+   ConstDecl -> ControlConstDecl
+             -> SignalConstDecl
+
+   ControlConstDecl -> CONST
+                    -> ControlConstDecl Cd ';'
+
+   SignalConstDecl -> SIGNAL_CONST
+                   -> SignalConstDecl SignalCd ';'
+
+   ImportList ->
+              -> ImportList Import
+
+   Import -> IMPORT IdList ';'
+          -> FROM <identifier> IMPORT IdList ';'
+
+   Export -> EXPORT IdList ';'
+          -> EXPORT QUALIFIED IdList ';'
+
+   Period -> '.'
+          -> ';'
+
+   Qualident -> <identifier>
+             -> Qualident '.' <identifier>
+
+   IndexRange -> ConstExp
+              -> ConstExp '..' ConstExp
+
+   Selector -> '*' <identifier> '(' Designator ')'
+
+   IndexRangeOrSelector -> IndexRange
+                        -> Selector
+
+   IndexRangeOrSelectorList -> IndexRangeOrSelector
+                            -> IndexRangeOrSelectorList ',' IndexRangeOrSelector
+
+   BrackIndexRangeOrSelectorList -> '[' IndexRangeOrSelectorList ']'
+
+   FieldSelector -> '.' <identifier>
+                 -> '.' <identifier> '..' <identifier>
+
+   DesignatorSelector -> BrackIndexRangeOrSelectorList
+                      -> FieldSelector
+
+   DesignatorSelectorList ->
+                          -> DesignatorSelectorList DesignatorSelector
+
+   ProperDesignator -> <identifier> DesignatorSelectorList
+
+   Designator -> ProperDesignator
+              -> '*'
+
+   ParenConstExp -> '(' ConstExp ')'
+
+   NotConstFactor -> NOT ConstFactor
+
+   ExtendedDesignator -> Designator
+                      -> Designator '(' ConstExpList ')'
+
+   ConstFactor -> <number>
+               -> ParenConstExp
+               -> NotConstFactor
+               -> ExtendedDesignator
+
+   MulOp -> '*'
+         -> DIV
+         -> MOD
+         -> AND
+
+   HalfM -> MulOp ConstFactor
+
+   MulExpList ->
+              -> MulExpList HalfM
+
+   ConstTerm -> ConstFactor MulExpList
+
+   AddOp -> '+'
+         -> '-'
+         -> OR
+
+   Sign -> '+'
+        -> '-'
+
+   HalfA -> AddOp ConstTerm
+
+   AddExpList ->
+              -> AddExpList HalfA
+
+   SimpleConstExp -> ConstTerm AddExpList
+                  -> Sign ConstTerm AddExpList
+
+   Relation -> '='
+            -> '<>'
+            -> '<'
+            -> '<='
+            -> '>'
+            -> '>='
+
+   RelationExp -> Relation SimpleConstExp
+
+   ConstExp -> SimpleConstExp
+            -> SimpleConstExp RelationExp
+
+   ConstExpList -> ConstExp
+                -> ConstExpList ',' ConstExp
+
+   BrackStrucConstExpList -> '[' StrucConstExpList ']'
+
+   StrucConstExpList -> StrucConstExp
+                     -> StrucConstExpList ',' StrucConstExp
+
+   StrucConstExp -> ConstExp
+                 -> BrackStrucConstExpList
+
+   SigConstExpList -> SigConstExp
+                   -> SigConstExpList ',' SigConstExp
+
+   ParenSigConstExpList -> '(' SigConstExpList ')'
+
+   SigConstExp -> ExtendedDesignator
+               -> ParenSigConstExpList
+
+   ConstCollection -> '(' '.' IdList '.' ')'
+
+   Cd -> <identifier> '=' StrucConstExp
+
+   SigConstExpOrConstCollection -> SigConstExp
+                                -> ConstCollection
+
+   SignalCd -> <identifier> '=' SigConstExpOrConstCollection
+
+   Td -> <identifier> '=' Type
+      -> <identifier> FP '=' Type
+
+   Type -> ArrayDecl
+        -> ComponentDecl
+        -> ExtendedQualident
+
+   ArrayDecl -> ARRAY OF Type
+             -> ARRAY SubRangeType OF Type
+
+   ExtendedQualident -> Qualident
+                     -> Qualident ArgumentsOrBody
+
+   ArgumentsOrBody -> ParenStrucConstExpList
+                   -> ComponentBody
+
+   ComponentBody -> IS Body END
+
+   Body -> DStatement
+        -> Body DStatement
+
+   DStatement -> ConnectionSpec
+              -> ConstraintSpec
+              -> DWhenStatement
+              -> ConstDecl
+              -> TypeDecl
+              -> HardwareDecl
+              -> HardwareModuleDecl
+
+   ParenStrucConstExpList -> '(' '.' StrucConstExpList '.' ')'
+
+   TypeDecl -> TYPE
+            -> TypeDecl Td ';'
+
+   Range -> ConstExp '..' ConstExp
+         -> ConstExp '..' ConstExp ':' <identifier>
+
+   RangeList -> Range
+             -> RangeList ',' Range
+
+   SubRangeType -> '[' RangeList ']'
+
+   IdList -> <identifier>
+          -> IdList ',' <identifier>
+
+   ParamKind -> IN
+             -> OUT
+             -> CLOCK
+             -> TYPE
+
+   FParam -> IdList ':' Type
+          -> ParamKind IdList ':' Type
+
+   FParamList -> FParam
+              -> FParamList ';' FParam
+
+   FP -> '('            ')'
+      -> '(' FParamList ')'
+      -> '('            ')' ':' Type
+      -> '(' FParamList ')' ':' Type
+
+   FPOrPredefined -> FP
+                  -> PREDEFINED
+
+   ComponentDecl -> ComponentHeading
+                 -> ComponentHeading ComponentBody
+
+   ComponentHeading -> COMPONENT FPOrPredefined
+
+   Hd -> IdList ':' Type
+
+   HardwareDecl -> HARDWARE
+                -> HardwareDecl Hd ';'
+
+   SimpleExp -> Designator
+             -> Designator '(' '.' StrucConstExpList '.' ')'
+             -> Designator Exp
+             -> Designator '(' '.' StrucConstExpList '.' ')' Exp
+
+   ExpList -> Exp
+           -> ExpList ',' Exp
+
+   StrucExp -> '(' ExpList ')' DesignatorSelectorList
+
+   ElseIfAlt -> ELSEIF EXP THEN EXP
+
+   ElseIfAltList ->
+                 -> ElseIfAltList ElseIfAlt
+
+   IfExp -> IF Exp THEN Exp ElseIfAltList ELSE Exp END
+
+   OtherwiseWhenAlt -> OTHERWISE_WHEN ConstExp THEN Exp
+
+   OtherwiseWhenAltList ->
+                        -> OtherwiseWhenAltList OtherwiseWhenAlt
+
+   WhenExp -> WHEN ConstExp THEN Exp OtherwiseWhenAltList OTHERWISE Exp END
+
+   Exp -> SimpleExp
+       -> StrucExp
+       -> IfExp
+       -> WhenExp
+
+   Statement -> Assignment
+             -> Basic
+             -> Connection
+             -> IfStatement
+             -> ForStatement
+             -> WhenStatement
+             -> Result
+
+   StatementList ->
+                 -> StatementList Statement
+
+   StatementSeq -> StatementList
+                -> StatementSeq ',' StatementList
+
+   ConnectionSpec -> CONNECT StatementSeq 'END.' ';'
+
+   LCStatementSeq -> LCStatementList
+                  -> LCStatementSeq ';' LCStatementList
+
+   LCStatementList ->
+                   -> LCStatementList LCStatement
+
+   LCStatement -> Basic
+               -> ForStatement
+               -> WhenStatement
+               -> Order Boundaries
+
+   Order -> ORDER <identifier> LCStatementSeq END
+
+   Boundaries -> Boundary LCStatementSeq END
+
+   Boundary -> TOP
+            -> RIGHT
+            -> BOTTOM
+            -> LEFT
+
+   ConstraintSpec -> CONSTRAINTS LCStatementSeq 'END.' ';'
+
+   DesignatorList -> Designator
+                  -> DesignatorList ',' Designator
+
+   Basic -> DesignatorList
+         -> '[' <identifier> ']' DesignatorList
+
+   AssignOp -> ':='
+            -> '=='
+
+   Assignment -> Designator AssignOp Exp
+
+   ElseIfAltS -> ELSEIF Exp THEN StatementSeq
+
+   ElseIfAltSList ->
+                  -> ElseIfAltSList ElseIfAltS
+
+   IfStatement -> IF Exp THEN StatementSeq ElseIfAltSList END
+               -> IF Exp THEN StatementSeq ElseIfAltSList ELSE StatementSeq END
+
+   Connection -> Designator
+              -> Designator Exp
+
+   VariableRange -> <identifier> ':=' ConstExp TO ConstExp
+                 -> <identifier> ':=' ConstExp TO ConstExp BY ConstExp
+
+   VariableRangeList -> VariableRange
+                     -> VariableRangeList ',' VariableRange
+
+
+   ForConstDeclList ->
+                    -> ForConstDeclList CONST Cd ';'
+
+   ForStatement -> FOR VariableRangeList DO ForConstDeclList StatementSeq END
+
+   OtherwiseWhenAltS -> OTHERWISE_WHEN ConstExp THEN StatementSeq
+
+   OtherwiseWhenAltSList ->
+                         -> OtherwiseWhenAltSList OtherwiseWhenAltS
+
+   WhenStatement -> WHEN ConstExp THEN StatementSeq OtherwiseWhenAltSList OTHERWISE StatementSeq END
+
+   DOtherwiseWhenAltS -> DOTHERWISE_WHEN ConstExp THEN StatementSeq // ??? 
+
+   DOtherwiseWhenAltSList ->
+                          -> DOtherwiseWhenAltSList DOtherwiseWhenAltS
+
+   DWhenStatement -> WHEN ConstExp THEN Body DOtherwiseWhenAltSList OTHERWISE Body END
+
+   Result -> RESULT Exp

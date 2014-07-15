@@ -1,0 +1,17 @@
+
+typedef.lgr(0011) :  <spaces>         -> ( \t | \n | ' ' )+
+typedef.lgr(0011) : .^^^^^^^^..............................
+typedef.lgr(0011) : Warning: '<spaces>' will be ignored by the lexer (not returned to the parser).
+typedef.lgr(0011) : .
+
+typedef.lgr(0012) :  <commentline>    -> '/' '/' neol*
+typedef.lgr(0012) : .^^^^^^^^^^^^^....................
+typedef.lgr(0012) : Warning: '<commentline>' will be ignored by the lexer (not returned to the parser).
+typedef.lgr(0012) : .
+
+typedef.lgr(0013) :  <commentblock>   -> '/' '*' na* '*'+ (nans na* '*'+)* '/'
+typedef.lgr(0013) : .^^^^^^^^^^^^^^...........................................
+typedef.lgr(0013) : Warning: '<commentblock>' will be ignored by the lexer (not returned to the parser).
+typedef.lgr(0013) : .
+
+3 warnings.

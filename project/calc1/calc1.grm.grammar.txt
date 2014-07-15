@@ -1,0 +1,104 @@
+
+/* calc1 grammar */
+
+/* Options */
+
+/* Declarations */
+
+   0       <error>                   => error();
+   1       <identifier>              => lookup();
+   2       <integer>                 => lookup();
+   3       <eof>                     ;
+
+   4       '=='                      ;
+   5       '!='                      ;
+   6       '+'                       ;
+   7       '-'                       ;
+   8       '*'                       ;
+   9       '/'                       ;
+  10       'program'                 ;
+  11       '{'                       ;
+  12       '}'                       ;
+  13       '='                       ;
+  14       ';'                       ;
+  15       'if'                      ;
+  16       'endif'                   ;
+  17       '('                       ;
+  18       ')'                       ;
+  19       'then'                    ;
+  20       'else'                    ;
+
+/* Operator Precedence */
+
+	{ '==' '!=' } <<
+	{ '+' '-' } <<
+	{ '*' '/' } <<
+
+/* Rules */
+
+   0       Goal
+       0       -> Program... <eof>                                               *> goal_() emit("\t\tSTART\n",,"\t\tEOF\n")
+                ;
+   1       Program
+       1       -> 'program' <identifier> '{' Stmt... '}'                         *> program_(2) emit("\t\tPROGRAM %s\n",,"\t\tEND PROGRAM %s\n")
+                ;
+   2       Stmt
+       2       -> Assignment
+       3       -> IfThen
+       4       -> IfElse
+       5       -> IfThenElse
+                ;
+   3       Assignment
+       6       ~> Target '=' Exp ';'                                             *> assign_() emit(,,"\t\tSTORE\n")
+                ;
+   4       IfThen
+       7       -> 'if' RelExp Then 'endif'                                       *> if_() emit("if&0:\n",,"endif&0:\n")
+                ;
+   5       IfElse
+       8       -> 'if' RelExp Else 'endif'                                       *> if_() emit("if&0:\n",,"endif&0:\n")
+                ;
+   6       IfThenElse
+       9       -> 'if' RelExp Then2 Else2 'endif'                                *> if_() emit("if&0:\n",,"endif&0:\n")
+                ;
+   7       Target
+      10       -> <identifier>                                                   *> ident_(1) emit(,,"\t\tLADR %s\n")
+                ;
+   8       RelExp
+      11       -> Exp '==' Exp                                                   *> eq_(2) emit(,,"\t\tEQ\n")
+      12       -> Exp '!=' Exp                                                   *> ne_(2) emit(,,"\t\tNE\n")
+                ;
+   9       Exp
+      13       -> Primary
+      14       -> Exp '+' Exp                                                    *> add_(2) emit(,,"\t\tADD\n")
+      15       -> Exp '-' Exp                                                    *> sub_(2) emit(,,"\t\tSUB\n")
+      16       -> Exp '*' Exp                                                    *> mul_(2) emit(,,"\t\tMUL\n")
+      17       -> Exp '/' Exp                                                    *> div_(2) emit(,,"\t\tDIV\n")
+                ;
+  10       Primary
+      18       -> <integer>                                                      *> intr_(1) emit(,,"\t\tLOAD %s\n")
+      19       -> <identifier>                                                   *> ident_(1) emit(,,"\t\tLOAD %s\n")
+      20       -> '(' Exp ')'
+                ;
+  11       Then
+      21       -> 'then' Stmt...                                                 *> then_() emit("\t\tBR NZ endif&1\nthen&1:\n",,)
+                ;
+  12       Else
+      22       -> 'else' Stmt...                                                 *> else_() emit("\t\tBR Z endif&1\nelse&1:\n",,)
+                ;
+  13       Then2
+      23       -> 'then' Stmt...                                                 *> then2_() emit("\t\tBR NZ else&1\nthen&1:\n",,)
+                ;
+  14       Else2
+      24       -> 'else' Stmt...                                                 *> else2_() emit("\t\tBR endif&1\nelse&1:\n",,)
+                ;
+  15       Program...
+      25       -> Program
+      26       -> Program... Program
+                ;
+  16       Stmt...
+      27       -> Stmt
+      28       -> Stmt... Stmt
+                ;
+
+/* End of calc1 grammar */
+

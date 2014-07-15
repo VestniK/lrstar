@@ -1,0 +1,238 @@
+
+/* HTML 4.0 small subset, by Paul B Mann, 2005?, tabs=3. */
+
+   <error>            => error();
+   <tag>              => lookupu(); // Uppercase lookup, so we don't have to specify both in grammar.
+   <identifier>       => lookup();
+   <integer>          => lookup();
+   <double_quote>     => double_quote ({string});
+   <hexdigits>        => lookup();
+   <specialchars>     => lookup();
+   <amperchar>        => lookup();
+   '.'                => period ({period});
+   '?'                => period ({period});
+   '!'                => period ({period});
+   <eof>					 ;
+
+/*----------------------------------------------------------------------------*/
+
+   Start       -> HtmlFile <eof>											+> file
+
+   HtmlFile		-> [PreHtml] [Html] 
+
+   PreHtml     ->  PreHtmlSt HTML PUBLIC {string} TagEnd       +> prehtml
+   PreHtmlSt   -> '<!DOCTYPE'                                  => tag() 
+
+   TagEnd      -> '>'                                          => tagend() 
+
+   Html        -> HtmlStart TagEnd [Head] [Body] ['</HTML>']   +> html       
+
+   HtmlStart   -> '<HTML'                                      => tag() 
+                                                                
+   Head        -> HeadStart TagEnd [HeadItem...] ['</HEAD>']   +> head       
+   HeadStart   -> '<HEAD'                                      => tag()   
+   HeadItem    -> Title
+               -> MetaTag
+               -> LinkTag
+               -> Style
+               -> Script
+
+   Title       -> '<TITLE' TagEnd [TitleWords] '</TITLE>'      +> title 
+   //                                                          => delete_tree() 
+
+   TitleWords  -> Word...                 
+               -> (Word... TitleEnd)...
+
+   TitleEnd    -> {period}                                     +> puncr
+               -> '?'                                          +> puncr
+               -> '!'                                          +> puncr
+               -> BRTag                                    
+               -> TitleEnd Tag
+
+   MetaTag     -> MetaStart TagEnd
+               -> MetaStart MetaItem... TagEnd              
+   MetaStart   -> '<META'                                      => tag() 
+   MetaItem    -> NAME         '=' Value                    
+               -> CONTENT      '=' Value                    
+               -> 'HTTP-EQUIV' '=' Value                    
+
+   LinkTag     -> LinkStart TagEnd
+               -> LinkStart LinkItem... TagEnd              
+   LinkStart   -> '<LINK'                                      => tag() 
+   LinkItem    -> REL  '=' Value                            
+               -> TYPE '=' Value                            
+               -> HREF '=' Value                            
+
+   Style       -> StyleStart '</STYLE>'                     
+   StyleStart  -> '<STYLE' '>'                                 => read_until ('</STYLE>')
+
+   Script      -> ScriptStart '</SCRIPT>'                   
+               -> ScriptTag ScriptItem... TagEnd
+   ScriptStart -> '<SCRIPT' '>'                                => read_until ('</SCRIPT>')
+   ScriptTag   -> '<SCRIPT'                                    => tag()
+
+   ScriptItem  -> <identifier> '=' Value
+               -> <keyword>     '=' Value
+
+/*----------------------------------------------------------------------------*/
+
+   Body        -> BodyTag [BodyText] '</BODY>'             +> body 
+
+   BodyTag     -> BodyStart TagEnd 
+               -> BodyStart BodyItem... TagEnd            
+   BodyStart   -> '<BODY'                                  => tag()
+
+   BodyItem    -> CLASS   '=' Value                         
+               -> ONLOAD  '=' Value                         
+               -> BGCOLOR '=' Value                         
+
+   BodyText    -> Section... 
+
+   Section     -> Headline                                 +> section 
+               -> Headline Paragraph...                    +> section 
+               -> Paragraph...                             +> section 
+
+   Headline    -> HeadlineTag Paragraph... HeadlineEnd      
+               -> HeadlineTag              HeadlineEnd      
+                                                           
+   HeadlineTag -> HeadlineSt TagEnd
+               -> HeadlineSt HeadlineItem... TagEnd        
+   HeadlineSt  -> '<H1'                                    => tag()
+               -> '<H2'                                    => tag()
+               -> '<H3'                                    => tag()
+               -> '<H4'                                    => tag()
+               -> '<H5'                                    => tag()
+               -> '<H6'                                    => tag()
+               -> '<H7'                                    => tag()
+
+   HeadlineItem-> CLASS '=' Value
+               -> STYLE '=' Value
+               -> ALIGN '=' Value
+
+   HeadlineEnd -> '</H1>' 
+               -> '</H2>' 
+               -> '</H3>' 
+               -> '</H4>' 
+               -> '</H5>' 
+               -> '</H6>' 
+               -> '</H7>'
+               
+   Paragraph   -> ParaTag Sentence...                      +> paragraph      
+               -> ParaTag Sentence... ParaEnd              +> paragraph      
+               -> ParaTag             ParaEnd              +> paragraph     
+               -> Sentence...                              +> paragraph
+                                                               
+   ParaTag     -> ParaStart TagEnd                              
+               -> ParaStart ParaItem... TagEnd             
+   ParaStart   -> '<P'                                     => tag()            
+   ParaItem    -> CLASS '=' Value                           
+               -> ALIGN '=' Value                           
+               -> STYLE '=' Value                           
+   ParaEnd     -> '</P>'
+
+   Sentence    
+               -> Word...                                  +> sentence 
+               -> Word... SentenceEnd                      +> sentence 
+               -> SentenceEnd                              +> sentence 
+               -> Tag... Word...                           +> sentence 
+               -> Tag... Word... SentenceEnd               +> sentence 
+               -> Tag... Word... BRTag...                  +> sentence 
+               -> BRTag...   
+               -> Tag...                                 
+
+   SentenceEnd -> {period}                                 +> punce
+               -> '?'                                      +> punce
+               -> '!'                                      +> punce
+               -> SentenceEnd Tag
+
+/*----------------------------------------------------------------------------*/
+
+   Word        -> <identifier>                             +> word 
+               -> <integer>                                +> word 
+               -> <hexdigits>                              
+               -> {string}                                 
+               -> <keyword>                                 +> word 
+               -> <specialchars>                          
+               -> '='                                      +> punc 
+               -> '>'                                      +> puncr
+               -> '<'                                      +> puncl
+               -> '-'                                      +> punc 
+               -> ','                                      +> puncr
+               -> ':'                                      +> puncr
+               -> ';'                                      +> puncr
+               -> '.'                                      +> punc 
+               -> '...'                                    +> punc 
+               -> <double_quote>                           +> puncq
+               -> <amperchar>                              
+               -> Word Tag...
+
+   Tag         -> '<B' TagEnd                                   
+               -> '</B>'                                   
+               -> HRTag                                    
+               -> '<I' TagEnd                                     
+               -> '</I>'                                    
+               -> '<U' TagEnd                                     
+               -> '</U>'                                    
+               -> FontTag                                   
+               -> FontEnd                                  
+               -> AnchorTag
+               -> AnchorEnd
+               -> SpanTag
+               -> SpanEnd
+               -> DivTag
+               -> DivEnd
+               -> '&nbsp;'
+
+/*----------------------------------------------------------------------------*/
+
+   FontTag     -> FontStart TagEnd
+               -> FontStart FontItem... TagEnd              
+   FontStart   -> '<FONT'                                  => tag() 
+   FontItem    -> SIZE '=' Value                           
+               -> FACE '=' Value                            
+   FontEnd     -> '</FONT>'
+              
+   AnchorTag   -> AnchorStart TagEnd
+               -> AnchorStart AnchorItem... TagEnd
+   AnchorStart -> '<A'                                     => tag() 
+   AnchorItem  -> TITLE '=' Value
+               -> HREF  '=' Value
+               -> NAME  '=' Value
+   AnchorEnd   -> '</A>'
+
+   SpanTag     -> SpanStart TagEnd 
+               -> SpanStart SpanItem... TagEnd
+   SpanStart   -> '<SPAN'                                  => tag()
+   SpanItem    -> CLASS '=' Value
+               -> STYLE '=' Value
+   SpanEnd     -> '</SPAN>'
+
+   DivTag      -> DivStart TagEnd
+               -> DivStart DivItem... TagEnd
+   DivStart    -> '<DIV'                                   => tag() 
+   DivItem     -> <identifier> '=' Value
+               -> <keyword>    '=' Value
+   DivEnd      -> '</DIV>'
+
+   BRTag       -> BRStart TagEnd
+               -> BRStart BRItem... TagEnd
+   BRStart     -> '<BR'                                    => tag()
+   BRItem      -> <identifier> '=' Value
+               -> <keyword>    '=' Value
+
+   HRTag       -> HRStart TagEnd
+               -> HRStart HRItem... TagEnd
+   HRStart     -> '<HR'                                    => tag()
+   HRItem      -> <identifier> '=' Value
+               -> <keyword>    '=' Value
+
+   Value       -> <identifier>           
+               -> <keyword>              
+               -> <integer>              
+               -> '+' <integer>              
+               -> '-' <integer>              
+               -> <hexdigits>            
+               -> {string}               
+             
+/* End of Grammar */
+

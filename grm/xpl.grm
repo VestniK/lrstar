@@ -1,0 +1,173 @@
+
+/* XPL Grammar, by Paul B Mann, 1988, tabs=3. */
+
+/* TOKENS */
+
+   <error>      => error();
+   <identifier> => lookup();
+   <string>     => lookup();
+   <constant>   => lookup();
+
+/* NONTERMINALS */
+
+   Start -> statement_list <eof>
+
+   statement_list -> statement
+                  -> statement_list statement
+
+   statement -> basic_statement
+             -> if_statement
+
+   basic_statement -> assignment ';'
+                   -> group ';'
+                   -> procedure_definition ';'
+                   -> return_statement ';'
+                   -> call_statement ';'
+                   -> go_to_statement ';'
+                   -> declaration_statement ';'
+                   -> ';'
+                   -> label_definition basic_statement
+
+   if_statement -> if_clause statement
+                -> if_clause true_part statement
+                -> label_definition if_statement
+
+   if_clause -> IF expression THEN
+
+   true_part -> basic_statement ELSE
+
+   group     -> group_head ending
+
+   group_head -> DO ';'
+              -> DO step_definition ';'
+              -> DO while_clause ';'
+              -> DO case_selector ';'
+              -> group_head statement
+
+   step_definition -> variable replace expression iteration_control
+
+   iteration_control -> TO expression
+                     -> TO expression BY expression
+
+   while_clause -> WHILE expression
+
+   case_selector -> CASE expression
+
+   procedure_definition -> procedure_head statement_list ending
+
+   procedure_head -> procedure_name ';'
+                  -> procedure_name type ';'
+                  -> procedure_name parameter_list ';'
+                  -> procedure_name parameter_list type ';'
+
+   procedure_name -> label_definition PROCEDURE
+
+   parameter_list -> parameter_head <identifier> ')'
+
+   parameter_head -> '('
+                  -> parameter_head <identifier> ','
+
+   ending -> END
+          -> END <identifier>
+          -> label_definition ending
+
+   label_definition -> <identifier> ':'
+
+   return_statement -> RETURN
+                    -> RETURN expression
+
+   call_statement -> CALL variable
+
+   go_to_statement -> go_to <identifier>
+
+   go_to -> GO TO
+         -> GOTO
+
+   declaration_statement -> DECLARE declaration_element
+                         -> declaration_statement ',' declaration_element
+
+   declaration_element -> type_declaration
+                       -> <identifier> LITERALLY <string>
+
+   type_declaration -> identifier_specification type
+                    -> bound_head <number> ')' type
+                    -> type_declaration initial_list
+
+   type -> FIXED
+        -> CHARACTER
+        -> LABEL
+        -> bit_head <number> ')'
+
+   bit_head -> BIT '('
+
+   bound_head -> identifier_specification '('
+
+   identifier_specification -> <identifier>
+                            -> identifier_list <identifier> ')'
+
+   identifier_list -> '('
+                   -> identifier_list <identifier> ','
+
+   initial_list -> initial_head constant ')'
+
+   initial_head -> INITIAL '('
+                -> initial_head constant ','
+
+   assignment -> variable replace expression
+              -> left_part assignment
+
+   replace -> '='
+
+   left_part -> variable ','
+
+   expression -> logical_factor
+              -> expression '|' logical_factor
+
+   logical_factor -> logical_secondary
+                  -> logical_factor '&' logical_secondary
+
+   logical_secondary -> logical_primary
+                     -> '~' logical_primary
+
+   logical_primary -> string_expression
+                   -> string_expression relation string_expression
+
+   relation		-> '='
+					-> '<'
+					-> '>'
+					-> '~='
+					-> '~<'
+					-> '~>'
+					-> '<='
+					-> '>=' 
+
+   string_expression -> arithmetic_expression
+                     -> string_expression '||' arithmetic_expression
+
+   arithmetic_expression -> term
+                         -> arithmetic_expression '+' term
+                         -> arithmetic_expression '-' term
+                         -> '+' term
+                         -> '-' term
+
+   term -> primary
+        -> term '*' primary
+        -> term '/' primary
+        -> term MOD primary
+
+   primary
+    -> constant
+    -> variable
+    -> '(' expression ')'
+
+   constant -> <string>
+            -> <constant>
+
+   variable -> <identifier>
+            -> subscript_head expression ')'
+
+   subscript_head -> <identifier> '('
+                  -> subscript_head expression ','
+
+/* END */
+

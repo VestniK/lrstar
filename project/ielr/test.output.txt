@@ -1,0 +1,11 @@
+ielr_parser
+Parsing test.input.txt ...
+
+     2  aaa; 
+     3  aaaa;
+     4  bab; 
+     5  baab; 
+
+Symbol Table is empty!
+
+End of Output.

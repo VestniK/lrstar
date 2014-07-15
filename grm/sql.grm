@@ -1,0 +1,484 @@
+
+/* SQL grammar, by Paul B Mann, 1988, tabs=3. */
+
+/* Input processing. */
+
+   <error>      => error();
+   <string>     => lookup();
+   <number>     => lookup();
+   <identifier> => lookup();
+
+/* Productions. */
+
+   Start
+      -> SQL <eof>
+
+   SQL
+      -> D
+      -> SQL D
+
+   D -> DML_list
+     -> DDL_list
+     -> DCL_list
+
+   DML_list
+     -> DML_stmt
+     -> DML_list DML_stmt
+
+   DDL_list
+     -> DDL_stmt
+     -> DDL_list DDL_stmt
+
+   DCL_list
+     -> DCL_stmt
+     -> DCL_list DCL_stmt
+
+   DML_stmt
+      -> BEGIN DECLARE SECTION ';'
+      -> END DECLARE SECTION ';'
+      -> CLOSE cursor_name ';'
+      -> DECLARE cursor_name
+         CURSOR FOR stmt_name
+         [Union]...
+         [ForUpdateOf]
+         [OrderBy]
+         ';'
+      -> DECLARE cursor_name
+         CURSOR FOR stmt_name
+         ';'
+      -> DELETE from_clause
+         WHERE search_cond
+         ';'
+      -> DELETE FROM table_name
+         WHERE CURRENT OF cursor_name ';'
+      -> DELETE FROM view_name
+         WHERE CURRENT OF cursor_name ';'
+      -> DESCRIBE stmt_name INTO sqlda_name ';'
+      -> END_EXEC ['.']
+      -> EXEC SQL ';'
+      -> EXECUTE stmt_name ';'
+      -> EXECUTE stmt_name USING host_list ';'
+      -> EXECUTE stmt_name USING DESCRIPTOR ':' host_variable ';'
+      -> EXECUTE IMMEDIATE ':' host_variable ';'
+      -> EXECUTE IMMEDIATE <string> ';'
+      -> FETCH cursor_name INTO host_list ';'
+      -> FETCH cursor_name USING DESCRIPTOR ':' host_variable ';'
+      -> AVG args ';'
+      -> COUNT '(' '*' ')' ';'
+      -> COUNT '(' DISTINCT column_name ')' ';'
+      -> MAX args ';'
+      -> MIN args ';'
+      -> SUM args ';'
+      -> DELETE stmt_name ':' FROM_stuff
+         SELECT stmt_name ',' select_clause ':' FROM_stuff_list ';'
+      -> GROUP BY column_name ';'
+      -> GROUP BY column_number ';'
+      -> HAVING search_cond ';'
+      -> INCLUDE SQLCA ';'
+      -> INCLUDE SQLDA ';'
+      -> INCLUDE member_name ';'
+      -> INSERT INTO table_name [colnamelist] [Values] ';'
+      -> INSERT INTO view_name  [colnamelist] [Values] ';'
+      -> stmt_name INTERSECT stmt_name ';'
+      -> stmt_name INTERSECT stmt_name ORDER BY intlist ';'
+      -> stmt_name MINUS stmt_name ';'
+      -> stmt_name MINUS stmt_name ORDER BY intlist ';'
+      -> OPEN cursor_name ';'
+      -> OPEN cursor_name USING ';'
+      -> OPEN cursor_name USING host_list ';'
+      -> OPEN cursor_name USING DESCRIPTOR ':' host_variable ';'
+      -> ORDER BY collist ';'
+      -> Exp BETWEEN Exp AND Exp ';'
+      -> Exp NOT BETWEEN Exp AND Exp ';'
+      -> Exp '='  (Exp | Subselect_clause) ';'
+      -> Exp '<>' (Exp | Subselect_clause) ';'
+      -> Exp '>'  (Exp | Subselect_clause) ';'
+      -> Exp '>=' (Exp | Subselect_clause) ';'
+      -> Exp '<'  (Exp | Subselect_clause) ';'
+      -> Exp '<=' (Exp | Subselect_clause) ';'
+      -> EXISTS Subselect_clause ';'
+      -> Exp IN Subselect_clause ';'
+      -> Exp IN host_list ';'
+      -> Exp IN Exp ';'
+      -> Exp NOT IN Subselect_clause ';'
+      -> Exp NOT IN '(' host_list ')' ';'
+      -> Exp NOT IN Exp ';'
+      -> column_name [NOT] LIKE '(' (hostvar | string) ')'
+         ESCAPE '(' (hostvar | string) ')' ';'
+      -> Exp IS [NOT] NULL ';'
+      -> Exp '='  [SOME | ANY | ALLP] Subselect_clause ';'
+      -> Exp '<>' [SOME | ANY | ALLP] Subselect_clause ';'
+      -> Exp '>'  [SOME | ANY | ALLP] Subselect_clause ';'
+      -> Exp '>=' [SOME | ANY | ALLP] Subselect_clause ';'
+      -> Exp '<'  [SOME | ANY | ALLP] Subselect_clause ';'
+      -> Exp '<=' [SOME | ANY | ALLP] Subselect_clause ';'
+      -> PREPARE stmt_name FROM ':' host_variable ';'
+      -> [NOT] (pred | search) [predlist]
+      -> select_clause ';'
+      -> stmt_name UNION stmt_name [orderbyint] ';'
+      -> stmt_name UNION ALLP stmt_name [orderbyint] ';'
+      -> UPDATE (tab | view) SET coleqlist [where] ';'
+      -> UPDATE (tab | view) SET coleqlist [wherecurr] ';'
+      -> WHENEVER notfound continue ';'
+
+   DDL_stmt
+      -> ALTER TABLE table_name ADD COLUMN column_name data_type
+         [NOT_NULL] [DEFAULT_literal] ';'
+      -> ALTER TABLE table_name ADD '(' column_name data_type ')' ';'
+      -> ALTER TABLE table_name ADD '(' column_name data_type ')'
+         NOT NULL WITH DEFAULT ';'
+      -> ALTER TABLE table_name ADD column_name data_type ';'
+      -> ALTER TABLE table_name ADD column_name data_type NULL ';'
+      -> ALTER TABLE table_name ADD column_name data_type NOT NULL ';'
+      -> COMMENT ON COLUMN column_name ON (tab | view) IS <string> [CLEAR] ';'
+      -> COMMENT ON INDEX index_name   IS <string> [CLEAR] ';'
+      -> COMMENT ON TABLE table_name   IS <string> [CLEAR] ';'
+      -> COMMENT ON VIEW  view_name    IS <string> [CLEAR] ';'
+
+      -> COMMENT ON TABLE table_name ';'
+      -> COMMENT ON COLUMN column_name '.' column_name IS <string> ';'
+
+      -> COMMENT ON TABLE (tab | view) ';'
+      -> COMMENT ON COLUMN table_name '.' column_name IS <string> ';'
+      -> COMMENT ON COLUMN view_name '.' column_name  IS <string> ';'
+
+      -> COMMENT ON (tab | view) '(' colislist ')' ';'
+      -> CREAT [UNIQUE] INDEX index_name ON table_name '(' colsortlist ')' ';'
+      -> CREAT SYNONYM synonym_name FOR (tab | view) ';'
+      -> CREATE table_name col_stuff_list ';'
+      -> CREATE table_name unique_stuff_list ';'
+      -> CREATE table_name col_stuff2_list ';'
+      -> CREATE VIEW view_name ['(' viewlist ')'] AS stmt_name [with] ';'
+      -> DROP INDEX index_name ';'
+      -> DROP SYNONYM synonym_name ';'
+      -> DROP TABLE table_name ';'
+      -> DROP VIEW view_name ';'
+      -> UPDATE [ALLP] STATISTICS FOR TABLE table_name ';'
+      -> LOCK TABLE (tab | view) IN SHARE MODE ';'
+      -> LOCK TABLE (tab | view) IN EXCLUSIVE MODE ';'
+      -> REVOKE (ALLP | AP) alter_list ON table_names FROM user_ids ';'
+      -> ROLLBACK [WORK]
+
+   user_ids
+      -> user_id /','...
+      -> PUBLIC  /','...
+
+   table_names
+      -> table_name /','...
+
+   DCL_stmt
+      -> COMMIT [WORK]
+      -> GRANT (ALLP | AP) alter_list ON table_name TO user_id [withgrant]
+
+  alter_list
+     -> alter /','...
+
+  alter
+     -> ALTER
+     -> DELETE
+     -> INDEX
+     -> INSERT
+     -> SELECT
+     -> UPDATE ['(' collist ')']
+
+   collist
+     -> column_name /','...
+
+  withgrant
+     -> WITH GRANT OPTION
+
+  ALLP
+      -> ALL
+      -> ALL PRIVILEGES
+
+   viewlist
+      -> view_column_name /','...
+
+   with
+      -> WITH CHECK OPTION
+
+   col_stuff2_list
+      -> col_stuff2 /','...
+
+   col_stuff2
+      -> column_name data_type
+      -> column_name data_type NOT NULL
+
+   col_stuff_list
+      -> col_stuff /','...
+
+   col_stuff
+      -> column_name data_type
+      -> column_name data_type NOT NULL [UNIQUE]
+
+   unique_stuff_list
+      -> unique_stuff /','...
+
+   unique_stuff
+      -> UNIQUE '(' collist ')'
+
+   colsortlist
+      -> columnsort /','...
+
+   columnsort
+      -> column_name
+      -> column_name ASC
+      -> column_name DESC
+
+   colislist
+      -> column_name IS <string> /','...
+
+   NOT_NULL -> NOT NULL
+
+   DEFAULT_literal
+      -> DEFAULT <literal>
+      -> DEFAULT SYSTEM
+
+   continue
+      -> CONTINUE
+      -> GOTO ':' host_label
+      -> GO TO ':' host_label
+      -> PERFORM ':' host_label
+      -> CALL ':' host_label
+
+   notfound
+      -> NOT FOUND
+      -> SQLERROR
+      -> SQLWARNING
+
+   wherecurr
+      -> WHERE CURRENT OF cursor_name
+
+   tab
+      -> table_name
+
+   view
+      -> view_name
+
+   coleqlist
+      -> coleq /','...
+
+   coleq
+      -> column_name '=' Exp
+      -> column_name '=' NULL
+
+   orderbyint
+      -> ORDER BY intlist
+
+   intlist
+      -> int /','...
+
+   int
+      -> <number>
+      -> <number> ASC
+      -> <number> DESC
+
+   select_clause
+      -> SELECT [ALL | DIST] select_list
+         from_clause
+         [ where
+         | groupby
+         | having
+         | intersect
+         | orderby ]...
+
+   where
+      -> WHERE search_cond
+
+   groupby
+      -> GROUP BY column_list
+
+   column_list
+      -> column_spec /','...
+
+   column_spec
+      -> column_name
+      -> column_number
+
+   having
+      -> HAVING search_cond
+
+   intersect
+      -> INTERSECT stmt_name
+      -> MINUS     stmt_name
+      -> UNION     stmt_name
+      -> UNION ALL stmt_name
+
+   orderby
+      -> ORDER BY column_spec_list
+      -> FOR UPDATE OF col_list
+
+   col_list
+      -> column_name /','...
+
+   column_spec_list
+      -> column_sort_spec /','...
+
+   column_sort_spec
+      -> column_name   [sort_spec]
+      -> column_number [sort_spec]
+
+   sort_spec
+      -> ASC
+      -> DESC
+
+   select_list
+      -> select /','...
+
+   select
+      -> '*'
+      -> Exp
+      -> table_name
+      -> view_name
+      -> corr_name
+
+   search
+      -> search_cond
+
+   predlist
+      -> pred ...
+
+   pred
+      -> predicate
+      -> AND [NOT] predicate
+      -> OR  [NOT] search_cond
+
+   from_clause
+      -> FROM (tab | view) [corr_name] /','...
+
+   hostvar
+     -> ':' host_variable
+
+   string
+     -> <string>
+
+   Subselect_clause
+     -> select_clause
+
+   colnamelist
+      -> '(' column_name /','... ')'
+
+   Values
+      ->
+      -> stmt_name
+      -> VALUES '(' vallist ')'
+
+   vallist
+      -> val /','...
+
+   val
+      -> <literal>
+      -> ':' host_variable
+      -> NULL
+
+   FROM_stuff_list
+      -> FROM_stuff ...
+
+   FROM_stuff
+      -> FROM table_name
+      -> FROM view_name
+      -> FROM table_name corr_name
+      -> FROM view_name  corr_name
+
+   args -> '(' Exp ')'
+        -> '(' ALL Exp ')'
+        -> '(' DISTINCT column_name ')'
+
+   Exp -> Prim
+       -> Exp '+' Trm
+       -> Exp '-' Trm
+
+   Trm
+       -> Prim
+       -> Trm '*' Prim
+       -> Trm '/' Prim
+
+   Prim
+       -> Primary
+       -> '+' Primary
+       -> '-' Primary
+
+   Primary
+       -> function
+       -> '(' Exp ')'
+       -> <literal>
+       -> <number>
+       -> column_name
+       -> ':' host_variable
+
+   host_list
+      -> ':' host_variable /','...
+
+   sqlda_name -> <identifier>
+
+   Union
+      -> UNION stmt_name
+      -> UNION ALL stmt_name
+
+   ForUpdateOf
+      -> FOR UPDATE OF column_name_list
+
+   column_name_list
+      -> column_name /','...
+
+   OrderBy
+      -> ORDER BY column_order_list
+
+   column_order_list
+      -> column [order] ...
+
+   column
+      -> column_name
+      -> <number>
+
+   order
+      -> ASC
+      -> DESC
+
+   data_type
+      -> CHAR      '(' length ')'
+      -> CHARACTER '(' length ')'
+      -> VARCHAR   '(' length ')'
+      -> NUMERIC   '(' precision ')'
+      -> NUMERIC   '(' precision ',' scale ')'
+      -> DEC       '(' precision ')'
+      -> DEC       '(' precision ',' scale ')'
+      -> DECIMAL   '(' precision ')'
+      -> DECIMAL   '(' precision ',' scale ')'
+      -> INT
+      -> INTEGER
+      -> SMALLINT
+      -> FLOAT
+      -> REAL
+      -> DOUBLE PRECISION
+
+   search_cond
+      -> <identifier> '='  <identifier>
+      -> <identifier> '<'  <identifier>
+      -> <identifier> '>'  <identifier>
+      -> <identifier> '<=' <identifier>
+      -> <identifier> '>=' <identifier>
+      -> <identifier> '<>' <identifier>
+
+   length    -> <number>
+   precision -> <number>
+   scale     -> <number>
+
+   column_number -> <number>
+
+   column_name   -> <identifier>
+   stmt_name     -> <identifier>
+   table_name    -> <identifier>
+   view_name     -> <identifier>
+   host_variable -> <identifier>
+   cursor_name   -> <identifier>
+   corr_name     -> <identifier>
+   function      -> <identifier>
+   host_label    -> <identifier>
+   index_name    -> <identifier>
+   member_name   -> <identifier>
+   predicate     -> <identifier>
+   synonym_name  -> <identifier>
+   view_column_name -> <identifier>
+   user_id       -> <identifier>
+

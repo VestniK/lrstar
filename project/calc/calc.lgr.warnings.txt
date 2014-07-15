@@ -1,0 +1,17 @@
+
+calc.lgr(0008) :  <spaces>         -> ( \t | \n | ' ' )+
+calc.lgr(0008) : .^^^^^^^^..............................
+calc.lgr(0008) : Warning: '<spaces>' will be ignored by the lexer (not returned to the parser).
+calc.lgr(0008) : .
+
+calc.lgr(0009) :  <commentline>    -> '/' '/' neol*
+calc.lgr(0009) : .^^^^^^^^^^^^^....................
+calc.lgr(0009) : Warning: '<commentline>' will be ignored by the lexer (not returned to the parser).
+calc.lgr(0009) : .
+
+calc.lgr(0010) :  <commentblock>   -> '/' '*' na* '*'+ (nans na* '*'+)* '/'
+calc.lgr(0010) : .^^^^^^^^^^^^^^...........................................
+calc.lgr(0010) : Warning: '<commentblock>' will be ignored by the lexer (not returned to the parser).
+calc.lgr(0010) : .
+
+3 warnings.

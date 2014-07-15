@@ -1,0 +1,7 @@
+
+CONFLICTS REPORT:
+
+5 shift-reduce conflicts were found, but resolved by choosing shift.
+
+No reduce-reduce conflicts were found!
+

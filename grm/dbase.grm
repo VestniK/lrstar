@@ -1,0 +1,462 @@
+
+/* dBASE III plus grammar, by Paul B Mann, 1988, tabs=3. */
+
+/* TOKENS */
+
+   <error>       => error();
+   <identifier>  => lookup();
+   <number>      => lookup();      /* Number.          */
+   <string>      => lookup();      /* Character string.*/
+   <CR>          ;                 /* Carriage Return. */
+   <eof>         ;                 /* End of File.     */
+
+/* PRODUCTIONS */
+
+   Start   -> cmdlist <eof>
+
+   cmdlist -> command...
+   command -> [statement] <CR>
+
+   statement
+      -> '*' text
+      -> '!' command
+      -> '?' [explist]
+      -> '??' explist
+      -> '@' position CLEAR TO position
+      -> '@' position GET variable [PICTURE template | RANGE low high] ...
+      -> '@' position SAY exp [PICTURE template]
+      -> '@' position TO position [DOUBLE]
+      -> variable '=' exp
+      -> ACCEPT [prompt] TO variable
+      -> APPEND
+         [ BLANK
+         | FROM filename
+         | FOR condition
+         | TYPE filetype ] ...
+      -> ASSIST
+      -> AVERAGE
+            [ scope
+            | explist
+            | TO varlist
+            | FOR condition
+            | WHILE condition ] ...
+      -> BROWSE
+            [ FIELDS fldlist
+            | LOCK <number>
+            | WIDTH size
+            | FREEZE field
+            | NOFOLLOW
+            | NOMENU
+            | NOAPPEND ] ...
+      -> CALL module [WITH variable]
+      -> CANCEL
+      -> CHANGE [ scope
+                | FIELDS fldlist
+                | FOR condition
+                | WHILE condition ] ...
+      -> CLEAR ( ALL
+               | FIELDS
+               | GETS
+               | MEMORY
+               | TYPEAHEAD )
+      -> CLOSE ( ALL
+               | ALTERNATE
+               | DATABASES
+               | FORMAT
+               | INDEX
+               | PROCEDURE )
+      -> CONTINUE
+      -> COPY STRUCTURE [ EXTENDED
+                        | TO filename
+                        | FIELDS fldlist ] ...
+      -> COPY [ FILE filename
+              | TO filename
+              | scope
+              | FIELDS fldlist
+              | FOR condition
+              | WHILE condition
+              | TYPE filetype ] ...
+      -> COUNT [ scope
+               | TO variable
+               | FOR condition
+               | WHILE condition ] ...
+      -> CREATE [ LABEL
+                | QUERY
+                | REPORT
+                | SCREEN ] filename [FROM filename]
+      -> CREATE [VIEW filename | FROM ENVIRONMENT] ...
+      -> DELETE [scope
+                | FOR condition
+                | WHILE condition] ...
+      -> DIR [filename]
+      -> DISPLAY [ scope
+                 | explist
+                 | FOR condition
+                 | WHILE condition
+                 | TO PRINT ] ...
+      -> DISPLAY HISTORY [ LAST <number> | TO PRINT ] ...
+      -> DISPLAY (MEMORY | STATUS | STRUCTURE) [TO PRINT]
+      -> DO program [WITH parmlist]
+      -> DO CASE caselist OTHERWISE command ... ENDCASE
+      -> DO WHILE condition <CR> cmdlist ENDDO
+      -> EDIT [ scope
+              | FIELDS fldlist
+              | FOR condition
+              | WHILE condition ] ...
+      -> EJECT
+      -> ERASE '?'
+      -> ERASE filename
+      -> EXIT
+      -> EXPORT TO filename [TYPE] PFS
+      -> FIND ( <number> | <string> )
+      -> GO ( <number> | TOP | BOTTOM )
+      -> GOTO ( <number> | TOP | BOTTOM )
+      -> HELP [keyword]
+      -> IF condition <CR> cmdlist [ELSE cmdlist] ENDIF
+      -> IMPORT FROM filename [TYPE] PFS
+      -> INDEX [ ON keyfield
+               | TO filename
+               | UNIQUE ] ...
+      -> INPUT [prompt] TO variable
+      -> INSERT [BLANK | BEFORE] ...
+      -> JOIN [ WITH database
+              | TO filename
+              | FOR condition
+              | FIELDS fldlist ] ...
+      -> LABEL [ FROM filename
+               | scope
+               | FOR condition
+               | WHILE condition
+               | SAMPLE
+               | TO PRINT
+               | TO FILE filename ] ...
+      -> LIST [ scope
+              | explist
+              | FOR condition
+              | WHILE condition
+              | OFF
+              | TO PRINT ] ...
+      -> LIST HISTORY [ LAST <number> | TO PRINT ] ...
+      -> LIST (MEMORY | STATUS | STRUCTURE) [TO PRINT]
+      -> LOAD module
+      -> LOCATE [ scope | FOR condition | WHILE condition ] ...
+      -> LOOP
+      -> MODIFY STRUCTURE
+      -> MODIFY ( COMMAND
+                | LABEL
+                | QUERY
+                | REPORT
+                | SCREEN
+                | VIEW ) filename
+      -> NOTE text
+      -> ON ERROR [statement] <CR>
+      -> ON ESCAPE [statement] <CR>
+      -> ON KEY [statement] <CR>
+      -> PACK
+      -> PARAMETERS varlist
+      -> PRIVATE varlist
+      -> PRIVATE ALL
+      -> PRIVATE ALL LIKE skeleton
+      -> PRIVATE ALL EXCEPT skeleton
+      -> PROCEDURE procedure <CR> cmdlist
+         RETURN [TO MASTER]
+      -> PUBLIC varlist
+      -> QUIT
+      -> READ [SAVE]
+      -> RECALL [scope | FOR condition | WHILE condition] ...
+      -> REINDEX
+      -> RELEASE varlist
+      -> RELEASE ALL
+      -> RELEASE ALL LIKE skeleton
+      -> RELEASE ALL EXCEPT skeleton
+      -> RELEASE MODULE module
+      -> RENAME filename TO filename
+      -> REPLACE [ scope
+                 | fieldWITHexplist
+                 | FOR condition
+                 | WHILE condition ] ...
+      -> REPORT FORM '?'
+      -> REPORT FORM filename
+            [ scope
+            | FOR condition
+            | WHILE condition
+            | PLAIN
+            | HEADING <string>
+            | NOEJECT
+            | TO PRINT
+            | TO FILE filename
+            | SUMMARY ] ...
+      -> RESTORE
+            [ FROM filename
+            | ADDITIVE
+            | PLAIN
+            | HEADING <string>
+            | NOEJECT ] ...
+      -> RESUME
+      -> RETRY
+      -> RUN command
+      -> SAVE TO filename
+      -> SAVE TO filename ALL
+      -> SAVE TO filename ALL LIKE skeleton
+      -> SAVE TO filename ALL EXCEPT skeleton
+      -> SEEK exp
+      -> SELECT alias
+      -> SET
+      -> SET ALTERNATE (TO [filename] | ON | OFF)
+      -> SET BELL  (ON | OFF)
+      -> SET CARRY (ON | OFF)
+      -> SET COLOR (ON | OFF)
+      -> SET COLOR TO [normal]
+      -> SET COLOR TO [normal] ',' [reverse]
+      -> SET COLOR TO [normal] ',' [reverse] ',' [border]
+      -> SET COLOR TO [normal] ',' [reverse] ',' [border] ',' [background]
+      -> SET CONFIRM (ON | OFF)
+      -> SET CONSOLE (ON | OFF)
+      -> SET DATE date
+      -> SET DEBUG (ON | OFF)
+      -> SET DECIMAL TO <number>
+      -> SET DEFAULT TO drive
+      -> SET DELETED (ON | OFF)
+      -> SET DELIMITERS (TO <string> | TO DEFAULT | ON | OFF)
+      -> SET DEVICE TO (PRINT | SCREEN)
+      -> SET DOHISTORY (ON | OFF)
+      -> SET ECHO (ON | OFF)
+      -> SET ESCAPE (ON | OFF)
+      -> SET EXACT (ON | OFF)
+      -> SET FIELDS (ON | OFF | TO ALL | TO fldlist)
+      -> SET FILTER (TO condition | TO FILE '?' | TO FILE filename)
+      -> SET FIXED (ON | OFF)
+      -> SET FORMAT (TO '?' | TO filename)
+      -> SET FUNCTION functionkey TO <string>
+      -> SET HEADING (ON | OFF)
+      -> SET HELP (ON | OFF)
+      -> SET INDEX (TO '?' | TO filenamelist)
+      -> SET INTENSITY (ON | OFF)
+      -> SET MARGIN TO <number>
+      -> SET MEMOWIDTH TO [width]
+      -> SET MENU (ON | OFF)
+      -> SET MESSAGE TO [<string>]
+      -> SET ORDER TO [<number>]
+      -> SET PATH TO [dir]
+      -> SET PRINT (ON | OFF)
+      -> SET PRINTER TO device
+      -> SET PROCEDURE TO [filename]
+      -> SET RELATION TO [exp | INTO alias] ...
+      -> SET SAFETY (ON | OFF)
+      -> SET SCOREBOARD (ON | OFF)
+      -> SET STATUS (ON | OFF)
+      -> SET STEP (ON | OFF)
+      -> SET TALK (ON | OFF)
+      -> SET TITLE (ON | OFF)
+      -> SET TYPEAHEAD TO <number>
+      -> SET UNIQUE (ON | OFF)
+      -> SET VIEW (TO '?' | TO filename)
+      -> SKIP [<number>]
+      -> SORT [ scope
+              | ON field [A | D] [',' field [A | D]] ...
+              | FOR condition
+              | WHILE condition
+              | TO filename ] ...
+      -> STORE exp TO varlist
+      -> SUM [ scope
+             | explist
+             | TO varlist
+             | FOR condition
+             | WHILE condition ] ...
+      -> SUSPEND
+      -> TEXT text2 ENDTEXT
+      -> TOTAL [ scope
+               | ON keyfield
+               | FIELDS fldlist
+               | FOR condition
+               | WHILE condition
+               | TO filename ] ...
+      -> TYPE filename [TO PRINT]
+      -> UPDATE [ ON keyfield
+                | FROM filename
+                | REPLACE fieldWITHexplist
+                | RANDOM ] ...
+      -> USE '?'
+      -> USE [ filename
+             | INDEX filenamelist
+             | ALIAS alias ] ...
+      -> WAIT [prompt | TO variable] ...
+      -> ZAP
+
+   text2      -> [any | <CR>] ...
+
+   text       -> [any] ...
+
+   any        -> <identifier>
+              -> <number>
+              -> <string>
+
+
+   condition  -> relation
+              -> condition and_or relation
+   and_or     -> '.AND.'
+              -> '.OR.'
+   relation   -> exp relop exp
+              -> '(' relation ')'
+   relop      -> ( '<' | '>' | '#' | '=' | '<=' | '>=' | '<>' )
+
+   exp        -> operand
+              -> exp expop operand
+   expop      -> ( '+' | '-' | '*' | '/' | '^' | '**' )
+   operand    -> <number>
+              -> <string>
+              -> <identifier>
+              -> function
+              -> '.NOT.' operand
+              -> '(' exp ')'
+
+   position   -> row ',' col
+   scope      -> RECORD <number>
+              -> NEXT <number>
+              -> REST
+              -> ALL
+
+   normal                 -> foreground ['/' background] ['*']
+   reverse                -> foreground ['/' background] ['*']
+   background             -> bcolor
+   border                 -> bcolor
+   foreground             -> fcolor ['+']
+   fcolor                 -> X       /* Blank or invisible. */
+                          -> bcolor
+   bcolor                 -> ( N | B | GR | BG | G | BR | R | W )
+
+/* LISTS */
+
+   caselist            -> (CASE condition <CR> cmdlist) ...
+   explist             -> exp [',' exp] ...
+   parmlist            -> parameter [',' parameter] ...
+   fldlist             -> field [',' field] ...
+   filenamelist        -> filename [',' filename] ...
+   varlist             -> variable [',' variable] ...
+   fieldWITHexplist    -> field WITH exp [',' field WITH exp] ...
+
+/* SYMBOL/TYPE CONSTRAINTS */
+
+   alias          -> <identifier>
+   col            -> <number>
+   database       -> <identifier>
+   date           -> <number>
+   device         -> <identifier>
+   dir            -> <identifier>
+   drive          -> <identifier>
+   field          -> <identifier>
+   filename       -> <identifier>
+   filetype       -> <identifier>
+   functionkey    -> <number>
+   high           -> <number>
+   keyfield       -> <identifier>
+   keyword        -> <identifier>
+   low            -> <number>
+   module         -> <identifier>
+   program        -> <identifier>
+   parameter      -> <identifier>
+   procedure      -> <identifier>
+   prompt         -> <string>
+   row            -> <number>
+   size           -> <number>
+   skeleton       -> <identifier>
+   template       -> <string>
+   variable       -> <identifier>
+   width          -> <number>
+
+/* Notes.  An <identifier> in the context of this grammar is a very
+   general concept.  An <identifier> includes:  filenames, variable names,
+   field names, device name, and disk drive, etc. */
+
+/* GENERIC FUNCTION SPECIFICATION.
+
+   function -> <identifier> '(' [exp \,...] ')'
+
+   END */
+
+/* NOTE:  Normally all the function names and argument types are not
+   listed in a grammar.  The symbol table usually determines whether an
+   <identifier> comming from the SCANNER is a <function> or not.  However,
+   it is possible to have all the functions and argument types listed in a
+   grammar and have the parsing mechanism check the validity of the
+   function names and argument types.  It makes the parser tables larger,
+   but if you want to do it then you can make use of the function list
+   below.
+   */
+
+/* ACTUAL FUNCTION SPECIFICATIONS */
+
+   function
+      -> ABS       '(' exp ')'
+      -> ASC       '(' <string> ')'
+      -> AT        '(' <string> ',' <string> ')'
+      -> BOF       '(' ')'
+      -> CDOW      '(' exp ')'
+      -> CHR       '(' <number> ')'
+      -> CMONTH    '(' exp ')'
+      -> COL       '(' ')'
+      -> CTOD      '(' <string> ')'
+      -> DATE      '(' ')'
+      -> DAY       '(' exp ')'
+      -> DBF       '(' ')'
+      -> DELETED   '(' ')'
+      -> DISKSPACE '(' ')'
+      -> DOW       '(' exp ')'
+      -> DTOC      '(' exp ')'
+      -> EOF       '(' ')'
+      -> ERROR     '(' ')'
+      -> EXP       '(' <number> ')'
+      -> FIELD     '(' <number> ')'
+      -> FILE      '(' filename ')'
+      -> FKLABEL   '(' <number> ')'
+      -> FKMAX     '(' ')'
+      -> FOUND     '(' ')'
+      -> GETENV    '(' variable ')'
+      -> IIF       '(' condition ',' exp ',' exp ')'
+      -> INKEY     '(' ')'
+      -> INT       '(' <number> ')'
+      -> ISALPHA   '(' <string> ')'
+      -> ISCOLOR   '(' ')'
+      -> ISLOWER   '(' <string> ')'
+      -> ISUPPER   '(' <string> ')'
+      -> LEFT      '(' <string> ',' <number> ')'
+      -> LEN       '(' <string> ')'
+      -> LOG       '(' <number> ')'
+      -> LOWER     '(' <string> ')'
+      -> LTRIM     '(' <string> ')'
+      -> LUPDATE   '(' ')'
+      -> MAX       '(' <number> ',' <number> ')'
+      -> MESSAGE   '(' ')'
+      -> MIN       '(' <number> ',' <number> ')'
+      -> MOD       '(' <number> ',' <number> ')'
+      -> MONTH     '(' exp ')'
+      -> NDX       '(' <number> ')'
+      -> OS        '(' ')'
+      -> PCOL      '(' ')'
+      -> PROW      '(' ')'
+      -> READKEY   '(' ')'
+      -> RECOUNT   '(' ')'
+      -> RECNO     '(' ')'
+      -> RECSIZE   '(' ')'
+      -> REPLICATE '(' <string> ',' <number> ')'
+      -> RIGHT     '(' <string> ',' <number> ')'
+      -> ROUND     '(' <number> ',' <number> ')'
+      -> ROW       '(' ')'
+      -> RTRIM     '(' <string> ')'
+      -> SPACE     '(' <number> ')'
+      -> SQRT      '(' <number> ')'
+      -> STR       '(' <number> ',' <number> ',' <number> ')'
+      -> STUFF     '(' <string> ',' <number> ',' <number> ',' <string> ')'
+      -> SUBSTR    '(' <string> ',' <number> ')'
+      -> SUBSTR    '(' <string> ',' <number> ',' <number> ')'
+      -> TIME      '(' ')'
+      -> TRANSFORM '(' exp ',' <string> ')'
+      -> TRIM      '(' <string> ')'
+      -> TYPE      '(' exp ')'
+      -> UPPER     '(' <string> ')'
+      -> VAL       '(' <string> ')'
+      -> VERSION   '(' ')'
+      -> YEAR      '(' exp ')'
+
+/* END */
+

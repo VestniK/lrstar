@@ -1,0 +1,148 @@
+
+/*--- LRSTAR Lexical Grammar Syntax. ---*/   
+
+/*--- Terminal Symbols. ------*/
+  														    
+	T_ERROR			<error>        => error (0);
+	T_ALPHA			<alpha>        => firstsym  ({first_alpha});
+	T_LEXICAL   	<lexical>      => firstsym  ({first_lexical});
+	T_ESCAPE 		<escape>       => firstsym  ({first_escape});
+	T_LITERAL1		<literal>		=> checkcase ({first_literal});	// '...'
+	T_LITERAL2		<string>			=> checkstring ({first_string}, {option_string});	// "..."	
+	T_INTEGER		<integer>		;
+	T_EOF				<eof>				;
+
+	T_ARROW  		'->'				=> arrow ();
+	T_RETURN			'=>'				;
+	T_LEFTP			'('				;
+	T_RIGHTP			')'				;
+	T_PLUS			'+'				;
+	T_STAR			'*'				;
+	T_QUEST			'?'				;
+	T_DOTS			'..'				;
+	T_BAR				'|'				;
+	T_DASH			'-'				;
+	T_IGNORE			'[]'				;
+	T_REPEAT       '...'          ;
+	T_LEFTB        '['				;
+	T_RIGHTB       ']'				;
+	T_SEMI 			';'				;
+
+/*--- Nonterminal Symbols. ---*/
+
+   Goal           	-> Grammar <eof>								
+
+	Grammar        	-> Options TokenProd...     
+	               	-> Options TokenProd...                  (NonterminalDef|SetDef)...
+	               	-> Options TokenProd... IgnoreProd...
+	               	-> Options TokenProd... IgnoreProd...    (NonterminalDef|SetDef)...
+
+	               	-> Options TokenProd... PP    
+	               	-> Options TokenProd... PP               (NonterminalDef|SetDef)...
+	               	-> Options TokenProd... PP IgnoreProd...
+	               	-> Options TokenProd... PP IgnoreProd... (NonterminalDef|SetDef)...
+
+  	Options				->													=> PRO_OPTNS(0)
+							->	{option_string}                     => PRO_OPTNS(1)
+													   
+/*--- Token Definitions ---*/
+
+	PP						-> '%%'											=> EOGI(0)
+
+   TokenProd      	-> Token ReturnValue 
+                  	-> Token ReturnValue ';' 
+
+   Token          	-> {first_alpha} '=>'     					=> ADD_TOKEN (1)
+                     -> {first_lexical} '=>'   					=> ADD_TOKEN (1)
+                     -> {first_literal} '=>' 			   	=> ADD_TOKEN (1)
+                     -> {first_string} '=>'  			   	=> ADD_TOKEN (1)
+
+	IgnoreProd	     	-> IgnoreToken     
+                  	-> IgnoreToken ';' 
+
+   IgnoreToken       -> {first_alpha} '[]'       				=> ADD_IGNORE (1)
+                     -> {first_lexical} '[]'						=> ADD_IGNORE (1)
+                     -> {first_literal} '[]'    	   		=> ADD_IGNORE (1) 
+                     -> {first_string} '[]'    				   => ADD_IGNORE (1)	
+							-> {first_escape} '[]'						=> ADD_IGNORE (1)	
+
+	ReturnValue	   	-> <integer>                           => ADD_TERMNO (1)
+							-> <alpha>                             => ADD_DEFCON (1)
+							-> <string>				   					=> ADD_STRING (1)
+
+/*--- Nonterminal Definitions ---*/
+
+   NonterminalDef    -> NonterminalSymbol NonterminalProd... 
+							-> NonterminalSymbol NonterminalProd... ';' 
+
+   NonterminalSymbol -> {first_alpha}								=> ADD_HEAD(1)
+                     -> {first_lexical}							=> ADD_HEADLEX(1)
+                     -> {first_escape}								=> ADD_HEADESC(1)
+
+   NonterminalProd   -> Arrow TailExprList                        
+
+   Arrow					-> '->'                                => ADD_PROD()
+
+   TailExprList     	-> TailExpr...                         => POP_ALL()
+   TailExpr       	-> TailSymbol
+                  	-> TailSymbol '+'								=> PUSH_PLUS()
+                  	-> TailSymbol '*'								=> PUSH_ASTER()
+                  	-> TailSymbol '?'								=> PUSH_QUEST()
+                  	-> TailSymbol '...'                    => PUSH_DOTS()
+                  	-> GroupStart    List GroupEnd
+                  	-> OptGroupStart List OptGroupEnd
+
+   List           	-> TailExpr
+                  	-> List TailExpr
+                  	-> List Or TailExpr 
+
+   Or             	-> '|'                                 => PUSH_OR()
+   GroupStart     	-> '('                                 => PUSH_GBEG()
+   GroupEnd       	-> ')'                                 => PUSH_GEND()
+                  	-> ')' '+'										=> PUSH_GPLUS()
+                  	-> ')' '*'										=> PUSH_GASTER()
+                  	-> ')' '?'										=> PUSH_GQUEST()
+                  	-> ')' '...'                           => PUSH_GDOTS()
+   OptGroupStart  	-> '['                                 => PUSH_OBEG()
+   OptGroupEnd    	-> ']'                                 => PUSH_OEND()
+                  	-> ']' '...'                           => PUSH_ODOTS()
+							
+   TailSymbol     	-> <alpha>                             => PUSH_TAIL (1)
+                  	-> <lexical>                           => PUSH_TAIL (1)
+                  	-> <escape>										=> PUSH_TAIL (1)
+                  	-> <literal>                           => PUSH_TAIL (1)
+                  	-> <integer>                           => PUSH_TAIL (1)
+
+/*--- Set Definitions ---*/
+
+   SetDef         	-> NonterminalSymbol Arrow SetExpr 
+                  	-> NonterminalSymbol Arrow SetExpr ';'
+
+   SetExpr         	-> Range                               => FIRST_RANGE(1)
+                  	-> SetStart '|' Character					=> ADD_CHAR(3)
+                  	-> SetStart '-' Character					=> SUB_CHAR(3)
+                  	-> SetStart '|' Range						=> ADD_RANGE(3)
+                  	-> SetStart '-' Range						=> SUB_RANGE(3)
+                  	-> SetStart '|' SetName						=> ADD_SET(3)
+                  	-> SetStart '-' SetName						=> SUB_SET(3)
+                  	-> SetExpr  '|' Character					=> ADD_CHAR(3)
+                  	-> SetExpr  '-' Character					=> SUB_CHAR(3)
+                  	-> SetExpr  '|' Range						=> ADD_RANGE()
+                  	-> SetExpr  '-' Range						=> SUB_RANGE()
+                  	-> SetExpr  '|' SetName						=> ADD_SET(3)
+                  	-> SetExpr  '-' SetName						=> SUB_SET(3)
+
+   Range          	-> RangeStart '..' Character           => RANGE_END(3)
+   RangeStart     	-> Character                           => RANGE_START(1)
+   SetStart       	-> Character									=> FIRST_CHAR(1)
+							->	SetName										=> FIRST_SET(1)
+
+   Character         -> <literal>                           
+                  	-> <integer>                           
+
+  	SetName				-> <alpha>		
+  							-> <escape>
+	//						-> <lexical> // This is invalid, removed by pbm, Feb 11 2014.
+
+/*--- End of Grammar. ---*/
+

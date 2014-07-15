@@ -1,0 +1,80 @@
+
+/* C Lexical Grammar */
+
+  	<eof>						-> \z
+
+	<constant>     		-> literal
+								-> integer
+								-> decimal
+								-> real
+
+	<identifier>   		-> letter (letter|digit)* 
+		           
+	integer        		-> digit+
+
+	letter	      		-> 'a'..'z' | 'A'..'Z' | '_' 
+	digit	         		-> '0'..'9'
+
+	real	         		-> integer exp
+								-> decimal exp
+
+	decimal        		-> digit+ '.'
+								->        '.' digit+
+								-> digit+ '.' digit+
+
+	exp	         		-> 'e' digit+ 
+								-> 'E' digit+
+								-> 'e' '-' digit+ 
+								-> 'E' '-' digit+
+								-> 'e' '+' digit+ 
+								-> 'E' '+' digit+
+
+	literal        		-> ''' lchar '''
+
+	lchar          		-> '\' '\'
+								-> '\' '''
+								-> '\' '"'
+								-> '\' 'n' 
+								-> '\' 't' 
+								-> '\' 'a' 
+								-> '\' 'b' 
+								-> '\' 'f' 
+								-> '\' 'r' 
+								-> '\' '0' 
+								-> lany
+	               		
+	lany           		-> any - ''' - '\' - \n
+
+	<string>       		-> '"' '"'
+								-> '"' schar+ '"'
+
+	schar          		-> '\' '\'
+								-> '\' '''
+								-> '\' '"'
+								-> '\' 'n' 
+								-> '\' 't' 
+								-> '\' 'a' 
+								-> '\' 'b' 
+								-> '\' 'f' 
+								-> '\' 'r' 
+								-> sany
+				      		
+	sany	         		-> any - '"' - '\' - \n
+
+  	<spaces>       		-> ( \t | \n | ' ' )+
+	<commentline>  		-> '/' '/' neol*
+  	<commentblock> 		-> '/' '*' na* '*'+ (nans na* '*'+)* '/'
+
+	na             		-> any - '*'			// not asterisk
+	nans           		-> any - '*' - '/'	// not asterisk not slash
+	neol           		-> any - \n				// not end of line
+	any						-> 0..255 - \z			// any character except end of file
+
+	\t							->  9						// tab
+	\n							-> 10						// newline
+	\f							-> 12						// form feed
+	\r							-> 13						// return
+	\z							-> 26						// end of file
+	
+/*--- End. ---*/
+

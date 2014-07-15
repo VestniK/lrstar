@@ -1,0 +1,26 @@
+
+LRSTAR 6.3.006 Copyright 2014 Paul B Mann.
+
+Input     typedef.grm /d 
+
+Grammar       23 rules, 12 terminals, 13 nonterminals.
+LR(1)         32 states in Minimal LR(1) state machine.
+              12 states after implementing shift-reduce actions.
+Conflicts      0 states, 0 shift-reduce, 0 reduce-reduce conflicts.
+
+Grammar is LR(0), 0 extra states were added.
+
+            rows   cols          matrix        list       vect      total
+B matrix       5 x    5 x 1 =        25 ->        5 +       36 =       41  
+T matrix       2 x   11 x 1 =        22 ->       18 +       24 =       42  
+N matrix       4 x    9 x 1 =        36 ->       28 +       35 =       63  
+R matrix       1 x    1 x 1 =         1 ->        1 +       24 =       25  
+Total                                            52 +      119 =      171
+
+0 min 0.078 sec, 94.576 MB, 0 warnings, 0 errors.
+
+Skeleton: ..\..\skl\parser.cpp.skl
+Output:   typedef_parser.cpp (1,136 lines)
+Skeleton: ..\..\skl\parser.h.skl
+Output:   typedef_parser.h (250 lines)
+

@@ -1,0 +1,123 @@
+
+// LRSTAR Lexical Grammar. 
+
+	<alpha>              =>     1
+	<lexical>            =>     2
+	<semantic>           =>     3
+	<literal>            =>     4
+	<string>             =>     5
+	<integer>            =>     6
+	<eof>                =>     7
+
+	'<keyword>'          =>     8
+	'<error>'            =>     9
+	'<eof>'              =>    10
+
+	':'                  =>    13
+	'->'                 =>    14
+	'~>'                 =>    15
+	'/->'                =>    16
+	'/~>'                =>    17
+	'|'                  =>    18
+	';'                  =>    19
+	'=>'                 =>    20
+	'+>'                 =>    21
+	'*>'                 =>    22
+	'=+>'                =>    23
+	'=*>'                =>    24
+	'^'                  =>    25
+	'{'                  =>    26
+	'}'                  =>    27
+	'<<'                 =>    28
+	'>>'                 =>    29
+	'+'                  =>    30
+	'...'                =>    31
+	'~'                  =>    32
+	'~..'                =>    33
+	'?'                  =>    34
+	'*'                  =>    35
+	'/'                  =>    36
+	'('                  =>    37
+	')'                  =>    38
+	'['                  =>    39
+	']'                  =>    40
+	','                  =>    41
+
+	whitespace				[]	
+	commentline				[]
+	commentblock			[]
+
+	<eof>						-> \z
+	<alpha>        		-> alpha
+	<lexical>      		-> '<' alpha '>' 
+	<semantic>     		-> '{' alpha '}'  
+
+	alpha          		-> (letter|'_') (letter|digit|'_')*
+
+	<integer>      		-> digit+
+
+	<literal>      		-> ''' lchar+ '''
+	lchar          		-> '\' '''
+   							->	'\' '"'
+   							->	'\' '\'
+								->	'\' letter
+								->	'\' digit
+								-> lany
+	lany     				-> 33..255 - ''' - '\'
+
+	<string>       		-> '"' '"'
+								-> '"' schar+ '"'
+	schar          		-> '\' '''
+   							->	'\' '"'
+   							->	'\' '\'
+								->	'\' letter
+								->	'\' digit
+								-> sany
+	sany     				-> ' '..255 - '"' - '\'
+
+	whitespace				-> ( \t | \n | ' ' )+
+	commentline 			-> '/' '/' neol*
+ 	commentblock			-> '/' '*' na* '*'+ (nans na* '*'+)* '/' // Allows inside comments.
+
+// commentblock			-> '/' '*' nans* ('/' na nans*)* '*'+ (nans+ ('/' na nans*)* '*'+)* '/'	// Does not allow inside comments.
+//	pcpc						-> '%%'
+//	pccode   				-> '%' '{' npc+ '%' [nrb npc* '%']... '}'
+
+	nrb             		-> any - '}'			// not asterisk
+	npc             		-> any - '%'			// not asterisk
+	na             		-> any - '*'			// not asterisk
+	nans           		-> any - '*' - '/'	// not asterisk not slash
+	neol           		-> any - \n				// not end of line
+	any						-> 0..255 - \z			// any character except end of file
+
+	letter         		-> 'a'..'z' | 'A'..'Z'
+	digit          		-> '0'..'9'
+
+	\t							-> 9
+	\n							-> 10
+	\z							-> 26
+
+/* End of Lexical Grammar. */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,572 @@
+
+/* LALR style PL/M grammar
+   by Bill Spees, Legendary Systems Inc, 1988 ?
+*/
+
+/* Productions. */
+
+   Start
+      -> Compiland <eof>
+
+   Compiland
+      -> Compiland_component
+
+   Compiland_component
+      -> Unit
+      -> Compiland_component Unit
+
+   Var_elem
+      -> Var_name_spec Array_spec_opt Var_type Var_attr_list_opt
+
+   Var_name_spec
+      -> Ident
+      -> Ident Based Base_spec
+
+   Base_spec
+      -> Ident
+      -> Ident Dot Ident
+
+   Var_attr_list_opt
+      -> /* N-O-T-H-I-N-G */
+      -> Var_attr_list_opt Var_attr
+
+   Var_attr
+      -> Public
+      -> Locator
+      -> Initializer
+      -> External
+      -> Const_attr
+
+   Locator
+      -> At Enlist Expression Exlist
+
+   Const_attr
+      -> Data
+
+   Array_spec
+      -> Expl_dimension
+      -> Impldim
+
+   Array_spec_opt
+      -> /* N-O-T-H-I-N-G */
+      -> Array_spec
+
+   Expl_dimension
+      -> Enlist Number Exlist
+      -> Enlist Ident Exlist
+
+   Var_type
+      -> Basic_type
+      -> Ident
+      -> Structure_type
+
+   Basic_type
+      -> Integer
+      -> Real
+      -> Pointer
+      -> Selector
+      -> Byte
+      -> Word
+      -> Dword
+
+   Label_elem
+      -> Ident Label
+      -> Label_elem Public
+      -> Label_elem External
+
+   Literal_elem
+      -> Ident Literally String
+
+   Fact_var_elem
+      -> Enlist Var_name_spec_list Exlist Expl_dimension_opt Var_type
+         Var_attr_list_opt
+
+   Expl_dimension_opt
+      -> /* N-O-T-H-I-N-G */
+      -> Expl_dimension
+
+   Fact_label_elem
+      -> Enlist Ident_list Exlist Label
+      -> Fact_label_elem Public
+      -> Fact_label_elem External
+
+   Ident_list
+      -> Ident
+      -> Ident_list Comma Ident
+
+   Var_ref_list
+      -> Var_ref
+      -> Var_ref_list Comma Var_ref
+
+   Structure_type
+      -> Structure Enlist Smel_list Exlist
+
+   Smel_list
+      -> Smel
+      -> Smel_list Comma Smel
+
+   Smel
+      -> Mname Expl_dimension_opt Basic_type
+
+   Mname
+      -> Ident
+      -> Enlist Ident_list Exlist
+
+   Var_name_spec_list
+      -> Var_name_spec
+      -> Var_name_spec_list Comma Var_name_spec
+
+   Initializer
+      -> Initial Enlist Init_list Exlist
+      -> Data Enlist Init_list Exlist
+
+   Init_list
+      -> Init
+      -> Init_list Comma Init
+
+   Init
+      -> Expression
+      -> String
+
+   Decl_list_opt
+      -> /* N-O-T-H-I-N-G */
+      -> Decl_list_opt Declaration
+      -> Decl_list_opt Gigo
+
+   Declaration
+      -> Decl_stmt
+      -> Proc_def
+
+   Decl_stmt
+      -> Declare Decl_elem_list Semi
+
+   Decl_elem_list
+      -> Decl_elem
+      -> Decl_elem_list Comma Decl_elem
+
+   Decl_elem
+      -> Fact_var_elem
+      -> Fact_label_elem
+      -> Var_elem
+      -> Literal_elem
+      -> Label_elem
+
+   Unit_list_opt
+      -> /* N-O-T-H-I-N-G */
+      -> Unit_list_opt Unit
+
+   Unit
+      -> Unit_component
+      -> Label_ident Unit_component
+      -> Unit_component Gigo
+
+   Unit_component
+      -> Ifthenelse_clse
+      -> Ifthen_clse
+      -> Assgn_stmt
+      -> Call_stmt
+      -> Goto_stmt
+      -> Null_stmt
+      -> Return_stmt
+      -> Dep_stmt
+      -> Other_do
+      -> Declaration
+
+   Ifthen_clse
+      -> If Expression Then Unit Else Unit
+
+
+   Ifthenelse_clse
+      -> If Expression Then Unit
+
+
+   Other_do
+      -> DCES Unit_list_opt Ending
+      -> DWES Unit_list_opt Ending
+      -> DITER Unit_list_opt Ending
+      -> DS Unit_list_opt Ending
+
+   DCES
+      -> Do Case Expression Semi
+
+   DWES
+      -> Do While Expression Semi
+
+   DITER
+      -> Do Simple_var Equals Expression To Expression By_part_opt Semi
+
+
+   DS
+      -> Do Semi
+
+   Ending
+      -> End_stmt
+      -> Label_ident Ending
+
+   End_stmt
+      -> End Semi
+      -> End Ident Semi
+
+   By_part_opt
+      -> /* N-O-T-H-I-N-G */
+      -> By Expression
+
+   Simple_var
+      -> Ident
+      -> Ident Dot Ident
+
+   Call_stmt
+      -> Call Ident Subscript_opt Semi
+
+   Goto_stmt
+      -> Go To Ident Semi
+      -> Goto Ident Semi
+
+   Null_stmt
+      -> Semi
+
+   Return_stmt
+      -> Return Semi
+      -> Return Expression Semi
+
+   Dep_stmt
+      -> Disable Semi
+      -> Enable Semi
+      -> Halt Semi
+      -> Causeinterrupt Semi
+
+   Primary
+      -> Constant
+      -> Var_ref
+      -> Loc_ref
+      -> Subexpression
+
+   Subexpression
+      -> Enlist Expression_list Exlist
+
+   Expression_list
+      -> Expression
+      -> Expression_list Comma Expression
+
+   Constant
+      -> Number
+      -> String
+
+   Var_ref
+      -> Ident Subscript_opt Member_spec_opt
+
+   Subscript_opt
+      -> /* N-O-T-H-I-N-G */
+      -> Subexpression
+
+   Member_spec_opt
+      -> /* N-O-T-H-I-N-G */
+      -> Dot Ident Subscript_opt
+
+   Loc_ref
+      -> Atsign Const_list
+      -> Dot Const_list
+      -> Atsign Var_ref
+      -> Dot Var_ref
+
+   Const_list
+      -> Enlist Constant Const_list_more_opt Exlist
+
+   Const_list_more_opt
+      -> /* N-O-T-H-I-N-G */
+      -> Const_list_more_opt Comma Constant
+
+   Rel_op
+      -> Gt
+      -> Gte
+      -> Lt
+      -> Lte
+      -> Ne
+      -> Equals
+
+   Expression
+      -> Logic_exp
+      -> Embed_assgn
+
+   Embed_assgn
+      -> Var_ref Sassgn Logic_exp
+
+   Logic_exp
+      -> Logic_fact
+      -> Logic_exp Or_op Logic_fact
+
+   Or_op
+      -> Or
+      -> Xor
+
+   Logic_fact
+      -> Logic_sec
+      -> Logic_fact And_op Logic_sec
+
+   And_op
+      -> And
+
+   Logic_sec
+      -> Not Logic_pri
+      -> Logic_pri
+
+   Logic_pri
+      -> Math_exp
+      -> Math_exp Rel_op Math_exp
+
+   Math_exp
+      -> Term
+      -> Math_exp Add_op Term
+
+   Term
+      -> Factor
+      -> Term Mul_op Factor
+
+   Factor
+      -> Primary
+      -> Splus Primary
+      -> Sminus Primary
+
+   Add_op
+      -> Plus
+      -> Minus
+      -> Splus
+      -> Sminus
+
+   Mul_op
+      -> Sstar
+      -> Sslash
+      -> Mod
+
+   Gigo
+      -> Passline
+      -> Gigo Passline
+
+   Proc_def
+      -> Proc_hdr Decl_list_opt Unit_list_opt Ending
+
+   Proc_hdr
+      -> Label_ident Procedure Parm_list_opt Basic_type_opt Proc_attr_list_opt Semi
+
+
+   Basic_type_opt
+      -> /* N-O-T-H-I-N-G */
+      -> Basic_type
+
+   Parm_list_opt
+      -> /* N-O-T-H-I-N-G */
+      -> Enlist Ident_list Exlist
+
+   Proc_attr_list_opt
+      -> /* N-O-T-H-I-N-G */
+      -> Proc_attr_list_opt External
+      -> Proc_attr_list_opt Interrupt Number
+      -> Proc_attr_list_opt Public
+      -> Proc_attr_list_opt Reentrant
+
+   Assgn_stmt
+      -> Var_ref_list Equals Expression Semi
+
+   And
+      -> AND
+
+   At
+      -> AT
+
+   Atsign
+      -> ATSIGN
+
+   Based
+      -> BASED
+
+   By
+      -> BY
+
+   Byte
+      -> BYTE
+
+   Call
+      -> CALL
+
+   Case
+      -> CASE
+
+   Causeinterrupt
+      -> CAUSEINTERRUPT
+
+   Comma
+      -> COMMA
+
+   Data
+      -> DATA
+
+   Declare
+      -> DECLARE
+
+   Disable
+      -> DISABLE
+
+   Do
+      -> DO
+
+   Dot
+      -> DOT
+
+   Dword
+      -> DWORD
+
+   Else
+      -> ELSE
+
+   Enable
+      -> ENABLE
+
+   End
+      -> END
+
+   Enlist
+      -> ENLIST
+
+   Equals
+      -> EQUALS
+
+   Exlist
+      -> EXLIST
+
+   External
+      -> EXTERNAL
+
+   Go
+      -> GO
+
+   Goto
+      -> GOTO
+
+   Gt
+      -> GT
+
+   Gte
+      -> GTE
+
+   Halt
+      -> HALT
+
+   Ident
+      -> IDENT
+
+   If
+      -> IF
+
+   Impldim
+      -> IMPLDIM
+
+   Initial
+      -> INITIAL
+
+   Integer
+      -> INTEGER
+
+   Interrupt
+      -> INTERRUPT
+
+   Label_ident
+      -> LABEL_IDENT
+
+   Label
+      -> LABEL
+
+   Literally
+      -> LITERALLY
+
+   Lt
+      -> LT
+
+   Lte
+      -> LTE
+
+   Minus
+      -> MINUS
+
+   Mod
+      -> MOD
+
+   Ne
+      -> NE
+
+   Not
+      -> NOT
+
+   Number
+      -> NUMBER
+
+   Or
+      -> OR
+
+   Passline
+      -> PASSLINE
+      -> IGNORE
+
+   Plus
+      -> PLUS
+
+   Pointer
+      -> POINTER
+
+   Procedure
+      -> PROCEDURE
+
+   Public
+      -> PUBLIC
+
+   Real
+      -> REAL
+
+   Reentrant
+      -> REENTRANT
+
+   Return
+      -> RETURN
+
+   Sassgn
+      -> SASSGN
+
+   Selector
+      -> SELECTOR
+
+   Semi
+      -> SEMI
+
+   Sminus
+      -> SMINUS
+
+   Splus
+      -> SPLUS
+
+   Sslash
+      -> SSLASH
+
+   Sstar
+      -> SSTAR
+
+   String
+      -> STRING
+
+   Structure
+      -> STRUCTURE
+
+   Then
+      -> THEN
+
+   To
+      -> TO
+
+   While
+      -> WHILE
+
+   Word
+      -> WORD
+
+   Xor
+      -> XOR
+
+/* End. */

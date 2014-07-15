@@ -1,0 +1,30 @@
+
+/* Calculator Lexical Grammar. */
+
+	<eof>          		-> 26	            
+
+	<identifier>			-> letter (letter|digit)*
+	               		
+	<integer>				-> digit...
+
+	letter         		-> 'a'..'z' | 'A'..'Z' | '_' 
+	digit          		-> '0'..'9'
+
+	<spaces>       		-> ( \t | \n | ' ' )+
+	<commentline>  		-> '/' '/' neol*
+	<commentblock> 		-> '/' '*' na* '*'+ (nans na* '*'+)* '/'	
+
+	na             		-> any - '*'			// not asterisk
+	nans           		-> any - '*' - '/'	// not asterisk not slash
+	neol           		-> any - \n				// not end of line
+	any						-> 0..255 - \z			// any character except end of file
+
+	\t							->  9						// tab
+	\n							-> 10						// newline
+	\f							-> 12						// form feed
+	\r							-> 13						// return
+	\z							-> 26						// end of file
+	
+/* End of Grammar. */
+
+

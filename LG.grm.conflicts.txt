@@ -1,0 +1,6 @@
+
+CONFLICTS REPORT:
+
+CONFLICTS: 0 states, 0 shift-reduce, 0 reduce-reduce conflicts.
+Grammar is LR(0).
+

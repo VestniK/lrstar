@@ -1,0 +1,51 @@
+
+/* C Typedef Solution. 
+
+   The following production (rule): 
+
+		TypedefIdentifier	-> <identifier>   =+> typedefidentifier_((1,{typedef})
+
+	is found in the grammar below.   
+
+	It upgrades the terminal number for the <identifier> in the symbol table 
+	to a {typedef}.  The next time this same <identifier> is encountered in the 
+	input file, the symbol-table lookup function will return {typedef} instead 
+	of <identifier>.  
+
+	This solves the conflict problem caused by the 'typedef' situation in the 
+	C language.  Some people call this a "hack" and prefer to use GLR parsing 
+	for this situation.  I can understand their thinking on this, but I provide
+	this solution now, because I'm not providing GLR parsers, and actually, I 
+	think this is a cleaner and faster solution.  Even GLR parsers have to check
+	the symbol table to resolve this problem.  The advantage of GLR is that they
+	can keep symbol-table operations separate from the parsing operations. 
+
+	Paul Mann, June 5 2013. 
+*/
+
+/* Terminal Declarations. */
+
+   <identifier>		=> lookup();  /* Symbol table lookup. */
+
+/* Rules. */
+
+   Goal					-> [Declaration]... <eof>								+> goal_
+																						
+	Declaration 		->         Type... Var        /',' ... ';'		+> decl_
+							-> typedef Type... TypedefVar /',' ... ';'		+> decl_
+
+	Var					-> [Ptr]... Identifier 									+> var_ 
+	TypedefVar			-> [Ptr]... TypedefIdentifier							+> typedefvar_
+
+   Identifier			-> <identifier>											+> identifier_ (1)	
+	TypedefIdentifier	-> <identifier>          							  =+> typedefidentifier_(1,{typedef})
+
+	Ptr					-> '*'														+> ptr_
+
+	Type					-> char														+> type_ (1)
+							-> int														+> type_ (1)
+							-> short														+> type_ (1)
+							-> unsigned													+> type_ (1)
+							-> {typedef}												+> type_ (1)
+
+/* End Of Grammar. */

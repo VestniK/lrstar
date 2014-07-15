@@ -1,0 +1,1941 @@
+
+/*  COBOL74 CICS  */
+
+/* by Ed Dobies
+      Xypro Technology
+      Simi Valley, CA
+      1988 ?
+*/
+
+   <error>        => error();
+   <identifier>   => lookup();
+   <integer>      => lookup();
+   <decimal>      => lookup();
+   <character>    => lookup();
+   <string>       => lookup();
+   <picture>      => lookup();
+
+   Start
+	   -> CICS <eof>
+
+   CICS
+	   -> Stmt Done '.'
+
+   Stmt
+	   -> AbendStmt
+	   -> AddressStmt
+	   -> AskTimeStmt
+	   -> AssignStmt
+	   -> CancelStmt
+	   -> ConverseStmt
+	   -> DelayStmt
+	   -> DeleteStmt
+	   -> DeleteQStmt
+	   -> DeqStmt
+	   -> DumpStmt
+	   -> EndBrStmt
+	   -> EnqStmt
+	   -> EnterStmt
+	   -> FreeMainStmt
+	   -> GetMainStmt
+	   -> HandleStmt
+	   -> IssueStmt
+	   -> JournalStmt
+	   -> LinkStmt
+	   -> LoadStmt
+	   -> PostStmt
+	   -> PurgeStmt
+	   -> ReadStmt
+	   -> ReadNextStmt
+	   -> ReadPrevStmt
+	   -> ReadQStmt
+	   -> ReceiveStmt
+	   -> ReleaseStmt
+	   -> ResetBrStmt
+	   -> RetrieveStmt
+	   -> ReturnStmt
+	   -> RewriteStmt
+	   -> RouteStmt
+	   -> SendStmt
+	   -> StartStmt
+	   -> StartBrStmt
+	   -> SuspendStmt
+	   -> SyncPointStmt
+	   -> TraceStmt
+	   -> UnlockStmt
+	   -> WaitStmt
+	   -> WriteStmt
+	   -> WriteQStmt
+	   -> XctlStmt
+
+   Done
+	   -> END_EXEC
+
+
+
+   /***********/
+   /*         */
+   /*  ABEND  */
+   /*         */
+   /***********/
+
+   AbendStmt
+	   -> AbendInit AbendList
+
+   AbendInit
+	   -> ABEND
+
+   AbendList
+	   -> AbendItem
+	   -> AbendList AbendItem
+
+   AbendItem
+	   -> CANCEL
+	   -> ABCODE '(' AbendCode ')'
+
+   AbendCode
+	   -> <string>
+	   -> <identifier>
+
+
+
+   /*************/
+   /*           */
+   /*  ADDRESS  */
+   /*           */
+   /*************/
+
+   AddressStmt
+	   -> AddressInit AddressList
+
+   AddressInit
+	   -> ADDRESS
+
+   AddressList
+	   -> AddressItem
+	   -> AddressList AddressItem
+
+   AddressItem
+	   -> CSA   '(' AddressCSA   ')'
+	   -> CWA   '(' AddressCWA   ')'
+	   -> TCTUA '(' AddressTCTUA ')'
+	   -> TWA   '(' AddressTWA   ')'
+
+   AddressCSA
+	   -> <identifier>
+
+   AddressCWA
+	   -> <identifier>
+
+   AddressTCTUA
+	   -> <identifier>
+
+   AddressTWA
+	   -> <identifier>
+
+
+
+   /*************/
+   /*           */
+   /*  ASKTIME  */
+   /*           */
+   /*************/
+
+   AskTimeStmt
+	   -> ASKTIME
+
+
+
+   /************/
+   /*          */
+   /*  ASSIGN  */
+   /*          */
+   /************/
+
+   AssignStmt
+	   -> AssignInit AssignList
+
+   AssignInit
+	   -> ASSIGN
+
+   AssignList
+	   -> AssignItem
+	   -> AssignList AssignItem
+
+   AssignItem
+	   -> AssignName '(' AssignArea ')'
+
+   AssignName
+	   -> <identifier>
+
+   AssignArea
+	   -> <identifier>
+
+
+
+   /************/
+   /*          */
+   /*  CANCEL  */
+   /*          */
+   /************/
+
+   CancelStmt
+	   -> CancelInit CancelList
+
+   CancelInit
+	   -> CANCEL
+
+   CancelList
+	   -> CancelItem
+	   -> CancelList CancelItem
+
+   CancelItem
+	   -> REQID   '(' CancelReqId   ')'
+	   -> TRANSID '(' CancelTransId ')'
+
+   CancelReqId
+	   -> <string>
+	   -> <identifier>
+
+   CancelTransId
+	   -> <string>
+	   -> <identifier>
+
+
+
+   /**************/
+   /*            */
+   /*  CONVERSE  */
+   /*            */
+   /**************/
+
+   ConverseStmt
+	   -> ConverseInit ConverseList
+
+   ConverseInit
+	   -> CONVERSE
+
+   ConverseList
+	   -> ConverseItem
+	   -> ConverseList ConverseItem
+
+   ConverseItem
+	   -> STRFIELD
+	   -> ERASE
+	   -> FROM       '(' ConverseFrom    ')'
+	   -> FROMLENGTH '(' ConverseFromLen ')'
+	   -> INTO       '(' ConverseInto    ')'
+	   -> SET        '(' ConverseSet     ')'
+	   -> TOLENGTH   '(' ConverseToLen   ')'
+	   -> CTLCHAR    '(' ConverseCtlChar ')'
+
+   ConverseFrom
+	   -> <identifier>
+
+   ConverseFromLen
+	   -> <integer>
+	   -> <identifier>
+
+   ConverseInto
+	   -> <identifier>
+
+   ConverseSet
+	   -> <identifier>
+
+   ConverseToLen
+	   -> <integer>
+	   -> <identifier>
+
+   ConverseCtlChar
+	   -> <integer>
+
+
+
+   /***********/
+   /*         */
+   /*  DELAY  */
+   /*         */
+   /***********/
+
+   DelayStmt
+	   -> DelayInit DelayList
+
+   DelayInit
+	   -> DELAY
+
+   DelayList
+	   -> DelayItem
+	   -> DelayList DelayItem
+
+   DelayItem
+	   -> INTERVAL '(' DelayInterval ')'
+	   -> TIME     '(' DelayTime     ')'
+	   -> REQID    '(' DelayReqId    ')'
+
+   DelayInterval
+	   -> <integer>
+	   -> <identifier>
+
+   DelayTime
+	   -> <integer>
+	   -> <identifier>
+
+   DelayReqId
+	   -> <string>
+	   -> <identifier>
+
+
+
+   /************/
+   /*          */
+   /*  DELETE  */
+   /*          */
+   /************/
+
+   DeleteStmt
+	   -> DeleteInit DATASET '(' DeleteFile ')'
+
+   DeleteInit
+	   -> DELETE
+
+   DeleteFile
+	   -> <string>
+	   -> <identifier>
+
+
+
+   /*************/
+   /*           */
+   /*  DELETEQ  */
+   /*           */
+   /*************/
+
+   DeleteQStmt
+	   -> DeleteQInit DeleteQList
+
+   DeleteQInit
+	   -> DELETEQ
+
+   DeleteQList
+	   -> DeleteQItem
+	   -> DeleteQList DeleteQItem
+
+   DeleteQItem
+	   -> TD
+	   -> TS
+	   -> QUEUE '(' DeleteQueue ')'
+
+   DeleteQueue
+	   -> <string>
+	   -> <identifier>
+
+
+
+   /*********/
+   /*       */
+   /*  DEQ  */
+   /*       */
+   /*********/
+
+   DeqStmt
+	   -> DeqInit DeqList
+
+   DeqInit
+	   -> DEQ
+
+   DeqList
+	   -> DeqItem
+	   -> DeqList DeqItem
+
+   DeqItem
+	   -> RESOURCE '(' DeqResource ')'
+	   -> LENGTH   '(' DeqLength   ')'
+
+   DeqResource
+	   -> <identifier>
+
+   DeqLength
+	   -> <integer>
+	   -> <identifier>
+
+
+
+   /**********/
+   /*        */
+   /*  DUMP  */
+   /*        */
+   /**********/
+
+   DumpStmt
+	   -> DumpInit DumpList
+
+   DumpInit
+	   -> DUMP
+
+   DumpList
+	   -> DumpItem
+	   -> DumpList DumpItem
+
+   DumpItem
+	   -> TASK
+	   -> STORAGE
+	   -> PROGRAM
+	   -> TERMINAL
+	   -> TABLES
+	   -> PCT
+	   -> PPT
+	   -> SIT
+	   -> FCT
+	   -> DCT
+	   -> DUMPCODE '(' DumpCode ')'
+	   -> FROM     '(' DumpFrom ')'
+	   -> LENGTH   '(' DumpLen  ')'
+
+   DumpCode
+	   -> <string>
+	   -> <identifier>
+
+   DumpFrom
+	   -> <identifier>
+
+   DumpLen
+	   -> <integer>
+	   -> <identifier>
+
+
+
+   /***********/
+   /*         */
+   /*  ENDBR  */
+   /*         */
+   /***********/
+
+   EndBrStmt
+	   -> EndBrInit DATASET '(' EndBrFile ')'
+
+   EndBrInit
+	   -> ENDBR
+
+   EndBrFile
+	   -> <string>
+	   -> <identifier>
+
+
+
+   /*********/
+   /*       */
+   /*  ENQ  */
+   /*       */
+   /*********/
+
+   EnqStmt
+	   -> EnqInit EnqList
+
+   EnqInit
+	   -> ENQ
+
+   EnqList
+	   -> EnqItem
+	   -> EnqList EnqItem
+
+   EnqItem
+	   -> RESOURCE '(' EnqResource ')'
+	   -> LENGTH   '(' EnqLength   ')'
+
+   EnqResource
+	   -> <identifier>
+
+   EnqLength
+	   -> <integer>
+	   -> <identifier>
+
+
+
+   /***********/
+   /*         */
+   /*  ENTER  */
+   /*         */
+   /***********/
+
+   EnterStmt
+	   -> EnterInit EnterList
+
+   EnterInit
+	   -> ENTER
+
+   EnterList
+	   -> EnterItem
+	   -> EnterList EnterItem
+
+   EnterItem
+	   -> TRACEID '(' EnterTraceId ')'
+	   -> FROM    '(' EnterFrom    ')'
+
+   EnterTraceId
+	   -> <integer>
+	   -> <identifier>
+
+   EnterFrom
+	   -> <identifier>
+
+
+
+   /**************/
+   /*            */
+   /*  FREEMAIN  */
+   /*            */
+   /**************/
+
+   FreeMainStmt
+	   -> FreeMainInit DATA '(' FreeMainData ')'
+
+   FreeMainInit
+	   -> FREEMAIN
+
+   FreeMainData
+	   -> <identifier>
+
+
+
+   /*************/
+   /*           */
+   /*  GETMAIN  */
+   /*           */
+   /*************/
+
+   GetMainStmt
+	   -> GetMainInit GetMainList
+
+   GetMainInit
+	   -> GETMAIN
+
+   GetMainList
+	   -> GetMainItem
+	   -> GetMainList GetMainItem
+
+   GetMainItem
+	   -> SET     '(' GetMainSet     ')'
+	   -> LENGTH  '(' GetMainLength  ')'
+	   -> INITIMG '(' GetMainInitImg ')'
+
+   GetMainSet
+	   -> <identifier>
+
+   GetMainLength
+	   -> <integer>
+	   -> <identifier>
+
+   GetMainInitImg
+	   -> <integer>
+
+
+
+   /************/
+   /*          */
+   /*  HANDLE  */
+   /*          */
+   /************/
+
+   HandleStmt
+	   -> HandleInit HandleAid
+	   -> HandleInit HandleCond
+	   -> HandleInit HandleAbend
+
+   HandleInit
+	   -> HANDEL
+
+   HandleAid
+	   -> HandleAidInit HandleAidList
+
+   HandleAidInit
+	   -> AID
+
+   HandleAidList
+	   -> HandleAidItem
+	   -> HandleAidList HandleAidItem
+
+   HandleAidItem
+	   -> PA1
+	   -> PA1    '(' HandleAidPA1    ')'
+	   -> PA2
+	   -> PA2    '(' HandleAidPA2    ')'
+	   -> PA3
+	   -> PA3    '(' HandleAidPA3    ')'
+	   -> PF1
+	   -> PF1    '(' HandleAidPF1    ')'
+	   -> PF2
+	   -> PF2    '(' HandleAidPF2    ')'
+	   -> PF3
+	   -> PF3    '(' HandleAidPF3    ')'
+	   -> PF4
+	   -> PF4    '(' HandleAidPF4    ')'
+	   -> PF5
+	   -> PF5    '(' HandleAidPF5    ')'
+	   -> PF6
+	   -> PF6    '(' HandleAidPF6    ')'
+	   -> PF7
+	   -> PF7    '(' HandleAidPF7    ')'
+	   -> PF8
+	   -> PF8    '(' HandleAidPF8    ')'
+	   -> PF9
+	   -> PF9    '(' HandleAidPF9    ')'
+	   -> PF10
+	   -> PF10   '(' HandleAidPF10   ')'
+	   -> PF11
+	   -> PF11   '(' HandleAidPF11   ')'
+	   -> PF12
+	   -> PF12   '(' HandleAidPF12   ')'
+	   -> PF13
+	   -> PF13   '(' HandleAidPF13   ')'
+	   -> PF14
+	   -> PF14   '(' HandleAidPF14   ')'
+	   -> PF15
+	   -> PF15   '(' HandleAidPF15   ')'
+	   -> PF16
+	   -> PF16   '(' HandleAidPF16   ')'
+	   -> PF17
+	   -> PF17   '(' HandleAidPF17   ')'
+	   -> PF18
+	   -> PF18   '(' HandleAidPF18   ')'
+	   -> PF19
+	   -> PF19   '(' HandleAidPF19   ')'
+	   -> PF20
+	   -> PF20   '(' HandleAidPF20   ')'
+	   -> PF21
+	   -> PF21   '(' HandleAidPF21   ')'
+	   -> PF22
+	   -> PF22   '(' HandleAidPF22   ')'
+	   -> PF23
+	   -> PF23   '(' HandleAidPF23   ')'
+	   -> PF24
+	   -> PF24   '(' HandleAidPF24   ')'
+	   -> CLEAR
+	   -> CLEAR  '(' HandleAidClear  ')'
+	   -> ENTER
+	   -> ENTER  '(' HandleAidEnter  ')'
+	   -> ANYKEY
+	   -> ANYKEY '(' HandleAidAnyKey ')'
+
+   HandleAidPA1
+	   -> <identifier>
+
+   HandleAidPA2
+	   -> <identifier>
+
+   HandleAidPA3
+	   -> <identifier>
+
+   HandleAidPF1
+	   -> <identifier>
+
+   HandleAidPF2
+	   -> <identifier>
+
+   HandleAidPF3
+	   -> <identifier>
+
+   HandleAidPF4
+	   -> <identifier>
+
+   HandleAidPF5
+	   -> <identifier>
+
+   HandleAidPF6
+	   -> <identifier>
+
+   HandleAidPF7
+	   -> <identifier>
+
+   HandleAidPF8
+	   -> <identifier>
+
+   HandleAidPF9
+	   -> <identifier>
+
+   HandleAidPF10
+	   -> <identifier>
+
+   HandleAidPF11
+	   -> <identifier>
+
+   HandleAidPF12
+	   -> <identifier>
+
+   HandleAidPF13
+	   -> <identifier>
+
+   HandleAidPF14
+	   -> <identifier>
+
+   HandleAidPF15
+	   -> <identifier>
+
+   HandleAidPF16
+	   -> <identifier>
+
+   HandleAidPF17
+	   -> <identifier>
+
+   HandleAidPF18
+	   -> <identifier>
+
+   HandleAidPF19
+	   -> <identifier>
+
+   HandleAidPF20
+	   -> <identifier>
+
+   HandleAidPF21
+	   -> <identifier>
+
+   HandleAidPF22
+	   -> <identifier>
+
+   HandleAidPF23
+	   -> <identifier>
+
+   HandleAidPF24
+	   -> <identifier>
+
+   HandleAidClear
+	   -> <identifier>
+
+   HandleAidEnter
+	   -> <identifier>
+
+   HandleAidAnyKey
+	   -> <identifier>
+
+   HandleCond
+	   -> HandleCondInit HandleCondList
+
+   HandleCondInit
+	   -> CONDITION
+
+   HandleCondList
+	   -> HandleCondItem
+	   -> HandleCondList HandleCondItem
+
+   HandleCondItem
+	   -> DUPREC
+	   -> DUPREC     '(' HandleCondDupRec     ')'
+	   -> ENDFILE
+	   -> ENDFILE    '(' HandleCondEndFile    ')'
+	   -> ENQBUSY
+	   -> ENQBUSY    '(' HandleCondEnqBusy    ')'
+	   -> ERROR
+	   -> ERROR      '(' HandleCondError      ')'
+	   -> EXPIRED
+	   -> EXPIRED    '(' HandleCondExpired    ')'
+	   -> ILLOGIC
+	   -> ILLOGIC    '(' HandleCondIllogic    ')'
+	   -> INVERRTERM
+	   -> INVERRTERM '(' HandleCondInvErrTerm ')'
+	   -> INVREQ
+	   -> INVREQ     '(' HandleCondInvReq     ')'
+	   -> IOERR
+	   -> IOERR      '(' HandleCondIOErr      ')'
+	   -> ITEMERR
+	   -> ITEMERR    '(' HandleCondItemErr    ')'
+	   -> JIDERR
+	   -> JIDERR     '(' HandleCondJidErr     ')'
+	   -> LENGERR
+	   -> LENGERR    '(' HandleCondLengErr    ')'
+	   -> MAPFAIL
+	   -> MAPFAIL    '(' HandleCondMapFail    ')'
+	   -> NOJBUFSP
+	   -> NOJBUFSP   '(' HandleCondNoJbufSp   ')'
+	   -> NOSPACE
+	   -> NOSPACE    '(' HandleCondNoSpace    ')'
+	   -> NOSTG
+	   -> NOSTG      '(' HandleCondNoStg      ')'
+	   -> NOTFND
+	   -> NOTFND     '(' HandleCondNotFnd     ')'
+	   -> NOTOPEN
+	   -> NOTOPEN    '(' HandleCondNotOpen    ')'
+	   -> OVERFLOW
+	   -> OVERFLOW   '(' HandleCondOverFlow   ')'
+	   -> PGMIDERR
+	   -> PGMIDERR   '(' HandleCondPgmIdErr   ')'
+	   -> QIDERR
+	   -> QIDERR     '(' HandleCondQidErr     ')'
+	   -> QZERO
+	   -> QZERO      '(' HandleCondQzero      ')'
+	   -> RTEFAIL
+	   -> RTEFAIL    '(' HandleCondRteFail    ')'
+	   -> RTESOME
+	   -> RTESOME    '(' HandleCondRteSome    ')'
+	   -> TERMIDERR
+	   -> TERMIDERR  '(' HandleCondTermIdErr  ')'
+
+   HandleCondDupRec
+	   -> <identifier>
+
+   HandleCondEndFile
+	   -> <identifier>
+
+   HandleCondEnqBusy
+	   -> <identifier>
+
+   HandleCondError
+	   -> <identifier>
+
+   HandleCondExpired
+	   -> <identifier>
+
+   HandleCondIllogic
+	   -> <identifier>
+
+   HandleCondInvErrTerm
+	   -> <identifier>
+
+   HandleCondInvReq
+	   -> <identifier>
+
+   HandleCondIOErr
+	   -> <identifier>
+
+   HandleCondItemErr
+	   -> <identifier>
+
+   HandleCondJidErr
+	   -> <identifier>
+
+   HandleCondLengErr
+	   -> <identifier>
+
+   HandleCondMapFail
+	   -> <identifier>
+
+   HandleCondNoJbufSp
+	   -> <identifier>
+
+   HandleCondNoSpace
+	   -> <identifier>
+
+   HandleCondNoStg
+	   -> <identifier>
+
+   HandleCondNotFnd
+	   -> <identifier>
+
+   HandleCondNotOpen
+	   -> <identifier>
+
+   HandleCondOverFlow
+	   -> <identifier>
+
+   HandleCondPgmIdErr
+	   -> <identifier>
+
+   HandleCondQidErr
+	   -> <identifier>
+
+   HandleCondQzero
+	   -> <identifier>
+
+   HandleCondRteFail
+	   -> <identifier>
+
+   HandleCondRteSome
+	   -> <identifier>
+
+   HandleCondTermIdErr
+	   -> <identifier>
+
+   HandleAbend
+	   -> HandleAbendInit HandleAbendList
+
+   HandleAbendInit
+	   -> ABEND
+
+   HandleAbendList
+	   -> HandleAbendItem
+	   -> HandleAbendList HandleAbendItem
+
+   HandleAbendItem
+	   -> CANCEL
+	   -> RESET
+	   -> PROGRAM '(' HandleAbendProgram ')'
+	   -> LABEL   '(' HandleAbendLabel   ')'
+
+   HandleAbendProgram
+	   -> <string>
+	   -> <identifier>
+
+   HandleAbendLabel
+	   -> <identifier>
+
+
+
+   /***********/
+   /*         */
+   /*  ISSUE  */
+   /*         */
+   /***********/
+
+   IssueStmt
+	   -> IssueInit IssueList
+
+   IssueInit
+	   -> ISSUE
+
+   IssueList
+	   -> IssueItem
+	   -> IssueList IssueItem
+
+   IssueItem
+	   -> PRINT
+	   -> COPY
+	   -> WAIT
+	   -> ERASEAUP
+	   -> RESET
+	   -> DISCONNECT
+	   -> TERMID  '(' IssueTermID  ')'
+	   -> CTLCHAR '(' IssueCtlChar ')'
+
+   IssueTermID
+	   -> <identifier>
+
+   IssueCtlChar
+	   -> <integer>
+
+
+
+
+   /*************/
+   /*           */
+   /*  JOURNAL  */
+   /*           */
+   /*************/
+
+   JournalStmt
+	   -> JournalInit JournalList
+
+   JournalInit
+	   -> JOURNAL
+
+   JournalList
+	   -> JournalItem
+	   -> JournalList JournalItem
+
+   JournalItem
+	   -> STARTIO
+	   -> WAIT
+	   -> JFILEID '(' JournalFileId ')'
+	   -> JTYPEID '(' JournalTypeId ')'
+	   -> FROM    '(' JournalFrom   ')'
+	   -> LENGTH  '(' JournalLength ')'
+	   -> REQID   '(' JournalReqId  ')'
+	   -> PREFIX  '(' JournalPrefix ')'
+	   -> PFXLENG '(' JournalPfxLen ')'
+
+   JournalFileId
+	   -> <string>
+	   -> <identifier>
+
+   JournalTypeId
+	   -> <string>
+	   -> <identifier>
+
+   JournalFrom
+	   -> <identifier>
+
+   JournalLength
+	   -> <integer>
+	   -> <identifier>
+
+   JournalReqId
+	   -> <identifier>
+
+   JournalPrefix
+	   -> <string>
+	   -> <identifier>
+
+   JournalPfxLen
+	   -> <integer>
+	   -> <identifier>
+
+
+
+   /**********/
+   /*        */
+   /*  LINK  */
+   /*        */
+   /**********/
+
+   LinkStmt
+	   -> LinkInit LinkList
+
+   LinkInit
+	   -> LINK
+
+   LinkList
+	   -> LinkItem
+	   -> LinkList LinkItem
+
+   LinkItem
+	   -> PROGRAM  '(' LinkProgram  ')'
+	   -> COMMAREA '(' LinkCommArea ')'
+	   -> LENGTH   '(' LinkLength   ')'
+
+   LinkProgram
+	   -> <string>
+	   -> <identifier>
+
+   LinkCommArea
+	   -> <identifier>
+
+   LinkLength
+	   -> <integer>
+	   -> <identifier>
+
+
+
+   /**********/
+   /*        */
+   /*  LOAD  */
+   /*        */
+   /**********/
+
+   LoadStmt
+	   -> LoadInit LoadList
+
+   LoadInit
+	   -> LOAD
+
+   LoadList
+	   -> LoadItem
+	   -> LoadList LoadItem
+
+   LoadItem
+	   -> PROGRAM  '(' LoadProgram ')'
+	   -> SET      '(' LoadSet     ')'
+	   -> LENGTH   '(' LoadLength  ')'
+
+   LoadProgram
+	   -> <string>
+	   -> <identifier>
+
+   LoadSet
+	   -> <identifier>
+
+   LoadLength
+	   -> <integer>
+	   -> <identifier>
+
+
+
+   /**********/
+   /*        */
+   /*  POST  */
+   /*        */
+   /**********/
+
+   PostStmt
+	   -> PostInit PostList
+
+   PostInit
+	   -> POST
+
+   PostList
+	   -> PostItem
+	   -> PostList PostItem
+
+   PostItem
+	   -> INTERVAL '(' PostInterval ')'
+	   -> TIME     '(' PostTime     ')'
+	   -> SET      '(' PostSet      ')'
+	   -> REQID    '(' PostReqId    ')'
+
+   PostInterval
+	   -> <integer>
+	   -> <identifier>
+
+   PostTime
+	   -> <integer>
+	   -> <identifier>
+
+   PostSet
+	   -> <identifier>
+
+   PostReqId
+	   -> <string>
+	   -> <identifier>
+
+
+
+   /***********/
+   /*         */
+   /*  PURGE  */
+   /*         */
+   /***********/
+
+   PurgeStmt
+	   -> PurgeInit MESSAGE
+
+   PurgeInit
+	   -> PURGE
+
+
+
+   /**********/
+   /*        */
+   /*  READ  */
+   /*        */
+   /**********/
+
+   ReadStmt
+	   -> ReadInit ReadList
+
+   ReadInit
+	   -> READ
+
+   ReadList
+	   -> ReadItem
+	   -> ReadList ReadItem
+
+   ReadItem
+	   -> GTEQ
+	   -> EQUAL
+	   -> GENERIC
+	   -> UPDATE
+	   -> DATASET   '(' ReadFile    ')'
+	   -> SET       '(' ReadSet     ')'
+	   -> INTO      '(' ReadInto    ')'
+	   -> LENGTH    '(' ReadRecLen  ')'
+	   -> RIDFLD    '(' ReadKeyName ')'
+	   -> KEYLENGTH '(' ReadKeyLen  ')'
+
+   ReadFile
+	   -> <string>
+	   -> <identifier>
+
+   ReadSet
+	   -> <identifier>
+
+   ReadInto
+	   -> <identifier>
+
+   ReadRecLen
+	   -> <integer>
+	   -> <identifier>
+
+   ReadKeyName
+	   -> <identifier>
+
+   ReadKeyLen
+	   -> <integer>
+	   -> <identifier>
+
+
+
+   /**************/
+   /*            */
+   /*  READNEXT  */
+   /*            */
+   /**************/
+
+   ReadNextStmt
+	   -> ReadNextInit ReadNextList
+
+   ReadNextInit
+	   -> READNEXT
+
+   ReadNextList
+	   -> ReadNextItem
+	   -> ReadNextList ReadNextItem
+
+   ReadNextItem
+	   -> DATASET   '(' ReadNextFile    ')'
+	   -> SET       '(' ReadNextSet     ')'
+	   -> INTO      '(' ReadNextInto    ')'
+	   -> LENGTH    '(' ReadNextRecLen  ')'
+	   -> RIDFLD    '(' ReadNextKeyName ')'
+	   -> KEYLENGTH '(' ReadNextKeyLen  ')'
+
+   ReadNextFile
+	   -> <string>
+	   -> <identifier>
+
+   ReadNextSet
+	   -> <identifier>
+
+   ReadNextInto
+	   -> <identifier>
+
+   ReadNextRecLen
+	   -> <integer>
+	   -> <identifier>
+
+   ReadNextKeyName
+	   -> <identifier>
+
+   ReadNextKeyLen
+	   -> <integer>
+	   -> <identifier>
+
+
+
+   /**************/
+   /*            */
+   /*  READPREV  */
+   /*            */
+   /**************/
+
+   ReadPrevStmt
+	   -> ReadPrevInit ReadPrevList
+
+   ReadPrevInit
+	   -> READPREV
+
+   ReadPrevList
+	   -> ReadPrevItem
+	   -> ReadPrevList ReadPrevItem
+
+   ReadPrevItem
+	   -> DATASET   '(' ReadPrevFile    ')'
+	   -> SET       '(' ReadPrevSet     ')'
+	   -> INTO      '(' ReadPrevInto    ')'
+	   -> LENGTH    '(' ReadPrevRecLen  ')'
+	   -> RIDFLD    '(' ReadPrevKeyName ')'
+	   -> KEYLENGTH '(' ReadPrevKeyLen  ')'
+
+   ReadPrevFile
+	   -> <string>
+	   -> <identifier>
+
+   ReadPrevSet
+	   -> <identifier>
+
+   ReadPrevInto
+	   -> <identifier>
+
+   ReadPrevRecLen
+	   -> <integer>
+	   -> <identifier>
+
+   ReadPrevKeyName
+	   -> <identifier>
+
+   ReadPrevKeyLen
+	   -> <integer>
+	   -> <identifier>
+
+
+
+   /***********/
+   /*         */
+   /*  READQ  */
+   /*         */
+   /***********/
+
+   ReadQStmt
+	   -> ReadQInit ReadQList
+
+   ReadQInit
+	   -> READQ
+
+   ReadQList
+	   -> ReadQItem
+	   -> ReadQList ReadQItem
+
+   ReadQItem
+	   -> TD
+	   -> TS
+	   -> NEXT
+	   -> QUEUE  '(' ReadQueue ')'
+	   -> SET    '(' ReadQSet  ')'
+	   -> INTO   '(' ReadQInto ')'
+	   -> LENGTH '(' ReadQLen  ')'
+	   -> ITEM   '(' ReadQItm  ')'
+
+   ReadQueue
+	   -> <string>
+	   -> <identifier>
+
+   ReadQSet
+	   -> <identifier>
+
+   ReadQInto
+	   -> <identifier>
+
+   ReadQLen
+	   -> <integer>
+	   -> <identifier>
+
+   ReadQItm
+	   -> <identifier>
+
+
+
+   /*************/
+   /*           */
+   /*  RECEIVE  */
+   /*           */
+   /*************/
+
+   ReceiveStmt
+	   -> ReceiveInit ReceiveList
+
+   ReceiveInit
+	   -> RECEIVE
+
+   ReceiveList
+	   -> ReceiveItem
+	   -> ReceiveList ReceiveItem
+
+   ReceiveItem
+	   -> TERMINAL
+	   -> INTO      '(' ReceiveInto   ')'
+	   -> SET       '(' ReceiveSet    ')'
+	   -> LENGTH    '(' ReceiveLength ')'
+	   -> MAP       '(' ReceiveMap    ')'
+	   -> MAPSET    '(' ReceiveMapSet ')'
+
+   ReceiveInto
+	   -> <identifier>
+
+   ReceiveSet
+	   -> <identifier>
+
+   ReceiveLength
+	   -> <integer>
+	   -> <identifier>
+
+   ReceiveMap
+	   -> <string>
+	   -> <identifier>
+
+   ReceiveMapSet
+	   -> <string>
+	   -> <identifier>
+
+
+
+   /*************/
+   /*           */
+   /*  RELEASE  */
+   /*           */
+   /*************/
+
+   ReleaseStmt
+	   -> ReleaseInit PROGRAM '(' ReleaseProg ')'
+
+   ReleaseInit
+	   -> RELEASE
+
+   ReleaseProg
+	   -> <string>
+	   -> <identifier>
+
+
+
+   /*************/
+   /*           */
+   /*  RESETBR  */
+   /*           */
+   /*************/
+
+   ResetBrStmt
+	   -> ResetBrInit ResetBrList
+
+   ResetBrInit
+	   -> RESETBR
+
+   ResetBrList
+	   -> ResetBrItem
+	   -> ResetBrList ResetBrItem
+
+   ResetBrItem
+	   -> GTEQ
+	   -> EQUAL
+	   -> GENERIC
+	   -> DATASET   '(' ResetBrFile    ')'
+	   -> RIDFLD    '(' ResetBrKeyName ')'
+	   -> KEYLENGTH '(' ResetBrKeyLen  ')'
+
+   ResetBrFile
+	   -> <string>
+	   -> <identifier>
+
+   ResetBrKeyName
+	   -> <identifier>
+
+   ResetBrKeyLen
+	   -> <integer>
+	   -> <identifier>
+
+
+
+   /**************/
+   /*            */
+   /*  RETRIEVE  */
+   /*            */
+   /**************/
+
+   RetrieveStmt
+	   -> RetrieveInit RetrieveList
+
+   RetrieveInit
+	   -> RETRIEVE
+
+   RetrieveList
+	   -> RetrieveItem
+	   -> RetrieveList RetrieveItem
+
+   RetrieveItem
+	   -> INTO   '(' RetrieveInto ')'
+	   -> SET    '(' RetrieveSet  ')'
+	   -> LENGTH '(' RetrieveLen  ')'
+
+   RetrieveInto
+	   -> <identifier>
+
+   RetrieveSet
+	   -> <identifier>
+
+   RetrieveLen
+	   -> <integer>
+	   -> <identifier>
+
+
+
+   /************/
+   /*          */
+   /*  RETURN  */
+   /*          */
+   /************/
+
+   ReturnStmt
+	   -> ReturnInit ReturnList
+
+   ReturnInit
+	   -> RETURN
+
+   ReturnList
+	   -> ReturnItem
+	   -> ReturnList ReturnItem
+
+   ReturnItem
+	   -> TRANSID  '(' ReturnTransId  ')'
+	   -> COMMAREA '(' ReturnCommArea ')'
+	   -> LENGTH   '(' ReturnLength   ')'
+
+   ReturnTransId
+	   -> <string>
+	   -> <identifier>
+
+   ReturnCommArea
+	   -> <identifier>
+
+   ReturnLength
+	   -> <integer>
+	   -> <identifier>
+
+
+
+   /*************/
+   /*           */
+   /*  REWRITE  */
+   /*           */
+   /*************/
+
+   RewriteStmt
+	   -> RewriteInit RewriteList
+
+   RewriteInit
+	   -> REWRITE
+
+   RewriteList
+	   -> RewriteItem
+	   -> RewriteList RewriteItem
+
+   RewriteItem
+	   -> DATASET   '(' RewriteFile ')'
+	   -> FROM      '(' RewriteFrom ')'
+	   -> LENGTH    '(' RewriteLen  ')'
+
+   RewriteFile
+	   -> <string>
+	   -> <identifier>
+
+   RewriteFrom
+	   -> <identifier>
+
+   RewriteLen
+	   -> <integer>
+	   -> <identifier>
+
+
+
+   /***********/
+   /*         */
+   /*  ROUTE  */
+   /*         */
+   /***********/
+
+   RouteStmt
+	   -> RouteInit RouteList
+
+   RouteInit
+	   -> ROUTE
+
+   RouteList
+	   -> RouteItem
+	   -> RouteList RouteItem
+
+   RouteItem
+	   -> NLEOM
+	   -> INTERVAL '(' RouteInterval ')'
+	   -> TIME     '(' RouteTime     ')'
+	   -> ERRTERM  '(' RouteErrTerm  ')'
+	   -> TITLE    '(' RouteTitle    ')'
+	   -> LIST     '(' RouteListItem ')'
+	   -> OPCLASS  '(' RouteOpClass  ')'
+	   -> REQID    '(' RouteReqId    ')'
+
+   RouteInterval
+	   -> <integer>
+	   -> <identifier>
+
+   RouteTime
+	   -> <integer>
+	   -> <identifier>
+
+   RouteErrTerm
+	   -> <string>
+	   -> <identifier>
+
+   RouteTitle
+	   -> <identifier>
+
+   RouteListItem
+	   -> <identifier>
+
+   RouteOpClass
+	   -> <identifier>
+
+   RouteReqId
+	   -> <string>
+	   -> <identifier>
+
+
+
+   /**********/
+   /*        */
+   /*  SEND  */
+   /*        */
+   /**********/
+
+   SendStmt
+	   -> SendInit SendList
+
+   SendInit
+	   -> SEND
+
+   SendList
+	   -> SendItem
+	   -> SendList SendItem
+
+   SendItem
+	   -> STRFIELD
+	   -> WAIT
+	   -> DATAONLY
+	   -> MAPONLY
+	   -> TERMINAL
+	   -> ERASE
+	   -> ERASEAUP
+	   -> ALARM
+	   -> FRSET
+	   -> PAGING
+	   -> ACCUM
+	   -> PRINT
+	   -> L40
+	   -> L64
+	   -> L80
+	   -> HOEOM
+	   -> NLEOM
+	   -> PAGE
+	   -> RELEASE
+	   -> RETAIN
+	   -> AUTOPAGE
+	   -> NOAUTOPAGE
+	   -> OPERPURGE
+	   -> TEXT
+	   -> JUSTFIRST
+	   -> JUSTLAST
+	   -> NOEDIT
+	   -> FREEKB
+	   -> CURSOR
+	   -> CURSOR    '(' SendCursor  ')'
+	   -> FROM      '(' SendFrom    ')'
+	   -> LENGTH    '(' SendLength  ')'
+	   -> DEST      '(' SendDest    ')'
+	   -> CTLCHAR   '(' SendCtlChar ')'
+	   -> MAP       '(' SendMap     ')'
+	   -> MAPSET    '(' SendMapSet  ')'
+	   -> TRANSID   '(' SendTransId ')'
+	   -> TRAILER   '(' SendTrailer ')'
+	   -> HEADER    '(' SendHeader  ')'
+	   -> JUSTIFY   '(' SendJustify ')'
+
+   SendFrom
+	   -> <identifier>
+
+   SendLength
+	   -> <integer>
+	   -> <identifier>
+
+   SendDest
+	   -> <identifier>
+
+   SendCtlChar
+	   -> <integer>
+
+   SendMap
+	   -> <string>
+	   -> <identifier>
+
+   SendMapSet
+	   -> <string>
+	   -> <identifier>
+
+   SendCursor
+	   -> <integer>
+	   -> <identifier>
+
+   SendTransId
+	   -> <string>
+	   -> <identifier>
+
+   SendTrailer
+	   -> <identifier>
+
+   SendHeader
+	   -> <identifier>
+
+   SendJustify
+	   -> <integer>
+	   -> <identifier>
+
+
+
+   /***********/
+   /*         */
+   /*  START  */
+   /*         */
+   /***********/
+
+   StartStmt
+	   -> StartInit StartList
+
+   StartInit
+	   -> START
+
+   StartList
+	   -> StartItem
+	   -> StartList StartItem
+
+   StartItem
+	   -> INTERVAL '(' StartInterval ')'
+	   -> TIME     '(' StartTime     ')'
+	   -> TRANSID  '(' StartTransId  ')'
+	   -> REQID    '(' StartReqId    ')'
+	   -> FROM     '(' StartFrom     ')'
+	   -> LENGTH   '(' StartLength   ')'
+	   -> TERMID   '(' StartTermId   ')'
+
+   StartInterval
+	   -> <integer>
+	   -> <identifier>
+
+   StartTime
+	   -> <integer>
+	   -> <identifier>
+
+   StartTransId
+	   -> <string>
+	   -> <identifier>
+
+   StartReqId
+	   -> <string>
+	   -> <identifier>
+
+   StartFrom
+	   -> <identifier>
+
+   StartLength
+	   -> <integer>
+	   -> <identifier>
+
+   StartTermId
+	   -> <string>
+	   -> <identifier>
+
+
+
+   /*************/
+   /*           */
+   /*  STARTBR  */
+   /*           */
+   /*************/
+
+   StartBrStmt
+	   -> StartBrInit StartBrList
+
+   StartBrInit
+	   -> STARTBR
+
+   StartBrList
+	   -> StartBrItem
+	   -> StartBrList StartBrItem
+
+   StartBrItem
+	   -> GTEQ
+	   -> EQUAL
+	   -> GENERIC
+	   -> DATASET   '(' StartBrFile    ')'
+	   -> RIDFLD    '(' StartBrKeyName ')'
+	   -> KEYLENGTH '(' StartBrKeyLen  ')'
+
+   StartBrFile
+	   -> <string>
+	   -> <identifier>
+
+   StartBrKeyName
+	   -> <identifier>
+
+   StartBrKeyLen
+	   -> <integer>
+	   -> <identifier>
+
+
+
+
+   /*************/
+   /*           */
+   /*  SUSPEND  */
+   /*           */
+   /*************/
+
+   SuspendStmt
+	   -> SUSPEND
+
+
+
+   /***************/
+   /*             */
+   /*  SYNCPOINT  */
+   /*             */
+   /***************/
+
+   SyncPointStmt
+	   -> SyncPointInit SyncPointTail
+
+   SyncPointInit
+	   -> SYNCPOINT
+
+   SyncPointTail
+	   ->
+	   -> ROLLBACK
+
+
+
+   /***********/
+   /*         */
+   /*  TRACE  */
+   /*         */
+   /***********/
+
+   TraceStmt
+	   -> TraceInit TraceList
+
+   TraceInit
+	   -> TRACE
+
+   TraceList
+	   -> TraceItem
+	   -> TraceList TraceItem
+
+   TraceItem
+	   -> ON
+	   -> OFF
+	   -> SYSTEM
+	   -> EI
+	   -> USER
+	   -> SINGLE
+
+
+
+   /************/
+   /*          */
+   /*  UNLOCK  */
+   /*          */
+   /************/
+
+   UnlockStmt
+	   -> UnlockInit DATASET '(' UnlockFile ')'
+
+   UnlockInit
+	   -> UNLOCK
+
+   UnlockFile
+	   -> <string>
+	   -> <identifier>
+
+
+
+   /**********/
+   /*        */
+   /*  WAIT  */
+   /*        */
+   /**********/
+
+   WaitStmt
+	   -> WaitInit WaitList
+
+   WaitInit
+	   -> WAIT
+
+   WaitList
+	   -> WaitItem
+	   -> WaitList WaitItem
+
+   WaitItem
+	   -> EVENT
+	   -> JOURNAL
+	   -> STARTIO
+	   -> ECADDR  '(' WaitECAddr  ')'
+	   -> JFILEID '(' WaitJFileId ')'
+	   -> REQID   '(' WaitReqId   ')'
+
+   WaitECAddr
+	   -> <identifier>
+
+   WaitJFileId
+	   -> <string>
+	   -> <identifier>
+
+   WaitReqId
+	   -> <string>
+	   -> <identifier>
+
+
+
+   /***********/
+   /*         */
+   /*  WRITE  */
+   /*         */
+   /***********/
+
+   WriteStmt
+	   -> WriteInit WriteList
+
+   WriteInit
+	   -> WRITE
+
+   WriteList
+	   -> WriteItem
+	   -> WriteList WriteItem
+
+   WriteItem
+	   -> DATASET   '(' WriteFile ')'
+	   -> FROM      '(' WriteFrom ')'
+	   -> LENGTH    '(' WriteLen  ')'
+	   -> RIDFIELD  '(' WriteKey  ')'
+
+   WriteFile
+	   -> <string>
+	   -> <identifier>
+
+   WriteFrom
+	   -> <identifier>
+
+   WriteLen
+	   -> <integer>
+	   -> <identifier>
+
+   WriteKey
+	   -> <identifier>
+
+
+
+   /************/
+   /*          */
+   /*  WRITEQ  */
+   /*          */
+   /************/
+
+   WriteQStmt
+	   -> WriteQInit WriteQList
+
+   WriteQInit
+	   -> WRITEQ
+
+   WriteQList
+	   -> WriteQItem
+	   -> WriteQList WriteQItem
+
+   WriteQItem
+	   -> TD
+	   -> TS
+	   -> MAIN
+	   -> AUXILIARY
+	   -> REWRITE
+	   -> QUEUE  '(' WriteQueue ')'
+	   -> FROM   '(' WriteQFrom ')'
+	   -> LENGTH '(' WriteQLen  ')'
+	   -> ITEM   '(' WriteQItm  ')'
+
+   WriteQueue
+	   -> <string>
+	   -> <identifier>
+
+   WriteQFrom
+	   -> <identifier>
+
+   WriteQLen
+	   -> <integer>
+	   -> <identifier>
+
+   WriteQItm
+	   -> <identifier>
+
+
+
+   /**********/
+   /*        */
+   /*  XCTL  */
+   /*        */
+   /**********/
+
+   XctlStmt
+	   -> XctlInit XctlList
+
+   XctlInit
+	   -> XCTL
+
+   XctlList
+	   -> XctlItem
+	   -> XctlList XctlItem
+
+   XctlItem
+	   -> PROGRAM  '(' XctlProgram  ')'
+	   -> COMMAREA '(' XctlCommArea ')'
+	   -> LENGTH   '(' XctlLength   ')'
+
+   XctlProgram
+	   -> <string>
+	   -> <identifier>
+
+   XctlCommArea
+	   -> <identifier>
+
+   XctlLength
+	   -> <integer>
+	   -> <identifier>
+
+
+
+

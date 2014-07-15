@@ -1,0 +1,2866 @@
+
+/* FORTRAN 77 */
+
+/* by Ed Dobies
+      Xypro Technology
+      Simi Valley, CA
+      1988 ?
+*/
+
+   <error>        => error();
+   <identifier>   => lookup();
+   <character>    => lookup();
+   <integer>      => lookup();
+   <string>       => lookup();
+   <label>        => lookup();
+   <eol>				;
+   <eof>				;
+
+/*  FORTRAN Grammar  */
+
+   Start
+	   -> TranUnit <eof>
+
+   TranUnit
+	   ->
+	   -> ProgList
+
+   ProgList
+	   -> ProgItem
+	   -> ProgList ProgItem
+
+   ProgItem
+	   -> MainProg
+	   -> FuncProg
+	   -> SubrProg
+	   -> BlockDataProg
+
+   MainProg
+	   -> ProgramStmt ProgBody
+	   ->             ProgBody
+
+   FuncProg
+	   -> FunctionStmt ProgBody
+
+   SubrProg
+	   -> SubroutineStmt ProgBody
+
+   BlockDataProg
+	   -> BlockDataStmt ProgBody
+
+   ProgBody
+	   -> Grp1StmtList Grp2StmtList Grp3StmtList Grp4StmtList ProgEnd
+
+   ProgEnd
+	   -> StmtLabel EndStmt
+	   ->           EndStmt
+
+   StmtLabel
+	   -> <label>
+
+   Grp1StmtList
+	   ->
+	   -> Grp1StmtList Grp1StmtItem
+
+   Grp1StmtItem
+	   -> StmtLabel FormatStmt
+	   -> StmtLabel EntryStmt
+	   ->           EntryStmt
+	   -> StmtLabel ImplicitStmt
+	   ->           ImplicitStmt
+	   -> StmtLabel ParameterStmt
+	   ->           ParameterStmt
+
+   Grp2StmtList
+	   ->
+	   -> Grp2StmtList Grp2StmtItem
+
+   Grp2StmtItem
+	   -> StmtLabel FormatStmt
+	   -> StmtLabel CommonStmt
+	   ->           CommonStmt
+	   -> StmtLabel DimensionStmt
+	   ->           DimensionStmt
+	   -> StmtLabel EndRecordStmt
+	   ->           EndRecordStmt
+	   -> StmtLabel EntryStmt
+	   ->           EntryStmt
+	   -> StmtLabel EquivalenceStmt
+	   ->           EquivalenceStmt
+	   -> StmtLabel ExternalStmt
+	   ->           ExternalStmt
+	   -> StmtLabel IntrinsicStmt
+	   ->           IntrinsicStmt
+	   -> StmtLabel ParameterStmt
+	   ->           ParameterStmt
+	   -> StmtLabel RecordStmt
+	   ->           RecordStmt
+	   -> StmtLabel SaveStmt
+	   ->           SaveStmt
+	   -> StmtLabel TypeStmt
+	   ->           TypeStmt
+
+   Grp3StmtList
+	   ->
+	   -> Grp3StmtList Grp3StmtItem
+
+   Grp3StmtItem
+	   -> StmtLabel FormatStmt
+	   -> StmtLabel DataStmt
+	   ->           DataStmt
+	   -> StmtLabel EntryStmt
+	   ->           EntryStmt
+
+   Grp4StmtList
+	   ->
+	   -> Grp4StmtList Grp4StmtItem
+
+   Grp4StmtItem
+	   -> StmtLabel FormatStmt
+	   -> StmtLabel DataStmt
+	   ->           DataStmt
+	   -> StmtLabel EntryStmt
+	   ->           EntryStmt
+	   -> StmtLabel ExecutableStmt
+	   ->           ExecutableStmt
+
+   ExecutableStmt
+	   -> AssignmentStmt
+	   -> BackspaceStmt
+	   -> CallStmt
+	   -> CheckpointStmt
+	   -> CloseStmt
+	   -> ContinueStmt
+	   -> DoStmt
+	   -> ElseStmt
+	   -> ElseIfStmt
+	   -> EndfileStmt
+	   -> EndIfStmt
+	   -> GoToStmt
+	   -> IfStmt
+	   -> InquireStmt
+	   -> OpenStmt
+	   -> PauseStmt
+	   -> PositionStmt
+	   -> PrintStmt
+	   -> ReadStmt
+	   -> ReceiveStmt
+	   -> ReturnStmt
+	   -> RewindStmt
+	   -> StartbackupStmt
+	   -> StopStmt
+	   -> UnitStmt
+	   -> WriteStmt
+
+
+
+   /****************/
+   /*              */
+   /*  ASSIGNMENT  */
+   /*              */
+   /****************/
+
+   AssignmentStmt
+	   -> AsgnValStmt AsgnDone
+	   -> AsgnAdrStmt AsgnDone
+
+   AsgnValStmt
+	   -> AsgnLHS '=' AsgnRHS
+
+   AsgnLHS
+	   -> QualName
+
+   AsgnRHS
+	   -> AnyExpr
+
+   AsgnAdrStmt
+	   -> AsgnInit AsgnLabel TO AsgnName
+
+   AsgnInit
+	   -> ASSIGN
+
+   AsgnLabel
+	   -> <integer>
+
+   AsgnName
+	   -> <identifier>
+
+   AsgnDone
+	   -> <eol>
+
+
+
+   /***************/
+   /*             */
+   /*  BACKSPACE  */
+   /*             */
+   /***************/
+
+   BackspaceStmt
+	   -> BkspStmtInit   BkspUnit       BkspStmtDone
+	   -> BkspStmtInit '(' BkspStmtBody ')' BkspStmtDone
+
+   BkspStmtInit
+	   -> BACKSPACE
+
+   BkspStmtBody
+	   -> BkspUnit
+	   -> BkspUnit ',' BkspCtrlList
+	   ->              BkspCtrlList
+
+   BkspCtrlList
+	   -> BkspCtrlItem
+	   -> BkspCtrlList ',' BkspCtrlItem
+
+   BkspCtrlItem
+	   -> UNIT   '=' BkspUnit
+	   -> ERR    '=' BkspErr
+	   -> IOSTAT '=' BkspIOStat
+
+   BkspUnit
+	   -> NumExpr
+	   -> '*'
+
+   BkspErr
+	   -> <integer>
+
+   BkspIOStat
+	   -> QualName
+
+   BkspStmtDone
+	   -> <eol>
+
+
+
+   /****************/
+   /*              */
+   /*  BLOCK DATA  */
+   /*              */
+   /****************/
+
+   BlockDataStmt
+	   -> BlockDataStmtInit BlockDataProgName BlockDataStmtDone
+
+   BlockDataStmtInit
+	   -> BLOCK DATA
+
+   BlockDataProgName
+	   -> <identifier>
+
+   BlockDataStmtDone
+	   -> <eol>
+
+
+
+   /**********/
+   /*        */
+   /*  CALL  */
+   /*        */
+   /**********/
+
+   CallStmt
+	   -> CallStmtInit CallStmtSubr CallStmtBody CallStmtDone
+
+   CallStmtInit
+	   -> CALL
+
+   CallStmtSubr
+	   -> <identifier>
+
+   CallStmtBody
+	   ->
+	   -> '(' CallArgList ')'
+	   -> '('             ')'
+
+   CallArgList
+	   -> CallArgItem
+	   -> CallArgList ',' CallArgItem
+
+   CallArgItem
+	   -> AnyExpr
+	   -> '*' CallLabel
+
+   CallLabel
+	   -> <integer>
+
+   CallStmtDone
+	   -> <eol>
+
+
+
+   /***********/
+   /*         */
+   /*  CLOSE  */
+   /*         */
+   /***********/
+
+   CloseStmt
+	   -> CloseStmtInit '(' CloseStmtBody ')' CloseStmtDone
+
+   CloseStmtInit
+	   -> CLOSE
+
+   CloseStmtBody
+	   -> CloseUnit
+	   -> CloseUnit ',' CloseCtrlList
+	   ->               CloseCtrlList
+
+   CloseCtrlList
+	   -> CloseCtrlItem
+	   -> CloseCtrlList ',' CloseCtrlItem
+
+   CloseCtrlItem
+	   -> UNIT   '=' CloseUnit
+	   -> ERR    '=' CloseErr
+	   -> STATUS '=' CloseStatus
+	   -> IOSTAT '=' CloseIOStat
+	   -> STACK  '=' CloseStack
+
+   CloseUnit
+	   -> NumExpr
+	   -> '*'
+
+   CloseErr
+	   -> <integer>
+
+   CloseStatus
+	   -> ChrExpr
+
+   CloseIOStat
+	   -> ChrExpr
+
+   CloseStack
+	   -> ChrExpr
+
+   CloseStmtDone
+	   -> <eol>
+
+
+
+   /************/
+   /*          */
+   /*  COMMON  */
+   /*          */
+   /************/
+
+   CommonStmt
+	   -> ComStmtInit CommonBody ComStmtDone
+
+   ComStmtInit
+	   -> COMMON
+
+   CommonBody
+	   -> CommonList1
+	   -> CommonList1 ',' CommonList2
+	   -> CommonList1     CommonList2
+	   ->                 CommonList2
+
+   CommonList1
+	   -> CommonItem1
+	   -> CommonList1 ',' CommonItem1
+
+   CommonItem1
+	   -> <identifier>
+	   -> ArrayDecl
+
+   CommonList2
+	   -> CommonItem2
+	   -> CommonList2 ',' CommonItem2
+	   -> CommonList2     CommonItem2
+
+   CommonItem2
+	   -> CommonHead CommonList1
+
+   CommonHead
+	   -> '/' ComBlockName '/'
+	   -> '/'              '/'
+
+   ComBlockName
+	   -> <identifier>
+
+   ComStmtDone
+	   -> <eol>
+
+
+
+   /****************/
+   /*              */
+   /*  CHECKPOINT  */
+   /*              */
+   /****************/
+
+   CheckpointStmt
+	   -> CkptStmtInit CkptStmtBody CkptStmtDone
+
+   CkptStmtInit
+	   -> CKECKPOINT
+
+   CkptStmtBody
+	   ->
+	   -> '(' CkptCtrlList ')' CkptDataList
+	   -> '(' CkptCtrlList ')'
+	   ->                  CkptDataList
+
+   CkptCtrlList
+	   -> CkptCtrlItem
+	   -> CkptCtrlList ',' CkptCtrlItem
+
+   CkptCtrlItem
+	   -> UNIT         '=' CkptUnit
+	   ->                  CkptUnit
+	   -> FILENUM      '=' CkptFileNum
+	   -> ERR          '=' CkptErr
+	   -> BACKUPSTATUS '=' CkptBupStat
+	   -> STACK        '=' CkptStack
+
+   CkptUnit
+	   -> NumExpr
+
+   CkptFileNum
+	   -> NumExpr
+
+   CkptErr
+	   -> <integer>
+
+   CkptBupStat
+	   -> QualName
+
+   CkptStack
+	   -> ChrExpr
+
+   CkptDataList
+	   -> CkptDataItem
+	   -> CkptDataList ',' CkptDataItem
+
+   CkptDataItem
+	   -> QualName
+
+   CkptStmtDone
+	   -> <eol>
+
+
+
+   /**************/
+   /*            */
+   /*  CONTINUE  */
+   /*            */
+   /**************/
+
+   ContinueStmt
+	   -> ContStmtInit ContStmtDone
+
+   ContStmtInit
+	   -> CONTINUE
+
+   ContStmtDone
+	   -> <eol>
+
+
+
+   /**********/
+   /*        */
+   /*  DATA  */
+   /*        */
+   /**********/
+
+   DataStmt
+	   -> DataStmtInit DataBodyList DataStmtDone
+
+   DataStmtInit
+	   -> DATA
+
+   DataBodyList
+	   -> DataBodyItem
+	   -> DataBodyList ',' DataBodyItem
+	   -> DataBodyList     DataBodyItem
+
+   DataBodyItem
+	   -> DataHeadList DataHeadMark DataTailList DataTailMark
+
+   DataHeadList
+	   -> DataHeadItem
+	   -> DataHeadList ',' DataHeadItem
+
+   DataHeadItem
+	   -> QualName
+	   -> DataImpDo
+
+   DataHeadMark
+	   -> '/'
+
+   DataTailList
+	   -> DataTailItem
+	   -> DataTailList ',' DataTailItem
+
+   DataTailItem
+	   -> DataTailItem1 '*' DataTailItem2
+	   ->                   DataTailItem2
+
+   DataTailItem1
+	   -> <integer>
+	   -> <identifier>
+
+   DataTailItem2
+	   -> AnyCon
+	   -> <identifier>
+
+   DataTailMark
+	   -> '/'
+
+   DataImpDo
+	   -> DataDoLpar DataDoList1 ',' DataDoIdx '=' DataDoList2 DataDoRpar
+
+   DataDoLpar
+	   -> '('
+
+   DataDoList1
+	   -> DataDoItem1
+	   -> DataDoList1 ',' DataDoItem1
+
+   DataDoItem1
+	   -> QualName
+	   -> DataImpDo
+
+   DataDoIdx
+	   -> <identifier>
+
+   DataDoList2
+	   -> DataDoItem2
+	   -> DataDoList2 ',' DataDoItem2
+
+   DataDoItem2
+	   -> IntConExpr
+
+   DataDoRpar
+	   -> ')'
+
+   DataStmtDone
+	   -> <eol>
+
+
+
+   /***************/
+   /*             */
+   /*  DIMENSION  */
+   /*             */
+   /***************/
+
+   DimensionStmt
+	   -> DimStmtInit DimDeclList DimStmtDone
+
+   DimStmtInit
+	   -> DIMENSION
+
+   DimDeclList
+	   -> DimDeclItem
+	   -> DimDeclList ',' DimDeclItem
+
+   DimDeclItem
+	   -> ArrayDecl
+
+   DimStmtDone
+	   -> <eol>
+
+
+
+   /********/
+   /*      */
+   /*  DO  */
+   /*      */
+   /********/
+
+   DoStmt
+	   -> DoStmtInit DoStmtBody DoStmtDone
+
+   DoStmtInit
+	   -> DO
+
+   DoStmtBody
+	   -> DoLabel ',' DoIndex '=' DoTailList
+	   -> DoLabel     DoIndex '=' DoTailList
+
+   DoLabel
+	   -> <integer>
+
+   DoIndex
+	   -> <identifier>
+
+   DoTailList
+	   -> DoTailItem
+	   -> DoTailList ',' DoTailItem
+
+   DoTailItem
+	   -> NumExpr
+
+   DoStmtDone
+	   ->
+
+
+
+   /**********/
+   /*        */
+   /*  ELSE  */
+   /*        */
+   /**********/
+
+   ElseStmt
+	   -> ElseStmtInit ElseStmtDone
+
+   ElseStmtInit
+	   -> ELSE
+
+   ElseStmtDone
+	   -> <eol>
+
+
+
+   /*************/
+   /*           */
+   /*  ELSE IF  */
+   /*           */
+   /*************/
+
+   ElseIfStmt
+	   -> ElseIfInit '(' ElseIfPred ')' THEN ElseIfDone
+
+   ElseIfInit
+	   -> ELSE IF
+
+   ElseIfPred
+	   -> AnyExpr
+
+   ElseIfDone
+	   -> <eol>
+
+
+
+   /*********/
+   /*       */
+   /*  END  */
+   /*       */
+   /*********/
+
+   EndStmt
+	   -> EndStmtSpec EndStmtDone
+
+   EndStmtSpec
+	   -> END
+
+   EndStmtDone
+	   -> <eol>
+
+
+
+   /***************/
+   /*             */
+   /*  END RECORD */
+   /*             */
+   /***************/
+
+   EndRecordStmt
+	   -> EndRecStmtSpec EndRecStmtDone
+
+   EndRecStmtSpec
+	   -> END RECORD
+
+   EndRecStmtDone
+	   -> <eol>
+
+
+
+   /*************/
+   /*           */
+   /*  ENDFILE  */
+   /*           */
+   /*************/
+
+   EndfileStmt
+	   -> EndfStmtInit   EndfUnit       EndfStmtDone
+	   -> EndfStmtInit '(' EndfStmtBody ')' EndfStmtDone
+
+   EndfStmtInit
+	   -> ENDFILE
+
+   EndfStmtBody
+	   -> EndfUnit
+	   -> EndfUnit ',' EndfCtrlList
+	   ->              EndfCtrlList
+
+   EndfCtrlList
+	   -> EndfCtrlItem
+	   -> EndfCtrlList ',' EndfCtrlItem
+
+   EndfCtrlItem
+	   -> UNIT   '=' EndfUnit
+	   -> ERR    '=' EndfErr
+	   -> IOSTAT '=' EndfIOStat
+
+   EndfUnit
+	   -> NumExpr
+	   -> '*'
+
+   EndfErr
+	   -> <integer>
+
+   EndfIOStat
+	   -> QualName
+
+   EndfStmtDone
+	   -> <eol>
+
+
+
+   /************/
+   /*          */
+   /*  END IF  */
+   /*          */
+   /************/
+
+   EndIfStmt
+	   -> EndIfInit EndIfDone
+
+   EndIfInit
+	   -> END IF
+
+   EndIfDone
+	   -> <eol>
+
+
+
+   /***********/
+   /*         */
+   /*  ENTRY  */
+   /*         */
+   /***********/
+
+   EntryStmt
+	   -> EntryStmtInit EntryName EntryParams EntryStmtDone
+
+   EntryStmtInit
+	   -> ENTRY
+
+   EntryName
+	   -> <identifier>
+
+   EntryParams
+	   ->
+	   -> '(' EntryParamList ')'
+
+   EntryParamList
+	   ->
+	   -> EntryParamList ',' EntryParamItem
+
+   EntryParamItem
+	   -> '*'
+	   -> <identifier>
+
+   EntryStmtDone
+	   -> <eol>
+
+
+
+   /*****************/
+   /*               */
+   /*  EQUIVALENCE  */
+   /*               */
+   /*****************/
+
+   EquivalenceStmt
+	   -> EquivStmtInit EquivBodyList EquivStmtDone
+
+   EquivStmtInit
+	   -> EQUIVALENCE
+
+   EquivBodyList
+	   -> EquivBodyItem
+	   -> EquivBodyList ',' EquivBodyItem
+
+   EquivBodyItem
+	   -> EquivLpar EquivNameItem ',' EquivNameList EquivRpar
+
+   EquivLpar
+	   -> '('
+
+   EquivNameList
+	   -> EquivNameItem
+	   -> EquivNameList ',' EquivNameItem
+
+   EquivNameItem
+	   -> QualName
+
+   EquivRpar
+	   -> ')'
+
+   EquivStmtDone
+	   -> <eol>
+
+
+
+   /**************/
+   /*            */
+   /*  EXTERNAL  */
+   /*            */
+   /**************/
+
+   ExternalStmt
+	   -> ExternStmtInit ExternBodyList ExternStmtDone
+
+   ExternStmtInit
+	   -> EXTERNAL
+
+   ExternBodyList
+	   -> ExternBodyItem
+	   -> ExternBodyList ',' ExternBodyItem
+
+   ExternBodyItem
+	   -> <identifier>
+
+   ExternStmtDone
+	   -> <eol>
+
+
+
+   /************/
+   /*          */
+   /*  FORMAT  */
+   /*          */
+   /************/
+
+   FormatStmt
+	   -> FmtStmtInit FmtStmtBody FmtStmtDone
+
+   FmtStmtInit
+	   -> FORMAT
+
+   FmtStmtBody
+	   -> '(' FmtSpecList ')'
+	   -> '('             ')'
+
+   FmtSpecList
+	   -> FmtSpecItem
+	   -> FmtSpecList ',' FmtSpecItem
+	   -> FmtSpecList     FmtSpecItem
+
+   FmtSpecItem
+	   -> FmtRepeat FmtSpec1 FmtSpec2
+	   ->           FmtSpec1 FmtSpec2
+	   -> FmtRepeat FmtSpec1 FmtSpec2 FmtSpec5
+	   ->           FmtSpec1 FmtSpec2 FmtSpec5
+	   -> FmtRepeat FmtSpec2
+	   ->           FmtSpec2
+	   -> FmtRepeat FmtSpec2 FmtSpec5
+	   ->           FmtSpec2 FmtSpec5
+	   -> FmtRepeat FmtSpec3
+	   ->           FmtSpec3
+	   -> FmtRepeat FmtSpec3 FmtSpec5
+	   ->           FmtSpec3 FmtSpec5
+	   -> FmtRepeat FmtSpec4
+	   ->           FmtSpec4
+	   -> FmtRepeat FmtSpec4 FmtSpec5
+	   ->           FmtSpec4 FmtSpec5
+	   -> FmtRepeat FmtSpec5
+	   ->           FmtSpec5
+
+   FmtSpec1
+	   -> FmtSpecK P
+
+   FmtSpec2
+	   -> F FmtSpecW '.' FmtSpecD
+	   -> E FmtSpecW '.' FmtSpecD
+	   -> E FmtSpecW '.' FmtSpecD E FmtSpecE
+	   -> D FmtSpecW '.' FmtSpecD
+	   -> G FmtSpecW '.' FmtSpecD
+	   -> G FmtSpecW '.' FmtSpecD E FmtSpecE
+
+   FmtSpec3
+	   -> '(' FmtSpecList ')'
+	   -> I FmtSpecW
+	   -> I FmtSpecW '.' FmtSpecM
+	   -> A
+	   -> A FmtSpecW
+	   -> L FmtSpecW
+
+   FmtSpec4
+	   ->            HolorithList
+	   -> FmtSpecN H HolorithList
+	   -> FmtSpecN X
+	   -> T   FmtSpecC
+	   -> T L FmtSpecC
+	   -> T R FmtSpecC
+	   -> S
+	   -> S P
+	   -> S S
+	   -> B N
+	   -> B Z
+
+   FmtSpec5
+	   -> '/'
+	   -> ':'
+
+   HolorithList
+	   -> HolorithItem
+	   -> HolorithList HolorithItem
+
+   HolorithItem
+	   -> FmtSpecH
+
+   FmtRepeat
+	   -> <integer>
+
+   FmtSpecW
+	   -> <integer>
+
+   FmtSpecE
+	   -> <integer>
+
+   FmtSpecN
+	   -> <integer>
+
+   FmtSpecC
+	   -> <integer>
+
+   FmtSpecD
+	   -> <integer>
+
+   FmtSpecM
+	   -> <integer>
+
+   FmtSpecK
+	   -> '+' <integer>
+	   -> '-' <integer>
+	   ->     <integer>
+
+   FmtSpecH
+	   -> <character>
+
+   FmtStmtDone
+	   -> <eol>
+
+
+
+   /**************/
+   /*            */
+   /*  FUNCTION  */
+   /*            */
+   /**************/
+
+   FunctionStmt
+	   -> FuncStmtType FuncStmtInit FuncProgName FuncParams FuncStmtDone
+
+   FuncStmtType
+	   -> REAL
+	   -> DOUBLE PRECISION
+	   -> COMPLEX
+	   -> LOGICAL
+	   -> FuncStmtInt
+	   -> FuncStmtChar
+
+   FuncStmtInt
+	   -> FuncStmtInt1
+	   -> FuncStmtInt1 '*' FuncStmtInt2
+
+   FuncStmtInt1
+	   -> INTEGER
+
+   FuncStmtInt2
+	   -> <integer>
+
+   FuncStmtChar
+	   -> FuncStmtChar1
+	   -> FuncStmtChar1 '*' FuncStmtChar2
+
+   FuncStmtChar1
+	   -> CHARACTER
+
+   FuncStmtChar2
+	   -> <integer>
+	   -> '(' IntConExpr ')'
+	   -> '(' '*' ')'
+
+   FuncStmtInit
+	   -> FUNCTION
+
+   FuncProgName
+	   -> <identifier>
+
+   FuncParams
+	   ->
+	   -> '(' FuncParamList ')'
+
+   FuncParamList
+	   ->
+	   -> FuncParamList ',' FuncParamItem
+
+   FuncParamItem
+	   -> <identifier>
+
+   FuncStmtDone
+	   -> <eol>
+
+
+
+   /***********/
+   /*         */
+   /*  GO TO  */
+   /*         */
+   /***********/
+
+   GoToStmt
+	   -> GoToStmtInit GoToStmtBody GoToStmtDone
+
+   GoToStmtInit
+	   -> GO TO
+
+   GoToStmtBody
+	   -> GoToUncond
+	   -> GoToComputed
+	   -> GoToAssigned
+
+   GoToUncond
+	   -> GoToLabelItem
+
+   GoToComputed
+	   -> '(' GoToLabelList ')' ',' GoToExpr
+	   -> '(' GoToLabelList ')'     GoToExpr
+
+   GoToExpr
+	   -> NumExpr
+
+   GoToAssigned
+	   -> GoToAsgnName ',' '(' GoToLabelList ')'
+	   -> GoToAsgnName     '(' GoToLabelList ')'
+	   -> GoToAsgnName
+
+   GoToAsgnName
+	   -> <identifier>
+
+   GoToLabelList
+	   -> GoToLabelItem
+	   -> GoToLabelList ',' GoToLabelItem
+
+   GoToLabelItem
+	   -> <integer>
+
+   GoToStmtDone
+	   -> <eol>
+
+
+
+   /********/
+   /*      */
+   /*  IF  */
+   /*      */
+   /********/
+
+   IfStmt
+	   -> IfStmtInit '(' IfPredicate ')' IfStmtTail
+
+   IfStmtInit
+	   -> IF
+
+   IfPredicate
+	   -> AnyExpr
+
+   IfStmtTail
+	   -> IfTargLabel ',' IfTargLabel ',' IfTargLabel IfStmtDone
+	   -> IfStmtExec ExecutableStmt
+	   -> THEN IfStmtDone
+
+   IfTargLabel
+	   -> <integer>
+
+   IfStmtExec
+	   ->
+
+   IfStmtDone
+	   -> <eol>
+
+
+
+   /**************/
+   /*            */
+   /*  IMPLICIT  */
+   /*            */
+   /**************/
+
+   ImplicitStmt
+	   -> ImplStmtInit ImplBodyList ImplStmtDone
+
+   ImplStmtInit
+	   -> IMPLICIT
+
+   ImplBodyList
+	   -> ImplBodyItem
+	   -> ImplBodyList ',' ImplBodyItem
+
+   ImplBodyItem
+	   -> ImplItemHead ImplItemTail
+
+   ImplItemHead
+	   -> REAL
+	   -> DOUBLE PRECISION
+	   -> COMPLEX
+	   -> LOGICAL
+	   -> ImplIntItem
+	   -> ImplCharItem
+
+   ImplIntItem
+	   -> ImplIntType
+	   -> ImplIntType '*' ImplIntSize
+
+   ImplIntType
+	   -> INTEGER
+
+   ImplIntSize
+	   -> INTEGER
+
+   ImplCharItem
+	   -> ImplCharType
+	   -> ImplCharType '*' ImplCharLen
+
+   ImplCharType
+	   -> CHARACTER
+
+   ImplCharLen
+	   -> <integer>
+	   -> '(' IntConExpr ')'
+	   -> '(' '*' ')'
+
+   ImplItemTail
+	   -> ImplTailLpar ImplTailList ImplTailRpar
+
+   ImplTailLpar
+	   -> '('
+
+   ImplTailList
+	   -> ImplTailItem
+	   -> ImplTailList ',' ImplTailItem
+
+   ImplTailItem
+	   -> ImplSingle
+	   -> ImplRange
+
+   ImplRange
+	   -> ImplSingle ImplDash ImplSingle
+
+   ImplDash
+	   -> '-'
+
+   ImplSingle
+	   -> <character>
+
+   ImplTailRpar
+	   -> ')'
+
+   ImplStmtDone
+	   -> <eol>
+
+
+
+   /*************/
+   /*           */
+   /*  INQUIRE  */
+   /*           */
+   /*************/
+
+   InquireStmt
+	   -> InqStmtInit '(' InqStmtBody ')' InqStmtDone
+
+   InqStmtInit
+	   -> INQUIRE
+
+   InqStmtBody
+	   -> InqUnit
+	   -> InqUnit ',' InqCtrlList
+	   ->             InqCtrlList
+
+   InqCtrlList
+	   -> InqCtrlItem
+	   -> InqCtrlList ',' InqCtrlItem
+
+   InqCtrlItem
+	   -> UNIT        '=' InqUnit
+	   -> FILE        '=' InqFile
+	   -> ERR         '=' InqErr
+	   -> IOSTAT      '=' InqIOStat
+	   -> EXIST       '=' InqExist
+	   -> OPENED      '=' InqOpened
+	   -> NUMBER      '=' InqNumber
+	   -> NAMED       '=' InqNamed
+	   -> NAME        '=' InqName
+	   -> ACCESS      '=' InqAccess
+	   -> SEQUENTIAL  '=' InqSequential
+	   -> DIRECT      '=' InqDirect
+	   -> FORM        '=' InqForm
+	   -> FORMATTED   '=' InqFormatted
+	   -> UNFORMATTED '=' InqUnformatted
+	   -> RECL        '=' InqRecl
+	   -> NEXTREC     '=' InqNextrec
+	   -> BLANK       '=' InqBlank
+
+   InqUnit
+	   -> NumExpr
+	   -> '*'
+
+   InqFile
+	   -> ChrExpr
+
+   InqErr
+	   -> <integer>
+
+   InqIOStat
+	   -> QualName
+
+   InqExist
+	   -> QualName
+
+   InqOpened
+	   -> QualName
+
+   InqNumber
+	   -> QualName
+
+   InqNamed
+	   -> QualName
+
+   InqName
+	   -> QualName
+
+   InqAccess
+	   -> QualName
+
+   InqSequential
+	   -> QualName
+
+   InqDirect
+	   -> QualName
+
+   InqForm
+	   -> QualName
+
+   InqFormatted
+	   -> QualName
+
+   InqUnformatted
+	   -> QualName
+
+   InqRecl
+	   -> QualName
+
+   InqNextrec
+	   -> QualName
+
+   InqBlank
+	   -> QualName
+
+   InqStmtDone
+	   -> <eol>
+
+
+
+   /***************/
+   /*             */
+   /*  INTRINSIC  */
+   /*             */
+   /***************/
+
+   IntrinsicStmt
+	   -> IntrinStmtInit IntrinBodyList IntrinStmtDone
+
+   IntrinStmtInit
+	   -> INTRINSIC
+
+   IntrinBodyList
+	   -> IntrinBodyItem
+	   -> IntrinBodyList ',' IntrinBodyItem
+
+   IntrinBodyItem
+	   -> <identifier>
+
+   IntrinStmtDone
+	   -> <eol>
+
+
+
+   /**********/
+   /*        */
+   /*  OPEN  */
+   /*        */
+   /**********/
+
+   OpenStmt
+	   -> OpenStmtInit '(' OpenStmtBody ')' OpenStmtDone
+
+   OpenStmtInit
+	   -> OPEN
+
+   OpenStmtBody
+	   -> OpenUnit
+	   -> OpenUnit ',' OpenCtrlList
+	   ->              OpenCtrlList
+
+   OpenCtrlList
+	   -> OpenCtrlItem
+	   -> OpenCtrlList ',' OpenCtrlItem
+
+   OpenCtrlItem
+	   -> UNIT         '=' OpenUnit
+	   -> ERR          '=' OpenErr
+	   -> FILE         '=' OpenFile
+	   -> STATUS       '=' OpenStatus
+	   -> ACCESS       '=' OpenAccess
+	   -> FORM         '=' OpenForm
+	   -> RECL         '=' OpenRecl
+	   -> BLANK        '=' OpenBlank
+	   -> IOSTAT       '=' OpenIOStat
+	   -> TIMED        '=' OpenTimed
+	   -> SPACECONTROL '=' OpenSpaceControl
+	   -> SYNCDEPTH    '=' OpenSyncDepth
+	   -> MODE         '=' OpenMode
+	   -> PROTECT      '=' OpenProtect
+	   -> STACK        '=' OpenStack
+
+   OpenUnit
+	   -> NumExpr
+	   -> '*'
+
+   OpenErr
+	   -> <integer>
+
+   OpenFile
+	   -> ChrExpr
+
+   OpenStatus
+	   -> ChrExpr
+
+   OpenAccess
+	   -> ChrExpr
+
+   OpenForm
+	   -> ChrExpr
+
+   OpenRecl
+	   -> NumExpr
+
+   OpenBlank
+	   -> ChrExpr
+
+   OpenIOStat
+	   -> QualName
+
+   OpenTimed
+	   -> LogExpr
+
+   OpenSpaceControl
+	   -> ChrExpr
+
+   OpenSyncDepth
+	   -> NumExpr
+
+   OpenMode
+	   -> ChrExpr
+
+   OpenProtect
+	   -> ChrExpr
+
+   OpenStack
+	   -> ChrExpr
+
+   OpenStmtDone
+	   -> <eol>
+
+
+
+   /***************/
+   /*             */
+   /*  PARAMETER  */
+   /*             */
+   /***************/
+
+   ParameterStmt
+	   -> ParamStmtInit '(' ParamBodyList ')' ParamStmtDone
+
+   ParamStmtInit
+	   -> PARAMETER
+
+   ParamBodyList
+	   -> ParamBodyItem
+	   -> ParamBodyList ',' ParamBodyItem
+
+   ParamBodyItem
+	   -> ParamName '=' ParamExpr
+
+   ParamName
+	   -> <identifier>
+
+   ParamExpr
+	   -> ConExpr
+
+   ParamStmtDone
+	   -> <eol>
+
+
+
+   /***********/
+   /*         */
+   /*  PAUSE  */
+   /*         */
+   /***********/
+
+   PauseStmt
+	   -> PauseStmtInit PauseStmtBody PauseStmtDone
+
+   PauseStmtInit
+	   -> PAUSE
+
+   PauseStmtBody
+	   ->
+	   -> ChrCon
+	   -> <integer>
+
+   PauseStmtDone
+	   -> <eol>
+
+
+
+   /**************/
+   /*            */
+   /*  POSITION  */
+   /*            */
+   /**************/
+
+   PositionStmt
+	   -> PosStmtInit '(' PosStmtBody ')' PosStmtDone
+
+   PosStmtInit
+	   -> POSITION
+
+   PosStmtBody
+	   -> PosUnit
+	   -> PosUnit ',' PosCtrlList
+	   ->             PosCtrlList
+
+   PosCtrlList
+	   -> PosCtrlItem
+	   -> PosCtrlList ',' PosCtrlItem
+
+   PosCtrlItem
+	   -> UNIT       '=' PosUnit
+	   -> ERR        '=' PosErr
+	   -> IOSTAT     '=' PosIOStat
+	   -> REC        '=' PosRec
+	   -> KEY        '=' PosKey
+	   -> KEYLEN     '=' PosKeyLen
+	   -> KEYID      '=' PosKeyId
+	   -> MODE       '=' PosMode
+	   -> COMPARELEN '=' PosCompLen
+	   -> SKIPEXACT  '=' PosSkipExact
+
+   PosUnit
+	   -> NumExpr
+	   -> '*'
+
+   PosErr
+	   -> <integer>
+
+   PosIOStat
+	   -> QualName
+
+   PosRec
+	   -> NumExpr
+
+   PosKey
+	   -> ChrExpr
+
+   PosKeyLen
+	   -> NumExpr
+
+   PosKeyId
+	   -> AnyExpr
+
+   PosMode
+	   -> ChrExpr
+
+   PosCompLen
+	   -> NumExpr
+
+   PosSkipExact
+	   -> ChrExpr
+
+   PosStmtDone
+	   -> <eol>
+
+
+
+   /***********/
+   /*         */
+   /*  PRINT  */
+   /*         */
+   /***********/
+
+   PrintStmt
+	   -> PrintStmtInit PrintStmtBody PrintStmtDone
+
+   PrintStmtInit
+	   -> PRINT
+
+   PrintStmtBody
+	   -> PrintFormat ',' PrintIOList
+	   -> PrintFormat
+
+   PrintFormat
+	   -> <integer>
+	   -> ChrExpr
+	   -> '*'
+
+   PrintIOList
+	   -> InputOutput
+
+   PrintStmtDone
+	   -> <eol>
+
+
+
+   /*************/
+   /*           */
+   /*  PROGRAM  */
+   /*           */
+   /*************/
+
+   ProgramStmt
+	   -> ProgStmtInit MainProgName ProgStmtDone
+
+   ProgStmtInit
+	   -> PROGRAM
+
+   MainProgName
+	   -> <identifier>
+
+   ProgStmtDone
+	   -> <eol>
+
+
+
+   /**********/
+   /*        */
+   /*  READ  */
+   /*        */
+   /**********/
+
+   ReadStmt
+	   -> ReadStmtInit ReadStmtBody ReadStmtDone
+
+   ReadStmtInit
+	   -> READ
+
+   ReadStmtBody
+	   -> '(' ReadCtrl ')' ReadIOList
+	   -> '(' ReadCtrl ')'
+	   -> ReadFmt      ',' ReadIOList
+	   -> ReadFmt
+
+   ReadCtrl
+	   -> ReadUnit
+	   -> ReadUnit             ',' ReadCtrlList
+	   -> ReadUnit ',' ReadFmt
+	   -> ReadUnit ',' ReadFmt ',' ReadCtrlList
+	   ->                          ReadCtrlList
+
+   ReadCtrlList
+	   -> ReadCtrlItem
+	   -> ReadCtrlList ',' ReadCtrlItem
+
+   ReadCtrlItem
+	   -> UNIT         '=' ReadUnit
+	   -> FMT          '=' ReadFmt
+	   -> REC          '=' ReadRec
+	   -> IOSTAT       '=' ReadIOStat
+	   -> END          '=' ReadEnd
+	   -> ERR          '=' ReadErr
+	   -> LOCK         '=' ReadLock
+	   -> UPDATE       '=' ReadUpdate
+	   -> LENGTH       '=' ReadLength
+	   -> TIMEOUT      '=' ReadTimeOut
+	   -> PROMPT       '=' ReadPrompt
+	   -> PROMPTLENGTH '=' ReadPromptLength
+	   -> SOURCE       '=' ReadSource
+
+   ReadUnit
+	   -> NumExpr
+	   -> '*'
+
+   ReadFmt
+	   -> <integer>
+	   -> ChrExpr
+	   -> '*'
+
+   ReadRec
+	   -> NumExpr
+
+   ReadIOStat
+	   -> QualName
+
+   ReadEnd
+	   -> <integer>
+
+   ReadErr
+	   -> <integer>
+
+   ReadLock
+	   -> LogExpr
+
+   ReadUpdate
+	   -> LogExpr
+
+   ReadLength
+	   -> QualName
+
+   ReadTimeOut
+	   -> NumExpr
+
+   ReadPrompt
+	   -> ChrExpr
+
+   ReadPromptLength
+	   -> NumExpr
+
+   ReadSource
+	   -> QualName
+
+   ReadIOList
+	   -> InputOutput
+
+   ReadStmtDone
+	   -> <eol>
+
+
+
+   /*************/
+   /*           */
+   /*  RECEIVE  */
+   /*           */
+   /*************/
+
+   ReceiveStmt
+	   -> RecvStmtInit RecvStmtBody RecvStmtDone
+
+   RecvStmtInit
+	   -> RECEIVE
+
+   RecvStmtBody
+	   ->     RecvItem
+	   -> '(' RecvList ')'
+
+   RecvList
+	   -> RecvItem
+	   -> RecvList ',' RecvItem
+
+   RecvItem
+	   -> SYSMSG
+	   -> MAXREPLY  RecvMaxReply
+	   -> OPEN      RecvOpen
+	   -> QDEPTH    RecvQdepth
+	   -> SYNCDEPTH RecvSyncDepth
+
+   RecvMaxReply
+	   -> <integer>
+
+   RecvOpen
+	   -> <integer>
+
+   RecvQdepth
+	   -> <integer>
+
+   RecvSyncDepth
+	   -> <integer>
+
+   RecvStmtDone
+	   -> <eol>
+
+
+
+   /************/
+   /*          */
+   /*  RECORD  */
+   /*          */
+   /************/
+
+   RecordStmt
+	   -> RecdStmtInit RecdStmtBody RecdStmtDone
+
+   RecdStmtInit
+	   -> RECORD
+
+   RecdStmtBody
+	   -> <identifier>
+
+   RecdStmtDone
+	   -> <eol>
+
+
+
+   /************/
+   /*          */
+   /*  RETURN  */
+   /*          */
+   /************/
+
+   ReturnStmt
+	   -> RetStmtInit RetStmtBody RetStmtDone
+
+   RetStmtInit
+	   -> RETURN
+
+   RetStmtBody
+	   ->
+	   -> NumExpr
+
+   RetStmtDone
+	   -> <eol>
+
+
+
+   /************/
+   /*          */
+   /*  REWIND  */
+   /*          */
+   /************/
+
+   RewindStmt
+	   -> RewStmtInit   RewUnit       RewStmtDone
+	   -> RewStmtInit '(' RewStmtBody ')' RewStmtDone
+
+   RewStmtInit
+	   -> REWIND
+
+   RewStmtBody
+	   -> RewUnit
+	   -> RewUnit ',' RewCtrlList
+	   ->             RewCtrlList
+
+   RewCtrlList
+	   -> RewCtrlItem
+	   -> RewCtrlList ',' RewCtrlItem
+
+   RewCtrlItem
+	   -> UNIT   '=' RewUnit
+	   -> ERR    '=' RewErr
+	   -> IOSTAT '=' RewIOStat
+
+   RewUnit
+	   -> NumExpr
+	   -> '*'
+
+   RewErr
+	   -> <integer>
+
+   RewIOStat
+	   -> QualName
+
+   RewStmtDone
+	   -> <eol>
+
+
+
+   /**********/
+   /*        */
+   /*  SAVE  */
+   /*        */
+   /**********/
+
+   SaveStmt
+	   -> SaveStmtInit SaveBodyList SaveStmtDone
+
+   SaveStmtInit
+	   -> SAVE
+
+   SaveBodyList
+	   ->
+	   -> SaveBodyList ',' SaveBodyItem
+
+   SaveBodyItem
+	   -> <identifier>
+
+   SaveStmtDone
+	   -> <eol>
+
+
+
+   /*****************/
+   /*               */
+   /*  STARTBACKUP  */
+   /*               */
+   /*****************/
+
+   StartbackupStmt
+	   -> SbupStmtInit SbupStmtBody SbupStmtDone
+
+   SbupStmtInit
+	   -> STARTBACKUP
+
+   SbupStmtBody
+	   ->
+	   -> '(' SbupList ')'
+
+   SbupList
+	   -> SbupItem
+	   -> SbupList ',' SbupItem
+
+   SbupItem
+	   -> CPU          '=' SbupCpu
+	   -> ERR          '=' SbupErr
+	   -> BACKUPSTATUS '=' SbupStatus
+	   -> OPTION       '=' SbupOption
+
+   SbupCpu
+	   -> NumExpr
+
+   SbupErr
+	   -> <integer>
+
+   SbupStatus
+	   -> QualName
+
+   SbupOption
+	   -> NumExpr
+
+   SbupStmtDone
+	   -> <eol>
+
+
+
+   /**********/
+   /*        */
+   /*  STOP  */
+   /*        */
+   /**********/
+
+   StopStmt
+	   -> StopStmtInit StopStmtBody StopStmtDone
+
+   StopStmtInit
+	   -> STOP
+
+   StopStmtBody
+	   ->
+	   -> ChrCon
+	   -> <integer>
+
+   StopStmtDone
+	   -> <eol>
+
+
+
+   /****************/
+   /*              */
+   /*  SUBROUTINE  */
+   /*              */
+   /****************/
+
+   SubroutineStmt
+	   -> SubrStmtInit SubrProgName SubrParams SubrStmtDone
+
+   SubrStmtInit
+	   -> SUBROUTINE
+
+   SubrProgName
+	   -> <identifier>
+
+   SubrParams
+	   ->
+	   -> '(' SubrParamList ')'
+
+   SubrParamList
+	   ->
+	   -> SubrParamList ',' SubrParamItem
+
+   SubrParamItem
+	   -> '*'
+	   -> <identifier>
+
+   SubrStmtDone
+	   -> <eol>
+
+
+
+   /**********/
+   /*        */
+   /*  TYPE  */
+   /*        */
+   /**********/
+
+   TypeStmt
+	   -> TypeStmtSpec1 TypeBodyList TypeStmtDone
+	   -> TypeStmtSpec2 TypeBodyList TypeStmtDone
+	   -> TypeStmtSpec3 TypeBodyList TypeStmtDone
+	   -> TypeStmtSpec4 TypeBodyList TypeStmtDone
+
+   TypeStmtSpec1
+	   -> REAL
+	   -> DOUBLE PRECISION
+	   -> COMPLEX
+	   -> LOGICAL
+
+   TypeStmtSpec2
+	   -> TypeSpecInt1
+	   -> TypeSpecInt1 '*' TypeSpecInt2
+
+   TypeSpecInt1
+	   -> INTEGER
+
+   TypeSpecInt2
+	   -> <integer>
+
+   TypeStmtSpec3
+	   -> TypeSpecFill1
+	   -> TypeSpecFill1 '*' TypeSpecFill2
+
+   TypeSpecFill1
+	   -> FILLER
+
+   TypeSpecFill2
+	   -> <integer>
+
+   TypeStmtSpec4
+	   -> TypeSpecChar '*' TypeSpecLen ','
+	   -> TypeSpecChar '*' TypeSpecLen
+	   -> TypeSpecChar
+
+   TypeSpecChar
+	   -> CHARACTER
+
+   TypeSpecLen
+	   -> <integer>
+	   -> '(' IntConExpr ')'
+	   -> '(' '*' ')'
+
+   TypeBodyList
+	   -> TypeBodyItem
+	   -> TypeBodyList ',' TypeBodyItem
+
+   TypeBodyItem
+	   -> TypeBodyName
+	   -> TypeBodyName  TypeBodyLen
+	   -> TypeBodyArray
+	   -> TypeBodyArray TypeBodyLen
+
+   TypeBodyName
+	   -> <identifier>
+
+   TypeBodyArray
+	   -> ArrayDecl
+
+   TypeBodyLen
+	   -> <integer>
+	   -> '(' IntConExpr ')'
+	   -> '(' '*' ')'
+
+   TypeStmtDone
+	   -> <eol>
+
+
+
+   /**********/
+   /*        */
+   /*  UNIT  */
+   /*        */
+   /**********/
+
+   UnitStmt
+	   -> UnitStmtInit UnitStmtBody UnitStmtDone
+
+   UnitStmtInit
+	   -> UNIT
+
+   UnitStmtBody
+	   ->     UnitSpecItem
+	   -> '(' UnitSpecList ')'
+	   -> '(' UnitSpecList ',' UnitSpecTail ')'
+
+   UnitSpecList
+	   -> UnitSpecItem
+	   -> UnitSpecList ',' UnitSpecItem
+
+   UnitSpecItem
+	   -> UnitSpec1
+	   -> UnitSpec1 '-' UnitSpec2
+
+   UnitSpec1
+	   -> <integer>
+
+   UnitSpec2
+	   -> <integer>
+
+   UnitSpecTail
+	   -> UnitSpecFile UnitParmList
+	   ->              UnitParmList
+
+   UnitSpecFile
+	   -> <identifier>
+
+   UnitParmList
+	   -> UnitParmItem
+	   -> UnitParmList ',' UnitParmItem
+
+   UnitParmItem
+	   -> BLOCK         UnitBlock
+	   -> CODE          UnitCode
+	   -> EXT           UnitExt1
+	   -> EXT       '(' UnitExt1 ',' UnitExt2 ')'
+	   -> REC           UnitRec
+	   -> UNITNAME      UnitName
+	   -> INPUT     '(' UnitInput     ')'
+	   -> OUTPUT    '(' UnitOutput    ')'
+	   -> I_O       '(' UnitIO        ')'
+	   -> EXCLUSIVE '(' UnitExclusive ')'
+	   -> PROTECTED '(' UnitProtected ')'
+	   -> SHARED    '(' UnitShared    ')'
+
+   UnitBlock
+	   -> <integer>
+
+   UnitCode
+	   -> <integer>
+
+   UnitExt1
+	   -> <integer>
+
+   UnitExt2
+	   -> <integer>
+
+   UnitRec
+	   -> <integer>
+
+   UnitName
+	   -> <identifier>
+
+   UnitInput
+	   -> ChrExpr
+
+   UnitOutput
+	   -> ChrExpr
+
+   UnitIO
+	   -> ChrExpr
+
+   UnitExclusive
+	   -> ChrExpr
+
+   UnitProtected
+	   -> ChrExpr
+
+   UnitShared
+	   -> ChrExpr
+
+   UnitStmtDone
+	   -> <eol>
+
+
+
+   /***********/
+   /*         */
+   /*  WRITE  */
+   /*         */
+   /***********/
+
+   WriteStmt
+	   -> WriteStmtInit WriteStmtBody WriteStmtDone
+
+   WriteStmtInit
+	   -> WRITE
+
+   WriteStmtBody
+	   -> '(' WriteCtrl ')' WriteIOList
+	   -> '(' WriteCtrl ')'
+
+   WriteCtrl
+	   -> WriteUnit
+	   -> WriteUnit              ',' WriteCtrlList
+	   -> WriteUnit ',' WriteFmt
+	   -> WriteUnit ',' WriteFmt ',' WriteCtrlList
+	   ->                            WriteCtrlList
+
+   WriteCtrlList
+	   -> WriteCtrlItem
+	   -> WriteCtrlList ',' WriteCtrlItem
+
+   WriteCtrlItem
+	   -> UNIT    '=' WriteUnit
+	   -> FMT     '=' WriteFmt
+	   -> IOSTAT  '=' WriteIOStat
+	   -> REC     '=' WriteRec
+	   -> END     '=' WriteEnd
+	   -> ERR     '=' WriteErr
+	   -> UNLOCK  '=' WriteUnlock
+	   -> UPDATE  '=' WriteUpdate
+	   -> LENGTH  '=' WriteLength
+	   -> TIMEOUT '=' WriteTimeOut
+	   -> MSGNUM  '=' WriteMsgNum
+	   -> REPLY   '=' WriteReply
+
+
+   WriteUnit
+	   -> NumExpr
+	   -> '*'
+
+   WriteFmt
+	   -> <integer>
+	   -> ChrExpr
+	   -> '*'
+
+   WriteIOStat
+	   -> QualName
+
+   WriteRec
+	   -> NumExpr
+
+   WriteEnd
+	   -> <integer>
+
+   WriteErr
+	   -> <integer>
+
+   WriteUnlock
+	   -> LogExpr
+
+   WriteUpdate
+	   -> LogExpr
+
+   WriteLength
+	   -> QualName
+
+   WriteTimeOut
+	   -> NumExpr
+
+   WriteMsgNum
+	   -> NumExpr
+
+   WriteReply
+	   -> NumExpr
+
+   WriteIOList
+	   -> InputOutput
+
+   WriteStmtDone
+	   -> <eol>
+
+
+
+   /****************/
+   /*              */
+   /*  ARRAY DECL  */
+   /*              */
+   /****************/
+
+   ArrayDecl
+	   -> ArrayDeclInit ArrayName ArraySize ArrayDeclDone
+
+   ArrayDeclInit
+	   ->
+
+   ArrayName
+	   -> <identifier>
+
+   ArraySize
+	   -> ArraySizeLpar ArraySizeList ArraySizeRpar
+
+   ArraySizeLpar
+	   -> '('
+
+   ArraySizeList
+	   -> ArraySizeItem
+	   -> ArraySizeList ArraySizeComma ArraySizeItem
+
+   ArraySizeComma
+	   -> ','
+
+   ArraySizeItem
+	   -> ArraySizeHead ArraySizeColon ArraySizeTail
+	   ->                              ArraySizeTail
+
+   ArraySizeHead
+	   -> DimExpr
+
+   ArraySizeColon
+	   -> ':'
+
+   ArraySizeTail
+	   -> '*'
+	   -> DimExpr
+
+   ArraySizeRpar
+	   -> ')'
+
+   ArrayDeclDone
+	   ->
+
+
+
+   /**************/
+   /*            */
+   /*  DIM EXPR  */
+   /*            */
+   /**************/
+
+   DimExpr
+	   -> DimTerm
+	   -> '+' DimTerm
+	   -> '-' DimTerm
+	   -> DimExpr '+' DimTerm
+	   -> DimExpr '-' DimTerm
+
+   DimTerm
+	   -> DimFact
+	   -> DimTerm '*' DimFact
+	   -> DimTerm '/' DimFact
+
+   DimFact
+	   -> DimPrim
+	   -> DimFact '**' DimPrim
+
+   DimPrim
+	   -> '(' DimExpr ')'
+	   -> <integer>
+	   -> <identifier>
+
+
+
+   /**************/
+   /*            */
+   /*  I-O LIST  */
+   /*            */
+   /**************/
+
+   InputOutput
+	   -> IOInit IOList IODone
+
+   IOInit
+	   ->
+
+   IOList
+	   -> IOItem
+	   -> IOList ',' IOItem
+
+   IOItem
+	   -> AnyExpr
+	   -> QualName
+	   -> IOImpDo
+
+   IOImpDo
+	   -> '(' IOList ',' IODoIndex '=' IODoList ')'
+
+   IODoIndex
+	   -> <identifier>
+
+   IODoList
+	   -> IODoItem
+	   -> IODoList ',' IODoItem
+
+   IODoItem
+	   -> NumExpr
+
+   IODone
+	   ->
+
+
+
+   /**************/
+   /*            */
+   /*  ANY EXPR  */
+   /*            */
+   /**************/
+
+   AnyExpr
+	   -> AnyExprInit AnyExprList AnyExprDone
+
+   AnyExprInit
+	   ->
+
+   AnyExprList
+	   -> AnyExprItem
+	   -> AnyExprList AnyBop AnyExprItem
+
+   AnyExprItem
+	   -> AnyUop AnyExprItem1
+
+   AnyExprItem1
+	   -> AnyCon
+	   -> QualName
+	   -> '(' AnyExpr ')'
+
+   AnyExprDone
+	   ->
+
+
+
+   /**************/
+   /*            */
+   /*  NUM EXPR  */
+   /*            */
+   /**************/
+
+   NumExpr
+	   -> NumExprInit NumExprList NumExprDone
+
+   NumExprInit
+	   ->
+
+   NumExprList
+	   -> NumExprItem
+	   -> NumExprList NumBop NumExprItem
+
+   NumExprItem
+	   -> NumUop NumExprItem1
+
+   NumExprItem1
+	   -> NumCon
+	   -> QualName
+	   -> '(' NumExpr ')'
+
+   NumExprDone
+	   ->
+
+
+
+   /**************/
+   /*            */
+   /*  LOG EXPR  */
+   /*            */
+   /**************/
+
+   LogExpr
+	   -> LogExprInit LogExprList LogExprDone
+
+   LogExprInit
+	   ->
+
+   LogExprList
+	   -> LogExprItem
+	   -> LogExprList LogBop LogExprItem
+
+   LogExprItem
+	   -> LogUop LogExprItem1
+
+   LogExprItem1
+	   -> LogCon
+	   -> QualName
+	   -> '(' LogExpr ')'
+
+   LogExprDone
+	   ->
+
+
+
+   /**************/
+   /*            */
+   /*  CHR EXPR  */
+   /*            */
+   /**************/
+
+   ChrExpr
+	   -> ChrExprInit ChrExprList ChrExprDone
+
+   ChrExprInit
+	   ->
+
+   ChrExprList
+	   -> ChrExprItem
+	   -> ChrExprList ChrBop ChrExprItem
+
+   ChrExprItem
+	   -> ChrCon
+	   -> QualName
+	   -> '(' ChrExpr ')'
+
+   ChrExprDone
+	   ->
+
+
+
+   /**************/
+   /*            */
+   /*  CON EXPR  */
+   /*            */
+   /**************/
+
+   ConExpr
+	   -> ConExprInit ConExprList ConExprDone
+
+   ConExprInit
+	   ->
+
+   ConExprList
+	   -> ConExprItem
+	   -> ConExprList AnyBop ConExprItem
+
+   ConExprItem
+	   -> AnyUop ConExprItem1
+
+   ConExprItem1
+	   -> AnyCon
+	   -> QualName
+	   -> '(' ConExpr ')'
+
+   ConExprDone
+	   ->
+
+
+
+   /******************/
+   /*                */
+   /*  INT CON EXPR  */
+   /*                */
+   /******************/
+
+   IntConExpr
+	   -> IconExprInit IconExprList IconExprDone
+
+   IconExprInit
+	   ->
+
+   IconExprList
+	   -> IconExprItem
+	   -> IconExprList NumBop IconExprItem
+
+   IconExprItem
+	   -> NumUop IconExprItem1
+
+   IconExprItem1
+	   -> <integer>
+	   -> <identifier>
+	   -> '(' IntConExpr ')'
+
+   IconExprDone
+	   ->
+
+
+
+   /*************/
+   /*           */
+   /*  ANY BOP  */
+   /*           */
+   /*************/
+
+   AnyBop
+	   -> NumBop
+	   -> ChrBop
+	   -> LogBop
+	   -> RelBop
+
+
+
+   /*************/
+   /*           */
+   /*  NUM BOP  */
+   /*           */
+   /*************/
+
+   NumBop
+	   -> '+'
+	   -> '-'
+	   -> '*'
+	   -> '/'
+	   -> '**'
+
+
+
+   /*************/
+   /*           */
+   /*  CHR BOP  */
+   /*           */
+   /*************/
+
+   ChrBop
+	   -> '//'
+
+
+
+   /*************/
+   /*           */
+   /*  LOG BOP  */
+   /*           */
+   /*************/
+
+   LogBop
+	   -> '.AND.'
+	   -> '.OR.'
+	   -> '.EQV.'
+	   -> '.NEQV.'
+
+
+
+   /*************/
+   /*           */
+   /*  REL BOP  */
+   /*           */
+   /*************/
+
+   RelBop
+	   -> '.LT.'
+	   -> '.LE.'
+	   -> '.EQ.'
+	   -> '.NE.'
+	   -> '.GT.'
+	   -> '.GE.'
+
+
+
+   /*************/
+   /*           */
+   /*  ANY UOP  */
+   /*           */
+   /*************/
+
+   AnyUop
+	   -> NumUop
+	   -> LogUop
+
+
+
+   /*************/
+   /*           */
+   /*  NUM UOP  */
+   /*           */
+   /*************/
+
+   NumUop
+	   -> '+'
+	   -> '-'
+
+
+
+   /*************/
+   /*           */
+   /*  LOG UOP  */
+   /*           */
+   /*************/
+
+   LogUop
+	   -> '.NOT.'
+
+
+
+   /*************/
+   /*           */
+   /*  ANY CON  */
+   /*           */
+   /*************/
+
+   AnyCon
+	   -> ChrCon
+	   -> LogCon
+	   -> NumUop AnyNum
+	   ->        AnyNum
+
+   AnyNum
+	   -> NumCon
+
+
+
+   /*************/
+   /*           */
+   /*  CHR CON  */
+   /*           */
+   /*************/
+
+   ChrCon
+	   -> <string>
+
+
+
+   /*************/
+   /*           */
+   /*  LOG CON  */
+   /*           */
+   /*************/
+
+   LogCon
+	   -> '.TRUE.'
+	   -> '.FALSE.'
+
+
+
+   /*************/
+   /*           */
+   /*  NUM CON  */
+   /*           */
+   /*************/
+
+   NumCon
+	   -> SimpCon
+	   -> CplxCon
+
+
+
+   /**************/
+   /*            */
+   /*  SIMP CON  */
+   /*            */
+   /**************/
+
+   SimpCon
+	   -> '.' SimpConDec SimpCon1
+	   ->     SimpConFix SimpCon2
+
+   SimpConDec
+	   -> <integer>
+
+   SimpCon1
+	   ->
+	   -> SimpConInd SimpConExp
+
+   SimpConInd
+	   -> E
+	   -> D
+
+   SimpConExp
+	   -> <integer>
+
+   SimpConFix
+	   -> <integer>
+
+   SimpCon2
+	   ->
+	   -> '.' SimpConDec SimpCon1
+	   ->     SimpConInd SimpConExp
+
+
+
+   /**************/
+   /*            */
+   /*  CPLX CON  */
+   /*            */
+   /**************/
+
+   CplxCon
+	   -> CplxConInit '(' CplxConReal ',' CplxConImag ')' CplxConDone
+
+   CplxConInit
+	   ->
+
+   CplxConReal
+	   -> FltCon
+
+   CplxConImag
+	   -> FltCon
+
+   CplxConDone
+	   ->
+
+
+
+   /*************/
+   /*           */
+   /*  FLT CON  */
+   /*           */
+   /*************/
+
+   FltCon
+	   -> FltConFix '.' FltConDec E FltConExp
+	   -> FltConFix '.' FltConDec
+	   -> FltConFix               E FltConExp
+	   -> FltConFix '.'
+	   ->           '.' FltConDec E FltConExp
+	   ->           '.' FltConDec
+
+   FltConFix
+	   -> <integer>
+
+   FltConDec
+	   -> <integer>
+
+   FltConExp
+	   -> <integer>
+
+
+
+   /***************/
+   /*             */
+   /*  QUAL NAME  */
+   /*             */
+   /***************/
+
+   QualName
+	   -> QualNameInit QualNameBase QualNameIndex QualNameRange QualNameDone
+
+   QualNameInit
+	   ->
+
+   QualNameBase
+	   -> QualNameBase1
+	   -> QualNameBase1 '^' QualNameBase2
+
+   QualNameBase1
+	   -> BuiltIn
+	   -> <identifier>
+
+   QualNameBase2
+	   -> <identifier>
+
+   QualNameIndex
+	   ->
+	   -> QualNameIdxLpar QualNameIdxList QualNameIdxRpar
+
+   QualNameIdxLpar
+	   -> '('
+
+   QualNameIdxList
+	   -> QualNameIdxItem
+	   -> QualNameIdxList ',' QualNameIdxItem
+
+   QualNameIdxItem
+	   -> NumExpr
+
+   QualNameIdxRpar
+	   -> ')'
+
+   QualNameRange
+	   ->
+	   -> QualNameRngLpar QualNameRngBody QualNameRngRpar
+
+   QualNameRngLpar
+	   -> '('
+
+   QualNameRngBody
+	   -> QualNameRngHead QualNameRngMark QualNameRngTail
+	   -> QualNameRngHead QualNameRngMark
+	   ->                 QualNameRngMark QualNameRngTail
+	   ->                 QualNameRngMark
+
+   QualNameRngHead
+	   -> NumExpr
+
+   QualNameRngMark
+	   -> ':'
+
+   QualNameRngTail
+	   -> NumExpr
+
+   QualNameRngRpar
+	   -> ')'
+
+   QualNameDone
+	   ->
+
+
+
+   /*************/
+   /*           */
+   /*  BUILTIN  */
+   /*           */
+   /*************/
+
+   BuiltIn
+	   -> INT
+	   -> INT4
+	   -> INT8
+	   -> IFIX
+	   -> IFIX4
+	   -> IFIX8
+	   -> IDINT
+	   -> IDINT4
+	   -> IDINT8
+	   -> REAL
+	   -> FLOAT
+	   -> SNGL
+	   -> DBLE
+	   -> CMPLX
+	   -> ICHAR
+	   -> CHAR
+	   -> AINT
+	   -> DINT
+	   -> ANINT
+	   -> DNINT
+	   -> NINT
+	   -> NINT4
+	   -> NINT8
+	   -> IDNINT
+	   -> IDNINT4
+	   -> IDNINT8
+	   -> IABS
+	   -> IABS4
+	   -> IABS8
+	   -> ABS
+	   -> DABS
+	   -> CABS
+	   -> MOD
+	   -> MOD4
+	   -> MOD8
+	   -> AMOD
+	   -> DMOD
+	   -> ISIGN
+	   -> ISIGN4
+	   -> ISIGN8
+	   -> SIGN
+	   -> DSIGN
+	   -> IDIM
+	   -> IDIM4
+	   -> IDIM8
+	   -> DIM
+	   -> DDIM
+	   -> DPROD
+	   -> MAX
+	   -> MAX0
+	   -> MAX04
+	   -> MAX08
+	   -> AMAX1
+	   -> DMAX1
+	   -> AMAX0
+	   -> AMAX04
+	   -> AMAX08
+	   -> MAX1
+	   -> MAX14
+	   -> MAX18
+	   -> MIN
+	   -> MIN0
+	   -> MIN04
+	   -> MIN08
+	   -> AMIN1
+	   -> DMIN1
+	   -> AMIN0
+	   -> AMIN04
+	   -> AMIN08
+	   -> MIN1
+	   -> MIN14
+	   -> MIN18
+	   -> LEN
+	   -> INDEX
+	   -> AIMAG
+	   -> CONJG
+	   -> SQRT
+	   -> DSQRT
+	   -> CSQRT
+	   -> EXP
+	   -> DEXP
+	   -> CEXP
+	   -> LOG
+	   -> ALOG
+	   -> DLOG
+	   -> CLOG
+	   -> LOG10
+	   -> ALOG10
+	   -> DLOG10
+	   -> SIN
+	   -> DSIN
+	   -> CSIN
+	   -> COS
+	   -> DCOS
+	   -> CCOS
+	   -> TAN
+	   -> DTAN
+	   -> ASIN
+	   -> DASIN
+	   -> ACOS
+	   -> DACOS
+	   -> ATAN
+	   -> DATAN
+	   -> ATAN2
+	   -> DATAN2
+	   -> SINH
+	   -> DSINH
+	   -> COSH
+	   -> DCOSH
+	   -> TANH
+	   -> DTANH
+	   -> FILENUM
+

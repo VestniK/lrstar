@@ -1,0 +1,23 @@
+
+DFASTAR 6.3.006 Copyright 2014 Paul B Mann.
+
+Input     lr1.lgr 
+
+Grammar     1056 rules, 256 terminals, 25 nonterminals.
+               0 reductions added during 1790 traces.
+Conflicts      0 conflict states, 0 shift-reduce, 0 reduce-reduce.
+              34 states, after converting to a DFA.
+               9 states removed, 210 comparisons.
+              25 states, in final DFA state machine.
+
+            rows   cols          matrix        list       vect      total
+T matrix      17 x   12 x 1 =       204 ->      195 +      306 =      501 
+Total                                           195 +      306 =      501
+
+0 min 0.031 sec, 97.290 MB, 3 warnings, 0 errors.
+
+Skeleton: ..\..\skl\lexer.cpp.skl
+Output:   lr1_lexer.cpp (113 lines)
+Skeleton: ..\..\skl\lexer.h.skl
+Output:   lr1_lexer.h (55 lines)
+

@@ -1,0 +1,92 @@
+
+/* calc grammar */
+
+/* Options */
+
+/* Declarations */
+
+   0       ERROR                     <error>                   => error();
+   1       IDENT                     <identifier>              => lookup();
+   2       INTEGER                   <integer>                 => lookup();
+   3       EOFILE                    <eof>                     ;
+
+   4       '=='                      ;
+   5       '!='                      ;
+   6       '+'                       ;
+   7       '-'                       ;
+   8       '*'                       ;
+   9       '/'                       ;
+  10       'program'                 ;
+  11       '{'                       ;
+  12       '}'                       ;
+  13       '='                       ;
+  14       ';'                       ;
+  15       'if'                      ;
+  16       'endif'                   ;
+  17       '('                       ;
+  18       ')'                       ;
+  19       'then'                    ;
+  20       'else'                    ;
+
+/* Operator Precedence */
+
+	{ '==' '!=' } <<
+	{ '+' '-' } <<
+	{ '*' '/' } <<
+
+/* Rules */
+
+   0       Start
+       0       -> Program... <eof>                                               *> goal_() goal_(,,)
+                ;
+   1       Program
+       1       -> 'program' <identifier> '{' Stmt... '}'                         *> program_(2) program_(,,)
+                ;
+   2       Stmt
+       2       ~> Target '=' Exp ';'                                             *> store_() store_(,,)
+       3       -> 'if' RelExp Then 'endif'                                       *> if_() if_(,,)
+       4       -> 'if' RelExp Else 'endif'                                       *> if_() if_(,,)
+       5       -> 'if' RelExp Then2 Else2 'endif'                                *> if_() if_(,,)
+                ;
+   3       Target
+       6       -> <identifier>                                                   *> target_(1) target_(,,)
+                ;
+   4       RelExp
+       7       -> Exp '==' Exp                                                   *> eq_() eq_(,,)
+       8       -> Exp '!=' Exp                                                   *> ne_() ne_(,,)
+                ;
+   5       Exp
+       9       -> Primary
+      10       -> Exp '+' Exp                                                    *> add_() add_(,,)
+      11       -> Exp '-' Exp                                                    *> sub_() sub_(,,)
+      12       -> Exp '*' Exp                                                    *> mul_() mul_(,,)
+      13       -> Exp '/' Exp                                                    *> div_() div_(,,)
+                ;
+   6       Primary
+      14       -> <integer>                                                      *> int_(1) int_(,,)
+      15       -> <identifier>                                                   *> ident_(1) ident_(,,)
+      16       -> '(' Exp ')'
+                ;
+   7       Then
+      17       -> 'then' Stmt...                                                 *> then_() then_(,,)
+                ;
+   8       Else
+      18       -> 'else' Stmt...                                                 *> else_() else_(,,)
+                ;
+   9       Then2
+      19       -> 'then' Stmt...                                                 *> then2_() then2_(,,)
+                ;
+  10       Else2
+      20       -> 'else' Stmt...                                                 *> else2_() else2_(,,)
+                ;
+  11       Program...
+      21       -> Program
+      22       -> Program... Program
+                ;
+  12       Stmt...
+      23       -> Stmt
+      24       -> Stmt... Stmt
+                ;
+
+/* End of calc grammar */
+

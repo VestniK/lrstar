@@ -1,0 +1,9 @@
+
+CONFLICTS REPORT:
+
+None of the options: 'c', 'rr', 'ct' was specified.
+
+CONFLICTS: 0 states, 0 shift-reduce, 0 reduce-reduce conflicts.
+
+Grammar is LALR(1), 0 extra states were added.
+

@@ -1,0 +1,47 @@
+typedef_parser
+Parsing test.input.txt ...
+
+     2  typedef unsigned int uint, *uintptr;
+     3  uint    a, b, c;
+     4  uintptr x, y, z;	
+
+Symbol Table ...
+
+  sti  leng  type  term  
+    1     4     0     6   {typedef}                       uint
+    2     7     0     6   {typedef}                       uintptr
+    3     1     0     1   <identifier>                    a
+    4     1     0     1   <identifier>                    b
+    5     1     0     1   <identifier>                    c
+    6     1     0     1   <identifier>                    x
+    7     1     0     1   <identifier>                    y
+    8     1     0     1   <identifier>                    z
+
+Abstract Syntax Tree ...
+
+  node  prev  next parent child  line   sti 
+    23     0     0      0     6     0     0   + goal_
+     6     0    14     23     1     0     0     + decl_
+     1     0     2      6     0     2   -11     | + type_ ('unsigned')
+     2     1     3      0     0     2    -9     | + type_ ('int')
+     3     2     5      0     0     0     0     | + typedefvar_
+     5     3     0      0     4     0     0     | + typedefvar_
+     4     0     0      5     0     0     0     |   + ptr_
+    14     6    22      0     7     0     0     + decl_
+     7     0     9     14     0     3     1     | + type_ (uint)
+     9     7    11      0     8     0     0     | + var_
+     8     0     0      9     0     3     3     | | + identifier_ (a)
+    11     9    13      0    10     0     0     | + var_
+    10     0     0     11     0     3     4     | | + identifier_ (b)
+    13    11     0      0    12     0     0     | + var_
+    12     0     0     13     0     3     5     |   + identifier_ (c)
+    22    14     0      0    15     0     0     + decl_
+    15     0    17     22     0     4     2       + type_ (uintptr)
+    17    15    19      0    16     0     0       + var_
+    16     0     0     17     0     4     6       | + identifier_ (x)
+    19    17    21      0    18     0     0       + var_
+    18     0     0     19     0     4     7       | + identifier_ (y)
+    21    19     0      0    20     0     0       + var_
+    20     0     0     21     0     4     8         + identifier_ (z)
+
+End of Output.

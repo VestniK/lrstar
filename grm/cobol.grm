@@ -1,0 +1,954 @@
+
+///////////////////////////////////////////////////////////////////////
+//
+//     COBOL_85 Complete Grammar, by Paul B Mann, 1997.                                        
+
+   ////// Terminal Symbol Actions. //////
+
+   <error>         => error ();
+   <ident>         => lookup (); // This has to be #1
+   <decimal>       => lookup ();
+   <integer>       => lookup ();
+   <literal_start> => lookup ();
+   <literal>       => lookup ();
+   <pseudo_text>   => lookup ();
+   <string>        => lookup ();
+   IS              => ignore ();
+   ARE             => ignore ();
+   ','             => ignore ();
+
+   ////// Start Symbol. //////
+
+   Start     -> Program <eof>
+
+   Program   -> IdentDiv [EnvirDiv] [DataDiv] [ProcDiv] [EndProgStmt]
+
+   ////// Identification Division. //////
+
+   IdentDiv  -> IDENTIFICATION DIVISION '.'
+                PROGRAM_ID '.' <ident> [INITIAL PROGRAM] '.'
+                [AUTHOR '.'        [<error>... '.']]
+                [INSTALLATION '.'  [<error>... '.']]
+                [DATE_WRITTEN '.'  [<error>... '.']]
+                [DATE_COMPILED '.' [<error>... '.']]
+                [SECURITY '.'      [<error>... '.']]
+
+   ////// Environment Division. //////
+
+   EnvirDiv  -> ENVIRONMENT DIVISION '.'
+                [ CONFIGURATION SECTION '.']
+                [ SOURCE_COMPUTER '.' [<ident> [WITH DEBUGGING] '.'] ]
+                [ OBJECT_COMPUTER '.' [<ident> [Memory] [Sequence] '.'] ]
+                [ SPECIAL_NAMES   '.' [SpecialClause... '.'] ]
+                [ FIGURATIVE_CONSTANTS  '.' [FigConDef...] ]
+                [ INPUT_OUTPUT SECTION '.'
+                  FILE_CONTROL   '.' [FileContrlEntry...]
+                  [ I_O_CONTROL  '.' [IOContrlEntry...] ]
+                ]
+
+   Memory    -> MEMORY SIZE <integer> Words
+
+   Sequence  -> COLLATING SEQUENCE <ident>
+
+   Words     -> WORDS
+             -> CHARACTERS
+             -> MODULES
+
+   SpecialClause
+             -> WorkStation WorkStaStuff...
+             -> ALPHABET <ident> Alphabet
+             -> SYMBOLIC CHARACTERS SymbolicChars... InName
+             -> CLASS <ident> (Literal [THRU Literal])...
+             -> CURRENCY SIGN Literal
+             -> DECIMAL POINT COMMA
+
+   WorkStation
+             -> WORKSTATION
+             -> ONE_LINE
+             -> <ident> /* {switch_x} */
+
+   WorkStaStuff
+             -> STATUS <ident>
+             -> ON STATUS <ident>
+             -> OFF STATUS <ident>
+
+   Alphabet  -> STANDARD_1
+             -> STANDARD_2
+             -> NATIVE
+             -> LiteralThru...
+
+   LiteralThru
+             -> Literal [ThruLit | AlsoLit...]
+
+   ThruLit   -> THRU Literal
+
+   AlsoLit   -> ALSO Literal
+
+   SymbolicChars
+             -> <ident>... <integer>...
+
+   InName    -> IN <ident>
+
+   FigConDef -> (<ident> Literal)... '.'
+
+   FileContrlEntry
+             -> Select <ident> Assign [SelectClause...] '.'
+
+   Select    -> SELECT 
+             -> SELECT OPTIONAL
+
+   Assign    -> ASSIGN IdLit
+             -> ASSIGN TO IdLit
+
+   SelectClause
+             -> Literal
+             -> DISPLAY
+             -> NODISPLAY
+             -> RESPECIFY
+             -> [ORGANIZATION] Organization
+             -> ACCESS AccessMode
+             -> ACCESS MODE AccessMode
+             -> RECORD KEY <ident>
+             -> RELATIVE KEY <ident>
+             -> STATUS <ident>
+             -> FILE STATUS <ident>
+             -> CURSOR POSITION <ident>
+             -> BUFFER SIZE <integer> [BLOCKS]
+             -> PFKEY <ident>
+             -> PADDING CHARACTER IdLit
+             -> RECORD DELIMITER STANDARD_1
+             -> RECORD DELIMITER <ident>
+             -> RESERVE <integer> [AREA | AREAS]
+             -> WITH HASHSIZE OF <integer> [BLOCKS]
+             -> ORDER BY KEY
+             -> ORDER BY ENTRY
+             -> ALTERNATE RECORD KEY AltRecKey...
+
+   Organization
+             -> SEQUENTIAL
+             -> RELATIVE
+             -> INDEXED
+             -> INDEXED DMS
+             -> INDEXED XDMS
+
+   AccessMode
+             -> SEQUENTIAL
+             -> RANDOM
+             -> DYNAMIC
+
+   AltRecKey ->           <ident> [WITH DUPLICATES]
+             -> <integer> <ident> [WITH DUPLICATES]
+
+   IOContrlEntry
+             -> RERUN [ON <ident>] [EVERY <integer>] RECORDS [OF] <ident> '.'
+             -> SAME [Thing] [AREA FOR <ident>...] '.'
+
+   Thing     -> RECORD
+             -> SORT
+             -> SORT MERGE
+
+   ////// Data Division. //////
+
+   DataDiv   -> DATA DIVISION [SYNCHRONIZED] '.'
+                [FILE SECTION '.' [FileDescEntry...]]
+                [WORKING_STORAGE SECTION '.' [DataDescEntry...]]
+                [LINKAGE SECTION '.' [DataDescEntry...]]
+
+   FileDescEntry
+             -> FD <ident> [FileDescClause...] '.'
+                DataDescEntry...
+
+   FileDescClause -> EXTERNAL
+             -> GLOBAL
+             -> BLOCK [CONTAINS] [<integer> TO] <integer> [CHARACTERS|RECORDS]
+             -> RECORD CONTAINS <integer> Chars
+             -> RECORD VARYING IN SIZE Chars
+             -> RECORD VARYING IN SIZE FROM <integer> TO <integer> Chars
+             -> LABEL RECORD STANDARD
+             -> LABEL RECORDS STANDARD
+             -> LABEL RECORD OMITTED
+             -> LABEL RECORDS OMITTED
+             -> DATA RECORD <ident>...
+             -> DATA RECORDS <ident>...
+             -> LINAGE IdInt LINES [WITH FOOTING AT IdInt]
+             -> LINES AT TOP IdInt
+             -> LINES AT BOTTOM IdInt
+             -> CODE_SET <ident>
+             -> VALUE OF StuffIs...
+
+   StuffIs   -> FILENAME IdLit
+             -> LIBRARY IdLit
+             -> VOLUME IdLit
+             -> SPACE IdLit
+             -> POSITION IdLit
+             -> INDEX AREA IdLit
+             -> DATA AREA IdLit
+             -> PRINT_CLASS IdLit
+             -> PRINT_FORM IdLit
+             -> FILE_CLASS IdLit
+             -> EXTENT SIZE IdLit
+             -> RECOVERY BLOCKS IdLit
+             -> RECOVERY STATUS <ident>
+             -> DATABASE_NAME <ident>
+
+   Chars     -> CHARACTERS
+             -> COMPRESSED CHARACTERS
+
+   DataDescEntry -> [<ident> UsageIs] <integer> IdFiller [DataClause...] ['.']
+
+   UsageIs   -> USAGE DISPLAY_WS
+
+   IdFiller  -> <ident>
+             -> FILLER
+
+   DataClause -> EXTERNAL
+             -> GLOBAL
+             -> [USAGE] Usage
+             -> [SIGN] LEADING SEPARATE [CHARACTERS]
+             -> [SIGN] TRAILING SEPARATE [CHARACTERS]
+             -> Occurs [OccursClause...]
+             -> [NOT] (SYNC | SYNCHRONIZED) [LEFT | RIGHT]
+             -> (JUST | JUSTIFIED) [RIGHT]
+             -> BLANK ZERO
+             -> BLANK WHEN ZERO
+             -> VALUE Value...
+             -> VALUES Value...
+             -> REDEFINES <ident>
+             -> RENAMES   <ident> THRU <ident>
+             -> COLUMN <integer>
+             -> COLUMN NUMBER <integer>
+             -> ROW <integer>
+             -> ROW NUMBER <integer>
+             -> LINE <integer>
+             -> LINE NUMBER <integer>
+             -> RANGE Range
+             -> OBJECT <ident>
+             -> SOURCE <ident>
+             -> PICTURE [Picture...]
+             -> PIC [Picture...] 
+
+   Range     -> NEGATIVE     IdLit TO IdLit
+             -> FROM         IdLit TO IdLit
+             -> POSITIVE     IdLit TO IdLit
+             -> <ident> IdLit TO IdLit
+
+   Occurs    -> OCCURS <integer> [TO <integer>] [TIMES]
+
+   OccursClause -> Depending
+             -> AscDesKey
+             -> IndexedBy
+
+   Depending -> DEPENDING <ident>
+
+   AscDesKey -> ASCENDING KEY <ident>...
+             -> DESCENDING KEY <ident>...
+
+   IndexedBy -> INDEXED BY <ident>...
+
+   Usage     -> BINARY
+             -> COMPUTATIONAL
+             -> COMP
+             -> DISPLAY
+             -> DISPLAY_WS
+             -> INDEX
+             -> PACKED_DECIMAL
+
+   Value     -> Primitive
+             -> Primitive THRU Primitive
+
+   ////// Procedure Division. //////
+
+   ProcDiv   -> ProcStmt Declaratives Section...
+             -> ProcStmt Section...
+
+   ProcStmt  -> PROCEDURE DIVISION [USING <ident>...] '.'
+
+   Declaratives -> DECLARATIVES '.'
+                   Section...
+                   END DECLARATIVES '.'
+
+   Section   -> <ident> SECTION '.'
+             -> <ident>         '.'
+             -> ImperStmt...    '.'
+
+   ////// Imperative Statements. //////
+
+   ImperStmt -> IOStmt                
+             -> OtherStmt             
+
+   IOStmt    -> CloseStmt
+             -> OpenStmt
+             -> ReadStmt
+             -> RewriteStmt
+             -> StartStmt
+             -> WriteStmt
+
+   OtherStmt -> AcceptStmt
+             -> AddStmt
+             -> AlterStmt
+             -> BeginStmt
+             -> CallStmt
+             -> CancelStmt
+             -> CommitStmt
+             -> ComputeStmt
+             -> ContinueStmt
+             -> DeleteStmt
+             -> DisplayStmt
+             -> DispReadStmt
+             -> DivideStmt
+             -> EnterStmt
+             -> EvaluateStmt
+             -> ExitStmt
+             -> ExitProgStmt
+             -> FreeStmt
+             -> GoToStmt
+             -> HoldStmt
+             -> IfStmt
+             -> InitStmt
+             -> InspectStmt
+             -> MergeStmt
+             -> MoveStmt
+             -> MultStmt
+             -> PerformStmt
+             -> ReleaseStmt
+             -> ReplaceStmt
+             -> ReturnStmt
+             -> RollbackStmt
+             -> SearchStmt
+             -> SetStmt
+             -> SortStmt
+             -> StopStmt
+             -> StringStmt
+             -> SubStmt
+             -> UnstringStmt
+             -> UseStmt
+
+   AcceptStmt -> ACCEPT <ident>... [FROM From]
+
+   From      -> <ident>
+             -> DATE
+             -> DAY
+             -> DAY_OF_WEEK
+             -> TIME
+
+   AddStmt   -> ADD Exp TO Target...
+                [GIVING Target... [SizeError] [NotSizeError]]
+                [END_ADD]
+             -> ADD Exp...
+                GIVING Target... [SizeError] [NotSizeError]
+                [END_ADD]
+             -> ADD CORR <ident> TO Target
+                [GIVING Target... [SizeError] [NotSizeError]]
+                [END_ADD]
+
+   AlterStmt -> ALTER (<ident> TO <ident>)...
+             -> ALTER (<ident> TO PROCEED TO <ident>)...
+
+   BeginStmt -> BEGIN (TRANSACTION | SUBTRACTION)
+                [ErrorClause]
+                [NotErrorClause]
+                [END_BEGIN]
+
+   CallStmt  -> CALL IdLit
+                [UsingClause]
+                [Exception]
+                [NotException]
+                [END_CALL]
+
+   UsingClause -> USING
+               -> USING Argument...
+
+   Argument  -> <ident>
+             -> BY CONTENT <ident>
+             -> BY REFERENCE <ident>
+
+   Exception -> EXCEPTION ImperStmt
+
+   NotException -> NOT EXCEPTION ImperStmt
+
+   CancelStmt -> CANCEL IdLit...
+
+   CloseStmt -> CLOSE
+                ( File
+                  [ Reel [FOR REMOVAL]
+                  | NO REWIND
+                  | WITH LOCK
+                  ]
+                )...
+                [END_CLOSE]
+
+   Reel      -> REEL
+             -> UNIT
+
+   CommitStmt -> COMMIT [IdLit]
+                [ErrorClause]
+                [NotErrorClause]
+                [END_COMMIT]
+
+   ComputeStmt -> COMPUTE Target... '=' Exp
+                [SizeError]
+                [NotSizeError]
+                [END_COMPUTE]
+
+   ContinueStmt -> CONTINUE
+
+   DeleteStmt -> DELETE <ident> [RECORD]
+                [InvalidKeyPara]
+                [NotInvalidKeyPara]
+                [END_DELETE]
+
+   DisplayStmt -> DISPLAY Primitive...
+                [UPON [WORKSTATION]]
+                [WITH NO ADVANCING]
+
+   DispReadStmt -> DISPLAY AND READ [ALTERED] <ident> ON <ident>
+                [DispReadClause...]
+                [END_DISPLAY]
+
+   DispReadClause  ->      PfKey IdInt...
+                   -> ONLY PfKey IdInt...
+                   ->      PfKey IdInt... ON PfKey IdInt...
+                   -> ONLY PfKey IdInt... ON PfKey IdInt...
+                   ->      PfKey IdInt... ON PfKey IdInt... ImperStmt
+                   -> ONLY PfKey IdInt... ON PfKey IdInt... ImperStmt
+                   -> NO_MOD ImperStmt
+
+   PfKey     -> PFKEY
+             -> PFKEYS
+
+   DivideStmt -> DIVIDE Exp
+                (INTO | BY) Target...
+                [GIVING Target...]
+                [REMAINDER Target...]
+                [SizeError]
+                [NotSizeError]
+                [END_DIVIDE]
+
+   EnterStmt -> ENTER <ident> '.'
+             -> ENTER <ident> <ident> '.'
+
+   EvaluateStmt -> EVALUATE Exp [ALSO Exp]...
+                   WhenAction...
+                   [WhenOtherAction]
+                   [END_EVALUATE]
+
+   WhenAction -> WHEN CondClause ImperStmt...
+              -> WHEN CondClause (ALSO CondClause)... ImperStmt...
+
+   WhenOtherAction -> WHEN OTHER ImperStmt...
+
+   CondClause -> Condition
+              -> Condition THRU Primitive
+
+   ExitStmt   -> EXIT
+
+   ExitProgStmt -> EXIT PROGRAM
+
+   FreeStmt  -> FREE ALL
+                [ErrorClause]
+                [NotErrorClause]
+                [END_FREE]
+
+   GoToStmt  -> GO TO <ident>
+             -> GO TO <ident>... DEPENDING <ident>
+
+   HoldStmt  -> HOLD [LIST]
+                ( RecordsClause
+                | ForClause...
+                | ForKeysClause...)
+                [TimeOut]
+                [END_CLAUSE]
+
+   RecordsClause -> RECORDS [OF] <ident>
+
+   ForClause -> FOR Retrieval
+
+   ForKeysClause -> FOR Retrieval KeysClause
+
+   Retrieval  -> RETRIEVAL
+              -> UPDATE
+
+   KeysClause -> KEYS Key...
+              -> WITH KEYS Key...
+
+   Key        -> IdLit
+              -> INITIAL IdLit CHARACTERS OF IdLit
+
+   IfStmt     -> IF IfCondition Then Else EndIf
+
+   IfCondition -> Condition
+
+   Then      ->      ImperStmt...
+             ->      NEXT SENTENCE
+             -> THEN ImperStmt...
+             -> THEN NEXT SENTENCE
+
+   Else      ->
+             -> ELSE ImperStmt...
+             -> ELSE NEXT SENTENCE
+
+   EndIf     ->
+             -> END_IF
+
+   Statement -> ImperStmt...
+             -> NEXT SENTENCE
+
+   InitStmt  -> INITIALIZE Variable...
+                [REPLACING (DataType [DATA] BY IdLit)...]
+
+   InspectStmt -> INSPECT Variable [Tallying] [Replacing]
+               -> INSPECT Variable Converting [Before...]
+
+   Tallying   -> TALLYING (Variable FOR Characters...)...
+
+   Replacing  -> REPLACING CharactersBy...
+
+   Converting -> CONVERTING IdLit TO IdLit
+
+   Characters -> CHARACTERS [Before...]
+              -> AllLeading (IdLit [Before...])...
+
+   Before     -> BeforeAfter INITIAL IdLit
+
+   CharactersBy -> CHARACTERS [BY] IdLit [Before...]
+                -> AllLeadingFirst (IdLit BY IdLit [Before...])...
+
+   BeforeAfter -> BEFORE
+               -> AFTER
+
+   AllLeading -> ALL
+              -> LEADING
+
+   AllLeadingFirst
+             -> ALL
+             -> LEADING
+             -> FIRST
+
+   MergeStmt -> MERGE <ident>
+                AscDesClause...
+                [SeqClause]
+                USING <ident>...
+                MergeClause
+
+   AscDesClause -> ASCENDING KEY <ident>...
+             -> DESCENDING KEY <ident>...
+
+   SeqClause -> COLLATING SEQUENCE <ident>
+
+   MergeClause -> OUTPUT PROCEDURE <ident> [THRU <ident>]
+             -> GIVING <ident>...
+
+   MoveStmt  -> MOVE Exp TO Target...
+             -> MOVE CORR Variable TO Variable
+             -> MOVE WITH CONVERSION Variable TO Variable
+                [ErrorClause]
+                [NotErrorClause]
+                [END_MOVE]
+             -> MOVE Exp TO FAC OF Variable
+             -> MOVE FAC OF Variable TO Exp
+             -> MOVE Exp TO ORDER_AREA OF Variable
+             -> MOVE ORDER_AREA OF Variable TO Variable
+
+   MultStmt  -> MULTIPLY Exp BY Target...
+                [GIVING Target...]
+                [SizeError]
+                [NotSizeError]
+                [END_MULTIPLY]
+
+   OpenStmt  -> OPEN (FileType (File [NO REWIND])...)...
+
+   PerformStmt -> Perform 
+               -> Perform PerformClause...
+               -> PERFORM END_PERFORM
+               -> PERFORM ImperStmt... END_PERFORM
+               -> PERFORM PerformClause... END_PERFORM
+               -> PERFORM PerformClause... ImperStmt... END_PERFORM
+
+   Perform   -> PERFORM <ident>
+             -> PERFORM <ident> THRU <ident>
+
+   PerformClause -> IdInt TIMES
+             -> UNTIL Condition
+             -> WITH TEST BeforeAfter
+             -> Varying <ident> FROM IdLitInt BY IdLitInt
+
+   Varying   -> VARYING
+             -> AFTER
+
+   ReadStmt  -> Read File
+                [ReadQual...]
+                [ReadPara...]
+                EndRead      
+                                     
+   Read      -> READ                               
+
+   File      -> <ident>                             
+
+   ReadQual  -> RECORD                             
+             -> NEXT                          
+             -> NEXT RECORD                         
+             -> HOLD                           
+             -> WITH HOLD                           
+             -> MODIFIABLE                         
+             -> ALTERED                            
+             -> INTO <ident>                      
+             -> KEY <ident>                         
+             -> TimeOut                             
+
+   ReadPara  -> AtEndPara                             
+             -> NotAtEndPara                       
+             -> InvalidKeyPara                      
+             -> NotInvalidKeyPara                   
+
+   EndRead   ->                                     
+             -> END_READ                            
+
+   ReleaseStmt -> RELEASE <ident> [FROM <ident>]
+
+   ReplaceStmt -> REPLACE (<pseudo_text> BY <pseudo_text>)...
+               -> REPLACE OFF
+
+   ReturnStmt -> RETURN <ident> /* RECORD [INTO <ident>] */
+                 END ImperStmt
+                 [NOT END ImperStmt]
+                 [END_RETURN]
+
+   RewriteStmt -> REWRITE Record
+                  [RewriteQual...]
+                  [RewritePara...]
+                  [EndRewrite]
+
+   RewriteQual -> FROM <ident>
+					-> ALARM
+             	-> ROLL UP
+             	-> ROLL DOWN
+             	-> ERASE PROTECT
+             	-> ERASE MODIFY
+             	-> AFTER ALARM
+             	-> AFTER ROLL UP
+             	-> AFTER ROLL DOWN
+             	-> AFTER ERASE PROTECT
+             	-> AFTER ERASE MODIFY
+             	-> AFTER SETTING CURSOR IdInt RowLine IdInt
+
+   RewritePara -> InvalidKeyPara
+               -> NotInvalidKeyPara
+
+   EndRewrite  -> END_REWRITE
+
+   RollbackStmt -> ROLLBACK IdLit
+                  [ErrorClause]
+                  [NotErrorClause]
+                  [END_ROLLBACK]
+
+   SearchStmt -> SEARCH [ALL] <ident>
+                [VARYING <ident>]
+                [AT END ImperStmt...]
+                (WHEN CondExp [AND CondExp] Statement)...
+                [END_SEARCH]
+
+   SetStmt   -> SET VarFC...         Primitive
+             -> SET VarFC... TO      Primitive
+             -> SET VarFC    UP BY   Primitive
+             -> SET VarFC    DOWN BY Primitive
+
+   VarFC     -> Variable
+             -> FigConst
+
+   SortStmt  -> SORT <ident>
+                (OnAscDesKey <ident>...)...
+                [Duplicates | SequenceIs]...
+                InputProc
+                OutputProc
+
+   OnAscDesKey -> ON ASCENDING
+               -> ON DESCENDING
+               -> ON ASCENDING KEY
+               -> ON DESCENDING KEY
+
+   Duplicates -> WITH DUPLICATES [IN ORDER]
+
+   SequenceIs -> COLLATING SEQUENCE <ident>
+
+   InputProc  -> INPUT ProcIs
+              -> USING <ident>...
+
+   OutputProc -> OUTPUT ProcIs
+              -> GIVING <ident>...
+   ProcIs     -> PROCEDURE <ident> [THRU <ident>]
+
+   StartStmt  -> START <ident>
+                 [KeyCondition]
+                 [InvalidKeyPara]
+                 [NotInvalidKeyPara]
+                 [END_START]
+
+   KeyCondition ->             QualOper <ident>
+                -> KEY         QualOper <ident>
+                -> KEY <ident> QualOper <ident>
+               
+   StopStmt  -> STOP RUN
+             -> STOP Literal
+
+   StringStmt
+             -> STRING (ConstVar... DELIMITED [BY] IdLitSize)...
+                INTO <ident>
+                [WITH POINTER <ident>]
+                [OVERFLOW ImperStmt]
+                [NOT OVERFLOW ImperStmt]
+                [END_STRING]
+
+   ConstVar  -> Constant
+             -> Variable
+
+   IdLitSize -> <ident>
+             -> Literal
+             -> SIZE
+             -> SPACES
+
+   SubStmt   -> SUBTRACT Exp FROM Target...
+                [GIVING Target...]
+                [SizeError]
+                [NotSizeError]
+                [END_SUBTRACT]
+             -> SUBTRACT CORR <ident> FROM Target
+                [SizeError]
+                [NotSizeError]
+                [END_SUBTRACT]
+
+   UnstringStmt
+             -> UNSTRING <ident>
+                [DELIMITED [BY] [ALL] IdLit [OR [ALL] IdLit]...]
+                INTO (<ident> [DELIMITER [IN] <ident>] [COUNT [IN] <ident>])...
+                [WITH POINTER <ident>]
+                [TALLYING [IN] <ident>]
+                [OVERFLOW ImperStmt]
+                [NOT OVERFLOW ImperStmt]
+                [END_UNSTRING]
+
+   UseStmt   -> USE AFTER DEADLOCK
+             -> USE GlobalAfterStan
+                (EXCEPTION | ERROR) ProcedureOn (<ident> | FileType)
+
+   GlobalAfterStan -> AFTER
+                   -> AFTER STANDARD
+                   -> GLOBAL AFTER
+                   -> GLOBAL AFTER STANDARD
+
+   ProcedureOn -> PROCEDURE
+               -> PROCEDURE ON
+
+   WriteStmt -> WRITE Record
+                [WriteQual...]
+                [WritePara...]
+                [EndWrite]
+
+   Record    -> <ident>
+
+   WriteQual -> FROM <ident>
+             -> AFTER            Advance
+             -> BEFORE           Advance
+             -> AFTER ADVANCING  Advance
+             -> BEFORE ADVANCING Advance
+             -> TimeOut
+
+   WritePara -> AtEop
+             -> NotAtEop
+             -> InvalidKeyPara
+             -> NotInvalidKeyPara
+
+   Advance   -> AdvId
+             -> AdvId LINE
+             -> AdvId LINES
+             -> PAGE
+
+   AdvId     -> <ident>
+             -> <integer>
+
+   EndWrite  -> END_WRITE
+
+   EndProgStmt -> END PROGRAM <ident> '.'
+
+   ////// Supportive Nonterminals. //////
+
+   ErrorClause -> ERROR ImperStmt
+
+   NotErrorClause -> NOT ERROR ImperStmt
+
+   SizeError -> SIZE ERROR ImperStmt
+
+   NotSizeError -> NOT SIZE ERROR ImperStmt
+
+   InvalidKeyPara -> InvalidKey [ImperStmt...]
+
+   InvalidKey -> INVALID KEY                     
+
+   NotInvalidKeyPara -> NotInvalidKey [ImperStmt...]
+
+   NotInvalidKey -> NOT INVALID KEY              
+
+   AtEndPara -> AtEnd [ImperStmt...]
+
+   AtEnd     -> END                                  
+             -> AT END                                  
+
+   NotAtEndPara -> NotAtEnd [ImperStmt...]
+
+   NotAtEnd  -> NOT END                              
+             -> NOT AT END
+
+   AtEop     -> END OF PAGE [ImperStmt...]
+
+   NotAtEop  -> NOT END OF PAGE [ImperStmt...]
+
+   TimeOut   -> TimeOutQual ImperStmt
+             -> TimeOutQual NEXT SENTENCE
+
+   TimeOutQual
+             -> TimeOutOf
+             -> TimeOutOf Holder
+             -> TimeOutOf Seconds
+             -> TimeOutOf Seconds Holder
+
+   TimeOutOf -> TIMEOUT IdInt                                 
+             -> TIMEOUT OF IdInt                              
+
+   Seconds   -> SECOND                                        
+             -> SECONDS                                       
+
+   Holder    -> HOLDER_ID <ident>                             
+             -> HOLDER_ID IN <ident>                         
+
+   IdInt     -> <ident>
+             -> <integer>
+
+   RowLine   -> ROW                                           
+             -> LINE                                         
+
+   FileType  -> INPUT
+             -> OUTPUT
+             -> I_O
+             -> SHARED
+             -> EXTEND
+             -> SPECIAL_INPUT
+
+   Condition -> CondExp
+             -> Condition AND CondExp
+             -> Condition OR  CondExp
+             -> Condition AND QualOper CondPrim
+             -> Condition OR  QualOper CondPrim
+
+   CondExp   -> CondPrim
+             -> CondPrim DataType
+             -> CondPrim NOT DataType
+             -> CondPrim QualOper CondPrim
+             -> NOT CondPrim
+             -> ANY CondPrim
+
+   CondPrim  -> Exp
+             -> '(' Condition ')'
+             -> FAC OF Variable
+             -> FAC OF Variable ALTERED
+
+   QualOper  -> CondOper
+             -> NotPrefix CondOper
+
+   NotPrefix -> NOT
+
+   CondOper  -> '='
+             -> '<'
+             -> '>'
+             -> '<='
+             -> '>='
+             -> EQUAL
+             -> EQUAL TO
+             -> LESS THAN
+             -> GREATER THAN
+             -> LESS THAN OR EQUAL 
+             -> LESS THAN OR EQUAL TO
+             -> GREATER THAN OR EQUAL TO
+             -> GREATER THAN OR EQUAL
+
+   DataType  -> NUMERIC
+             -> ALPHABETIC
+             -> ALPHANUMERIC
+             -> ALPHANUMERIC_EDITED
+             -> NUMERIC_EDITED
+
+   Exp       -> Primitive
+             -> Exp Operator Primitive
+
+   Primitive -> Constant
+             -> '+' Constant
+             -> '_' Constant
+             -> FigConst
+             -> Variable
+             -> '(' Exp ')'
+
+   FigConst  -> Variable (IN | OF) [FAC OF] Variable
+             -> FigConst (IN | OF) [FAC OF] Variable
+
+   IdLit     -> <ident>
+             -> Literal
+
+   Target    -> Constant
+             -> Variable
+             -> Variable ROUNDED
+             -> FigConst
+
+   Constant  -> <integer>
+             -> <decimal>
+             -> <integer> <decimal>
+             -> <string>
+             -> Literal
+             -> TRUE
+             -> FALSE
+             -> ZERO
+             -> ZEROS
+             -> ALL ZEROS
+             -> ALL Literal
+             -> SPACE
+             -> SPACES
+             -> ON
+             -> OFF
+
+   Variable  -> Id
+             -> Id '(' Exp... ')'
+             -> Id '(' IdLitInt ':' IdLitInt ')'
+
+   Id        -> <ident>
+
+   IdLitInt  -> <ident>
+             -> Literal
+             -> <integer>
+
+   Operator  -> '+'
+             -> '_'
+             -> '*'
+             -> '/'
+             -> '**'
+
+   Literal   -> <literal>
+             -> LiteralStart <literal>
+
+   LiteralStart
+             -> <literal_start>
+             -> LiteralStart <literal_start>
+
+   ////// Other stuff. //////
+
+   Picture   -> <ident>
+             -> <integer>
+             -> <decimal>
+             -> '('
+             -> ')'
+             -> '*'
+             -> '/'
+             -> '+'
+             -> '_'
+             -> '$'
+
+   ////// End of Grammar. //////
+
+
+

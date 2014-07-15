@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual C++ Express 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LRSTAR 6.2.004", "workspace.vcproj", "{EA5645D7-512C-454E-8B96-1D2F01E5F755}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		DFASTAR_Debug|Win32 = DFASTAR_Debug|Win32
+		DFASTAR_Release|Win32 = DFASTAR_Release|Win32
+		LRSTAR_Debug|Win32 = LRSTAR_Debug|Win32
+		LRSTAR_Release|Win32 = LRSTAR_Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EA5645D7-512C-454E-8B96-1D2F01E5F755}.DFASTAR_Debug|Win32.ActiveCfg = DFASTAR_Debug|Win32
+		{EA5645D7-512C-454E-8B96-1D2F01E5F755}.DFASTAR_Debug|Win32.Build.0 = DFASTAR_Debug|Win32
+		{EA5645D7-512C-454E-8B96-1D2F01E5F755}.DFASTAR_Release|Win32.ActiveCfg = DFASTAR_Release|Win32
+		{EA5645D7-512C-454E-8B96-1D2F01E5F755}.DFASTAR_Release|Win32.Build.0 = DFASTAR_Release|Win32
+		{EA5645D7-512C-454E-8B96-1D2F01E5F755}.LRSTAR_Debug|Win32.ActiveCfg = LRSTAR_Debug|Win32
+		{EA5645D7-512C-454E-8B96-1D2F01E5F755}.LRSTAR_Debug|Win32.Build.0 = LRSTAR_Debug|Win32
+		{EA5645D7-512C-454E-8B96-1D2F01E5F755}.LRSTAR_Release|Win32.ActiveCfg = LRSTAR_Release|Win32
+		{EA5645D7-512C-454E-8B96-1D2F01E5F755}.LRSTAR_Release|Win32.Build.0 = LRSTAR_Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

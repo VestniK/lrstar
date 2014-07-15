@@ -1,0 +1,543 @@
+
+/* Microsoft Basic Grammar, by Paul B Mann, 1988, tabs=3. */
+
+/* TERMINALS */
+
+   <error>       => error ();
+   <identifier>  => lookup();
+   <number>      => lookup();
+   <string>      => lookup();
+
+/* NONTERMINALS */
+
+   Start   -> Program <eof>
+
+   Program -> LineNum StmtSeq <eol>
+           -> Program LineNum StmtSeq <eol>
+
+   StmtSeq -> Stmt
+           -> StmtSeq ':' Stmt
+
+   Stmt -> BeepStmt
+        -> CallStmt
+        -> ChainStmt
+        -> CircleStmt
+        -> CloseStmt
+        -> ClsStmt
+        -> ColorStmt
+        -> ComStmt
+        -> CommonStmt
+        -> DataStmt
+        -> DateStmt
+        -> DefFnStmt
+        -> DefSegStmt
+        -> DefTypeStmt
+        -> DefUsrStmt
+        -> DimStmt
+        -> DrawStmt
+        -> EndStmt
+        -> EraseStmt
+        -> ErrorStmt
+        -> FieldStmt
+        -> ForStmt
+        -> NextStmt
+        -> GetStmt
+        -> GosubStmt
+        -> GotoStmt
+        -> IfStmt
+        -> InputStmt
+        -> InputStmt2
+        -> KeyStmt
+        -> LetStmt
+        -> LineStmt
+        -> LineInputStmt
+        -> LineInputStmt2
+        -> LocateStmt
+        -> LprintStmt
+        -> LsetStmt
+        -> MidStmt
+        -> MotorStmt
+        -> OnStmt
+        -> OpenStmt
+        -> OptionStmt
+        -> OutStmt
+        -> PaintStmt
+        -> PenStmt
+        -> PlayStmt
+        -> PokeStmt
+        -> PrintStmt
+        -> PrintStmt2
+        -> PsetStmt
+        -> PresetStmt
+        -> PutStmt
+        -> RandStmt
+        -> ReadStmt
+        -> RestoreStmt
+        -> ResumeStmt
+        -> ReturnStmt
+        -> RsetStmt
+        -> ScreenStmt
+        -> SoundStmt
+        -> StopStmt
+        -> StrigStmt
+        -> SwapStmt
+        -> TimeStmt
+        -> TrStmt
+        -> WaitStmt
+        -> WhileStmt
+        -> WendStmt
+        -> WidthStmt
+        -> WriteStmt
+        -> WriteStmt2
+
+   BeepStmt -> BEEP
+
+   CallStmt -> CALL NumVar
+            -> CALL NumVar '(' VarList ')'
+
+   ChainStmt  -> Chain FileSpec
+              -> Chain FileSpec Line
+              -> Chain FileSpec Line All
+              -> Chain FileSpec Line All Delete
+   Chain      -> CHAIN
+              -> CHAIN MERGE
+   FileSpec   -> ','
+              -> <string> ','
+   Line       -> ','
+              -> NumExp ','
+   All        -> ','
+              -> ALL ','
+   Delete     -> DELETE LineNum
+              -> DELETE LineNum '-' LineNum
+
+   CircleStmt   -> CIRCLE Coordinates ',' [Radius] ',' [Color] ',' [Start1] ',' [End] ',' [Aspect]
+   Coordinates  -> '(' X ',' Y ')'
+   Radius       -> NumExp
+   Color        -> NumExp
+   Start1        -> NumExp
+   End          -> NumExp
+   Aspect       -> NumExp
+
+   CloseStmt   -> CLOSE FileNumList
+   FileNumList -> FileNum
+               -> FileNumList ',' FileNum
+
+   ClsStmt -> CLS
+
+   ColorStmt   -> COLOR [Foreground] ',' [Background] ',' [Border]
+   Foreground  -> NumExp
+   Background  -> NumExp
+   Border      -> NumExp
+
+   ComStmt  -> COM '(' N ')' Status
+   Status   -> ON
+            -> OFF
+            -> STOP
+
+   CommonStmt -> COMMON VarList
+
+   DataStmt     -> DATA ConstantList
+   ConstantList -> Constant
+                -> ConstantList ',' Constant
+
+   DateStmt -> 'DATE$' '=' X2
+
+	DefFnStmt -> DEF <FNname>  '=' NumExp							=> deftype (2, {FNname} )
+             -> DEF <FNname2> '=' StringExp						=> deftype (2, {FNname2})
+             -> DEF <FNname>  '(' VarList ')' '=' NumExp		=> deftype (2, {FNname} )
+             -> DEF <FNname2> '(' VarList ')' '=' StringExp	=> deftype (2, {FNname2})
+
+   DefSegStmt -> DEF SEG
+              -> DEF SEG '=' Address
+   Address    -> NumExp
+
+   DefTypeStmt -> DEFINT RangeList
+               -> DEFSNG RangeList
+               -> DEFDBL RangeList
+               -> DEFSTR RangeList
+   RangeList   -> Range
+               -> RangeList ',' Range
+   Range       -> <identifier>
+               -> <identifier> '-' <identifier>
+
+	DefUsrStmt  -> DEF <USRn> '=' Offset							=> deftype (2, {USRn})
+
+   Offset		-> NumExp
+
+   DimStmt		-> DIM SubVarList
+
+   DrawStmt		-> DRAW <string>
+
+   EndStmt		-> END
+
+   EraseStmt	-> ERASE ArrayNameList
+
+   ArrayNameList -> ArrayName
+                 -> ArrayNameList ',' ArrayName
+
+   ErrorStmt -> ERROR N
+
+   FieldStmt -> FIELD FileNum ',' FieldList
+             -> '#' FIELD FileNum ',' FieldList
+   FieldList -> Width AS StringVar
+             -> FieldList ',' Width AS StringVar
+   Width     -> NumExp
+
+   ForStmt  -> FOR NumVar '=' X TO Y
+            -> FOR NumVar '=' X TO Y STEP Z
+
+   NextStmt -> NEXT NumVarList
+
+   GetStmt  -> GET FileNum
+            -> GET FileNum ',' N
+            -> GET Coordinates '-' Coordinates ',' ArrayName
+
+   GosubStmt -> GOSUB LineNum
+
+   GotoStmt -> GOTO LineNum
+
+   IfStmt   -> IF NExp THEN Clause
+            -> IF NExp THEN Clause ELSE Clause
+            -> IF NExp GOTO LineNum
+            -> IF NExp GOTO LineNum ELSE Clause
+            -> IF NExp GOTO LineNum ',' ELSE Clause
+   NExp     -> NumExp
+            -> NumExp ','
+   Clause   -> LineNum
+            -> StmtSeq
+
+   InputStmt -> INPUT VarList
+             -> INPUT ';' VarList
+             -> INPUT ';' Prompt ';' VarList
+   Prompt    -> <string>
+
+   InputStmt2 -> INPUT FileNum ',' VarList
+
+   KeyStmt  -> KEY N ',' X2
+            -> KEY LIST
+            -> KEY ON
+            -> KEY OFF
+            -> KEY '(' N ')' Status
+
+   LetStmt  -> NumVar '=' X
+            -> StringVar '=' X2
+            -> LET NumVar '=' X
+            -> LET StringVar '=' X2
+
+   LineStmt -> LINE CoordinateRange
+            -> LINE CoordinateRange ',' [Color]
+            -> LINE CoordinateRange ',' [Color] ',' BF
+   BF       -> <identifier>
+
+   CoordinateRange -> '-' Coordinates
+                   -> Coordinates '-' Coordinates
+
+   LineInputStmt -> LINE INPUT StringVar
+                 -> LINE INPUT ';' StringVar
+                 -> LINE INPUT ';' Prompt ';' StringVar
+
+   LineInputStmt2 -> LINE INPUT FileNum ',' StringVar
+
+   LocateStmt  -> LOCATE [Row] ',' [Col] ',' [Cursor] ',' [Start1] ',' [Stop]
+   Row         -> NumExp
+   Col         -> NumExp
+   Cursor      -> NumExp
+   Stop        -> NumExp
+
+   LprintStmt     -> LPRINT PrintExpList
+                  -> LPRINT PrintExpList ';'
+                  -> LPRINT USING StringExp ';' PrintExpList
+                  -> LPRINT USING StringExp ';' PrintExpList ';'
+   PrintExpList   -> PrintExp
+                  -> PrintExpList ',' PrintExp
+                  -> PrintExpList ';' PrintExp
+   PrintExp       -> NumExp
+                  -> StringExp
+                  -> PrintFunc
+   PrintFunc      -> SPC '(' N ')'
+                  -> TAB '(' N ')'
+
+   LsetStmt -> LSET StringVar '=' X2
+
+   RsetStmt -> RSET StringVar '=' X2
+
+   MidStmt  -> MID2 '(' X2 ',' N ')' '=' X2
+            -> MID2 '(' X2 ',' N ',' N ')' '=' X2
+
+   MotorStmt  -> MOTOR
+              -> MOTOR State
+   State      -> NumExp
+
+   OnStmt     -> ON COM '(' N ')' GOSUB LineNum
+              -> ON ERROR GOTO LineNum
+              -> ON N GOTO LineNumList
+              -> ON N GOSUB LineNumList
+              -> ON KEY '(' N ')' GOSUB LineNum
+              -> ON PEN GOSUB LineNum
+              -> ON STRIG '(' N ')' GOSUB LineNum
+
+   LineNumList -> LineNum
+               -> LineNumList ',' LineNum
+
+   OpenStmt  -> OPEN FileSpec AS FileNum
+             -> OPEN FileSpec AS FileNum Len
+             -> OPEN FileSpec FOR Mode AS FileNum
+             -> OPEN FileSpec FOR Mode AS FileNum Len
+             -> OPEN Mode2 ',' FileNum ',' FileSpec
+             -> OPEN Mode2 ',' FileNum ',' FileSpec ',' Recl
+   Len       -> LEN '=' Recl
+   Recl      -> NumExp
+   Mode      -> OUTPUT
+             -> INPUT
+             -> APPEND
+   Mode2     -> <identifier>
+
+   OptionStmt -> OPTION BASE N
+
+   OutStmt -> OUT N ',' N
+
+   PaintStmt   -> PAINT Coordinates
+               -> PAINT Coordinates ',' Color
+               -> PAINT Coordinates ',' Color ',' Boundary
+   Boundary    -> NumExp
+
+   PenStmt  -> PEN Status
+
+   PlayStmt -> PLAY StringExp
+
+   PokeStmt -> POKE N ',' N
+
+   PrintStmt  -> '?'
+              -> PRINT
+              -> '?' PrintExpList
+              -> PRINT PrintExpList
+              -> PRINT USING StringExp ';' PrintExpList
+
+   PrintStmt2  -> PRINT FileNum2 ',' PrintExpList
+               -> PRINT FileNum2 ',' USING StringExp ';' PrintExpList
+
+   PsetStmt  -> PSET Coordinates
+             -> PSET Coordinates ',' Color
+
+   PresetStmt  -> PRESET Coordinates
+               -> PRESET Coordinates ',' Color
+
+   PutStmt  -> PUT FileNum
+            -> PUT FileNum ',' N
+            -> PUT Coordinates ',' NumVar
+            -> PUT Coordinates ',' NumVar ',' Action
+
+   Action -> PSET
+          -> PRESET
+          -> XOR
+          -> OR
+          -> AND
+
+   RandStmt  -> RANDOMIZE
+             -> RANDOMIZE N
+
+   ReadStmt  -> READ VarList
+
+   RestoreStmt -> RESTORE
+               -> RESTORE LineNum
+
+   ResumeStmt  -> RESUME
+               -> RESUME NEXT
+               -> RESUME LineNum
+
+   ReturnStmt  -> RETURN
+               -> RETURN LineNum
+
+   ScreenStmt  -> SCREEN [ScreenMode] ',' [Burst] ',' [Apage] ',' [Vpage]
+   ScreenMode  -> NumExp
+   Burst       -> NumExp
+   Apage       -> NumExp
+   Vpage       -> NumExp
+
+   SoundStmt -> SOUND Freq ',' Duration
+   Freq      -> NumExp
+   Duration  -> NumExp
+
+   StopStmt -> STOP
+
+   StrigStmt -> STRIG ON
+             -> STRIG OFF
+             -> STRIG '(' N ')' Status
+
+   SwapStmt -> SWAP Var ',' Var
+
+   TimeStmt -> TIME2 '=' X2
+
+   TrStmt -> TRON
+          -> TROFF
+
+   WaitStmt -> WAIT Port ',' N
+            -> WAIT Port ',' N ',' N
+   Port     -> NumExp
+
+   WhileStmt -> WHILE X
+
+   WendStmt  -> WEND
+
+   WidthStmt -> WIDTH Size
+             -> WIDTH FileNum ',' Size
+             -> WIDTH Device ',' Size
+   Size      -> NumExp
+   Device    -> <string>
+
+   WriteStmt -> WRITE
+             -> WRITE PrintExpList
+
+   WriteStmt2 -> WRITE FileNum2 ',' PrintExpList
+
+   N        -> <number>
+   X        -> NumExp
+   Y        -> NumExp
+   Z        -> NumExp
+   X2       -> StringExp
+
+   NumExp   -> RelExp
+            -> NumExp Logical RelExp
+   RelExp   -> Exp1
+            -> RelExp Relation Exp1
+            -> StringExp Relation StringExp
+   Exp1     -> Exp2
+            -> Exp1 '+' Exp2
+            -> Exp1 '-' Exp2
+   Exp2     -> Exp3
+            -> Exp2 MOD Exp3
+   Exp3     -> Exp4
+            -> Exp3 '\\' Exp4
+   Exp4     -> Exp5
+            -> Exp4 '*' Exp5
+            -> Exp4 '/' Exp5
+   Exp5     -> Exp6
+            -> '-' Exp6
+   Exp6     -> NumPrim
+            -> Exp6 '^' NumPrim
+   NumPrim  -> <number>
+            -> NumVar
+            -> NumFunc
+            -> '(' NumExp ')'
+   NumVar   -> <identifier>
+
+   Logical  -> NOT
+            -> AND
+            -> OR
+            -> XOR
+            -> EQV
+            -> IMP
+
+   Relation -> '<'
+            -> '>'
+            -> '='
+            -> '<>'
+            -> '><'
+            -> '<='
+            -> '>='
+            -> '=<'
+            -> '=>'
+
+   NumFunc -> ABS  '(' X ')'
+           -> ATN  '(' X ')'
+           -> CDBL '(' X ')'
+           -> CINT '(' X ')'
+           -> COS  '(' X ')'
+           -> CSNG '(' X ')'
+           -> CVI  '(' X2 ')'
+           -> CVS  '(' X2 ')'
+           -> CVD  '(' X2 ')'
+           -> EOF  '(' FileNum ')'
+           -> EXP  '(' X ')'
+           -> FIX  '(' X ')'
+           -> FRE  '(' X ')'
+           -> FRE  '(' X2 ')'
+           -> INP  '(' N ')'
+           -> INSTR '(' X2 ',' X2 ')'
+           -> INSTR '(' N ',' X2 ',' X2 ')'
+           -> INT  '(' X ')'
+           -> LEN  '(' X2 ')'
+           -> LOC  '(' FileNum ')'
+           -> LOF  '(' FileNum ')'
+           -> LOG  '(' X ')'
+           -> LPOS '(' N ')'
+           -> 'MID$' '(' X2 ',' N ')'
+           -> 'MID$' '(' X2 ',' N ',' N ')'
+           -> 'MKI$' '(' NumExp ')'
+           -> 'MKS$' '(' NumExp ')'
+           -> 'MKD$' '(' NumExp ')'
+           -> 'OCT$' '(' N ')'
+           -> PEEK '(' N ')'
+           -> PEN '(' N ')'
+           -> POINT Coordinates
+           -> POS '(' N ')'
+           -> 'RIGHT$' '(' X2 ',' N ')'
+           -> RND
+           -> RND '(' X ')'
+           -> SCREEN '(' Row ',' Col ')'
+           -> SCREEN '(' Row ',' Col ',' Z ')'
+           -> SGN '(' X ')'
+           -> SIN '(' X ')'
+           -> 'SPACE$' '(' N ')'
+           -> SQR '(' X ')'
+           -> STICK '(' N ')'
+           -> STRIG '(' N ')'
+           -> 'STRING$' '(' N ',' N ')'
+           -> 'STRING$' '(' N ',' X2 ')'
+           -> TAN '(' X ')'
+           -> VAL '(' X2 ')'
+           -> VARPTR '(' Var ')'
+           -> VARPTR '(' FileNum ')'
+           -> CSRLIN
+			  -> {USRn} '(' Arg ')'
+			  -> {FNname}
+			  -> {FNname} '(' VarList ')'
+
+   Arg -> NumExp
+       -> StringVar
+
+   StringExp -> StringPrim
+             -> StringExp '+' StringPrim
+
+   StringPrim -> <string>
+              -> StringVar
+              -> StringFunc
+              -> '(' StringExp ')'
+
+   StringVar  -> <identifier2>
+
+   StringFunc -> CHR2 '(' N ')'
+              -> ASC '(' X2 ')'
+              -> HEX2 '(' N ')'
+              -> INPUT2 '(' N ')'
+              -> INPUT2 '(' N ',' FileNum ')'
+              -> LEFT2 '(' X2 ',' N ')'
+              -> STR2 '(' X ')'
+              -> DATE2
+              -> TIME2
+              -> INKEY2
+				  -> {FNname2}
+			     -> {FNname2} '(' VarList ')'
+   LineNum    -> N
+   FileNum    -> N
+              -> FileNum2
+   FileNum2   -> '#' N
+   Constant   -> N
+              -> <string>
+   ArrayName  -> NumVar
+   VarList    -> Var
+              -> VarList ',' Var
+              -> SubVar
+              -> VarList ',' SubVar
+   NumVarList -> NumVar
+              -> NumVarList ',' NumVar
+   SubVarList -> SubVar
+              -> SubVarList ',' SubVar
+   SubVar     -> Var '(' Subscripts ')'
+   Subscripts -> NumExp
+              -> Subscripts ',' NumExp
+   Var        -> NumVar
+              -> StringVar
+
+/* END */
+

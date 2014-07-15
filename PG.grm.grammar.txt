@@ -1,0 +1,445 @@
+
+/* PG grammar */
+
+/* Options */
+
+/* Declarations */
+
+   0       ERROR                     <error>                   => error();
+   1       ALPHA                     <alpha>                   => firstsym();
+   2       <lexical>                 ;
+   3       <semantic>                ;
+   4       <literal>                 ;
+   5       <string>                  ;
+   6       <integer>                 ;
+   7       <eof>                     ;
+   8       '<keyword>'               ;
+   9       '<error>'                 ;
+  10       '<eof>'                   ;
+  11       GOALSYMBOL                {goal_symbol}             ;
+  12       HEADSYMBOL                {head_symbol}             ;
+  13       COLON                     ':'                       => arrow();
+  14       ARROW1                    '->'                      => arrow();
+  15       ARROW2                    '~>'                      => arrow();
+  16       ARROW3                    '/->'                     => arrow();
+  17       ARROW4                    '/~>'                     => arrow();
+  18       BAR                       '|'                       ;
+  19       SEMICOLON                 ';'                       ;
+  20       PARSEACTION               '=>'                      ;
+  21       MAKENODE                  '+>'                      ;
+  22       MAKENODEWA                '*>'                      ;
+  23       PAMAKENODE                '=+>'                     ;
+  24       PAMAKENODEWA              '=*>'                     ;
+
+  25       '^'                       ;
+  26       '{'                       ;
+  27       '}'                       ;
+  28       '<<'                      ;
+  29       '>>'                      ;
+  30       '+'                       ;
+  31       '...'                     ;
+  32       '~'                       ;
+  33       '~..'                     ;
+  34       '?'                       ;
+  35       '*'                       ;
+  36       '/'                       ;
+  37       '('                       ;
+  38       ')'                       ;
+  39       '['                       ;
+  40       ']'                       ;
+  41       ','                       ;
+
+/* Operator Precedence */
+
+/* Rules */
+
+   0       Goal
+       0       -> Grammar <eof>                                                  *> start_() start_(,,)
+                ;
+   1       Grammar
+       1       -> Options ErrorDecl Declarations OperPrec Rules                  *> grammar_() grammar_(,,)
+                ;
+   2       Options
+       2       ->                                                                =*> options_(0) options_(,,)
+       3       -> <string>                                                       =*> options_(1) options_(,,)
+                ;
+   3       Declarations
+       4       ->                                                                *> declarations_() declarations_(,,)
+       5       -> ConstDecl...                                                   *> declarations_() declarations_(,,)
+       6       -> TokenDecl...                                                   *> declarations_() declarations_(,,)
+       7       -> ConstDecl... TokenDecl...                                      *> declarations_() declarations_(,,)
+                ;
+   4       ConstDecl
+       8       -> DefCon Value ';'                                               *> constdecl_() constdecl_(,,)
+                ;
+   5       DefCon
+       9       -> <alpha>                                                        =*> constant_(1) constant_(,,)
+                ;
+   6       Value
+      10       -> <integer>                                                      =*> value_(1) value_(,,)
+                ;
+   7       ErrorDecl
+      11       ->                                                                => errordecl_(<error>)
+                ;
+   8       TokenDecl
+      12       -> DefCon Token ';'                                               *> token_decl_() token_decl_(,,)
+      13       -> DefCon Token TokenAction ';'                                   *> token_decl_() token_decl_(,,)
+      14       -> Token ';'                                                      *> token_decl_() token_decl_(,,)
+      15       -> Token TokenAction ';'                                          *> token_decl_() token_decl_(,,)
+                ;
+   9       Token
+      16       -> <alpha>                                                        =*> terminal_(1) terminal_(,,)
+      17       -> <alpha> '^'                                                    =*> terminalres_(1) terminalres_(,,)
+      18       -> <lexical>                                                      =*> terminal_(1) terminal_(,,)
+      19       -> <semantic>                                                     =*> terminal_(1) terminal_(,,)
+      20       -> <literal>                                                      =*> terminal_(1) terminal_(,,)
+      21       -> <literal> '^'                                                  =*> terminalres_(1) terminalres_(,,)
+      22       -> '<error>'                                                      =*> terminal_(1) terminal_(,,)
+      23       -> '<eof>'                                                        =*> terminal_(1) terminal_(,,)
+                ;
+  10       OperPrec
+      24       ->                                                                *> operprec_() operprec_(,,)
+      25       -> OperPrecLine...                                                *> operprec_() operprec_(,,)
+                ;
+  11       OperPrecLine
+      26       -> '{' Operator... '}' '<<'                                       *> leftassoc_(4) leftassoc_(,,)
+      27       -> '{' Operator... '}' '>>'                                       *> rightassoc_(4) rightassoc_(,,)
+                ;
+  12       Operator
+      28       -> <alpha>                                                        =*> oper_(1) oper_(,,)
+      29       -> <lexical>                                                      =*> oper_(1) oper_(,,)
+      30       -> <semantic>                                                     =*> oper_(1) oper_(,,)
+      31       -> <literal>                                                      =*> oper_(1) oper_(,,)
+                ;
+  13       Rules
+      32       -> GoalSymbolDef [NonterminalDef]...                              *> rules_() rules_(,,)
+                ;
+  14       GoalSymbolDef
+      33       -> GoalSymbol GoalSymbolRule                                      *> goaldef_(1) goaldef_(,,)
+                ;
+  15       GoalSymbol
+      34       -> {goal_symbol}                                                  => goalsymbol_(1)
+                ;
+  16       GoalSymbolRule
+      35       -> ':' GoalTails RuleActions [';']                                =*> prod_(1) prod_(,,)
+      36       -> '->' GoalTails RuleActions [';']                               =*> prod_(1) prod_(,,)
+                ;
+  17       GoalTails
+      37       -> TailExpr EOF                                                   *> tails_() tails_(,,)
+                ;
+  18       EOF
+      38       -> '<eof>'                                                        =*> tail_(1) tail_(,,)
+                ;
+  19       NonterminalDef
+      39       -> HeadSymbol ColonFirst [';']                                    *> headdef_(1) headdef_(,,)
+      40       -> HeadSymbol ColonFirst BarRules [';']                           *> headdef_(1) headdef_(,,)
+      41       -> HeadSymbol ArrowFirst [';']                                    *> headdef_(1) headdef_(,,)
+      42       -> HeadSymbol ArrowFirst BarRules [';']                           *> headdef_(1) headdef_(,,)
+      43       -> HeadSymbol ArrowFirst ArrowRules [';']                         *> headdef_(1) headdef_(,,)
+      44       -> HeadSymbol OtherFirst [';']                                    *> headdef_(1) headdef_(,,)
+      45       -> HeadSymbol OtherFirst ArrowRules [';']                         *> headdef_(1) headdef_(,,)
+                ;
+  20       HeadSymbol
+      46       -> {head_symbol}                                                  => headsymbol_(1)
+                ;
+  21       ColonFirst
+      47       -> ':' TailExprList RuleActions                                   =*> prod_(1) prod_(,,)
+                ;
+  22       ArrowFirst
+      48       -> '->' TailExprList RuleActions                                  =*> prod_(1) prod_(,,)
+                ;
+  23       OtherFirst
+      49       -> '~>' TailExprList RuleActions                                  =*> prod_(1) prod_(,,)
+      50       -> '/->' TailExprList RuleActions                                 =*> prod_(1) prod_(,,)
+      51       -> '/~>' TailExprList RuleActions                                 =*> prod_(1) prod_(,,)
+                ;
+  24       BarRules
+      52       -> BarRule...
+                ;
+  25       BarRule
+      53       -> Bar TailExprList RuleActions                                   =*> prod_(1) prod_(,,)
+                ;
+  26       Bar
+      54       -> '|'                                                            => arrow_(1)
+                ;
+  27       ArrowRules
+      55       -> ArrowRule...
+                ;
+  28       ArrowRule
+      56       -> Arrow TailExprList RuleActions                                 =*> prod_(1) prod_(,,)
+                ;
+  29       Arrow
+      57       -> '->'
+      58       -> '~>'
+      59       -> '/->'
+      60       -> '/~>'
+                ;
+  30       TailExprList
+      61       ->                                                                *> tails_() tails_(,,)
+      62       -> TailPosition...                                                *> tails_() tails_(,,)
+                ;
+  31       TailPosition
+      63       -> TailExpr                                                       => tailposition_()
+                ;
+  32       TailExpr
+      64       -> Tail
+      65       -> Tail '+'                                                       *> repeat_() repeat_(,,)
+      66       -> Tail '...'                                                     *> repeat_() repeat_(,,)
+      67       -> TailAst                                                        *> repeat_() repeat_(,,)
+      68       -> TailQuest
+      69       -> Tail SepExpr                                                   *> repeatsep_() repeatsep_(,,)
+      70       -> Tail SepExprRev                                                *> repeatseprev_() repeatseprev_(,,)
+      71       -> Group
+      72       -> Group '+'                                                      *> repeat_() repeat_(,,)
+      73       -> Group '...'                                                    *> repeat_() repeat_(,,)
+      74       -> Group '~'                                                      *> reverse_() reverse_(,,)
+      75       -> Group '~..'                                                    *> repeatrev_() repeatrev_(,,)
+      76       -> Group SepExpr                                                  *> repeatsep_() repeatsep_(,,)
+      77       -> Group SepExprRev                                               *> repeatseprev_() repeatseprev_(,,)
+      78       -> OGroup '?'                                                     *> repeat_() repeat_(,,)
+      79       -> OGroup '*'                                                     *> repeat_() repeat_(,,)
+      80       -> OptGroup
+      81       -> OptGroup '~'                                                   *> reverse_() reverse_(,,)
+      82       -> OptGroup '...'                                                 *> repeat_() repeat_(,,)
+      83       -> OptGroup '~..'                                                 *> repeatrev_() repeatrev_(,,)
+      84       -> OptGroup SepExpr                                               *> repeatsep_() repeatsep_(,,)
+      85       -> OptGroup SepExprRev                                            *> repeatseprev_() repeatseprev_(,,)
+                ;
+  33       SepExpr
+      86       -> '/' Sep '+'                                                    *> sepexpr_() sepexpr_(,,)
+      87       -> '/' Sep '...'                                                  *> sepexpr_() sepexpr_(,,)
+                ;
+  34       SepExprRev
+      88       -> '/' Sep '~..'                                                  *> sepexprrev_() sepexprrev_(,,)
+                ;
+  35       TailAst
+      89       -> TailAst2                                                       *> optgroup_() optgroup_(,,)
+                ;
+  36       TailAst2
+      90       -> Tail '*'                                                       *> tails_() tails_(,,)
+                ;
+  37       TailQuest
+      91       -> TailQuest2                                                     *> optgroup_() optgroup_(,,)
+                ;
+  38       TailQuest2
+      92       -> Tail '?'                                                       *> tails_() tails_(,,)
+                ;
+  39       Group
+      93       -> '(' GroupTails ')'                                             *> group_() group_(,,)
+                ;
+  40       OGroup
+      94       -> '(' GroupTails ')'                                             *> optgroup_() optgroup_(,,)
+                ;
+  41       OptGroup
+      95       -> '[' GroupTails ']'                                             *> optgroup_() optgroup_(,,)
+                ;
+  42       GroupTails
+      96       -> GroupExprList [OrGroupExprList]...
+                ;
+  43       GroupExprList
+      97       -> TailExpr...                                                    *> tails_() tails_(,,)
+                ;
+  44       OrGroupExprList
+      98       -> '|' TailExpr...                                                *> tails_() tails_(,,)
+                ;
+  45       Tail
+      99       -> <alpha>                                                        =*> tail_(1) tail_(,,)
+     100       -> <literal>                                                      =*> tail_(1) tail_(,,)
+     101       -> <lexical>                                                      =*> tail_(1) tail_(,,)
+     102       -> <semantic>                                                     =*> tail_(1) tail_(,,)
+     103       -> '<error>'                                                      =*> tail_(1) tail_(,,)
+     104       -> '<keyword>'                                                    =*> tailkw_(1) tailkw_(,,)
+                ;
+  46       Sep
+     105       -> <alpha>                                                        =*> sep_(1) sep_(,,)
+     106       -> <lexical>                                                      =*> sep_(1) sep_(,,)
+     107       -> <literal>                                                      =*> sep_(1) sep_(,,)
+     108       -> Group
+                ;
+  47       TokenAction
+     109       -> '=>' TokenActionSpec                                           *> token_action_(1) token_action_(,,)
+                ;
+  48       RuleActions
+     110       ->
+     111       -> ParseAction                                                    *> rule_actions_() rule_actions_(,,)
+     112       -> MakeNode                                                       *> rule_actions_() rule_actions_(,,)
+     113       -> MakeNodeWithAction                                             *> rule_actions_() rule_actions_(,,)
+     114       -> ParseActionMakeNode                                            *> rule_actions_() rule_actions_(,,)
+     115       -> ParseActionMakeNodeWA                                          *> rule_actions_() rule_actions_(,,)
+                ;
+  49       ParseAction
+     116       -> '=>' ParseActionSpec                                           *> parse_action_(1) parse_action_(,,)
+                ;
+  50       MakeNode
+     117       -> '+>' NodeSpec                                                  =*> make_node_(1) make_node_(,,)
+                ;
+  51       MakeNodeWithAction
+     118       -> '*>' NodeSpec BlankNodeAction                                  =*> make_node_wa_(1) make_node_wa_(,,)
+     119       -> '*>' NodeSpec NodeAction                                       =*> make_node_wa_(1) make_node_wa_(,,)
+                ;
+  52       ParseActionMakeNode
+     120       -> '=+>' PANodeSpec BlankParseAction                              =*> parse_action_make_node_(1) parse_action_make_node_(,,)
+                ;
+  53       ParseActionMakeNodeWA
+     121       -> '=*>' PANodeSpec BlankParseAction BlankNodeAction              =*> parse_action_make_node_wa_(1) parse_action_make_node_wa_(,,)
+     122       -> '=*>' PANodeSpec BlankParseAction NodeAction                   =*> parse_action_make_node_wa_(1) parse_action_make_node_wa_(,,)
+                ;
+  54       TokenActionSpec
+     123       -> TokenActionName Args                                           =*> token_action_spec_(1) token_action_spec_(,,)
+                ;
+  55       TokenActionName
+     124       -> <alpha>                                                        => token_action_name_(1)
+                ;
+  56       ParseActionSpec
+     125       -> ParseActionName Args                                           =*> parse_action_spec_(1) parse_action_spec_(,,)
+                ;
+  57       ParseActionName
+     126       -> <alpha>                                                        => parse_action_name_(1)
+                ;
+  58       BlankParseAction
+     127       ->                                                                =*> blank_parse_action_(1) blank_parse_action_(,,)
+                ;
+  59       NodeSpec
+     128       -> NodeName NNArgs                                                =*> node_spec_(1) node_spec_(,,)
+                ;
+  60       NodeName
+     129       -> <alpha>                                                        => node_name_(1)
+     130       ->                                                                => blank_node_name_(1)
+                ;
+  61       PANodeSpec
+     131       -> PANodeName NNArgs                                              =*> pa_node_spec_(1) pa_node_spec_(,,)
+                ;
+  62       PANodeName
+     132       -> <alpha>                                                        => pa_node_name_(1)
+     133       ->                                                                => pa_blank_node_name_(1)
+                ;
+  63       NodeAction
+     134       -> NodeActionName NAArgs                                          =*> node_action_(1) node_action_(,,)
+                ;
+  64       NodeActionName
+     135       -> <alpha>                                                        => node_action_name_(1)
+                ;
+  65       BlankNodeAction
+     136       -> BlankNodeActionName NAArgs                                     =*> node_action_(1) node_action_(,,)
+                ;
+  66       BlankNodeActionName
+     137       ->                                                                => blank_node_action_name_(1)
+                ;
+  67       Args
+     138       ->                                                                =*> args_() args_(,,)
+     139       -> '(' ')'                                                        =*> args_() args_(,,)
+     140       -> '(' Arg/','... ')'                                             =*> args_() args_(,,)
+                ;
+  68       NNArgs
+     141       ->                                                                =*> args_() args_(,,)
+     142       -> '(' ')'                                                        =*> args_() args_(,,)
+     143       -> '(' FirstArg [',' (Arg | NoArg)]... ')'                        =*> args_() args_(,,)
+                ;
+  69       NAArgs
+     144       -> NoArg NoArg NoArg                                              =*> args_() args_(,,)
+     145       -> '(' NoArg NoArg NoArg ')'                                      =*> args_() args_(,,)
+     146       -> '(' NAArg ',' NAArg ',' NAArg ')'                              =*> args_() args_(,,)
+                ;
+  70       NAArg
+     147       -> Arg
+     148       -> NoArg
+                ;
+  71       NoArg
+     149       ->                                                                =*> arg_null_() arg_null_(,,)
+                ;
+  72       FirstArg
+     150       -> ArgNum                                                         => arg_first_()
+                ;
+  73       Arg
+     151       -> ArgVar
+     152       -> ArgNum
+     153       -> ArgExpr
+                ;
+  74       ArgVar
+     154       -> <alpha>                                                        =*> arg_alpha_(1) arg_alpha_(,,)
+     155       -> <lexical>                                                      =*> arg_terminal_(1) arg_terminal_(,,)
+     156       -> <semantic>                                                     =*> arg_terminal_(1) arg_terminal_(,,)
+     157       -> <literal>                                                      =*> arg_terminal_(1) arg_terminal_(,,)
+     158       -> <string>                                                       =*> arg_string_(1) arg_string_(,,)
+     159       -> '<eof>'                                                        =*> arg_terminal_(1) arg_terminal_(,,)
+     160       -> '<error>'                                                      =*> arg_terminal_(1) arg_terminal_(,,)
+                ;
+  75       ArgNum
+     161       -> <integer>                                                      =*> arg_integer_(1) arg_integer_(,,)
+                ;
+  76       ArgExpr
+     162       -> ArgExprNum ('|' ArgExprNum)...                                 =*> arg_expr_() arg_expr_(,,)
+                ;
+  77       ArgExprNum
+     163       -> <integer>                                                      =*> arg_expr_integer_(1) arg_expr_integer_(,,)
+     164       -> <alpha>                                                        =*> arg_expr_alpha_(1) arg_expr_alpha_(,,)
+                ;
+  78       ConstDecl...
+     165       -> ConstDecl
+     166       -> ConstDecl... ConstDecl
+                ;
+  79       TokenDecl...
+     167       -> TokenDecl
+     168       -> TokenDecl... TokenDecl
+                ;
+  80       OperPrecLine...
+     169       -> OperPrecLine
+     170       -> OperPrecLine... OperPrecLine
+                ;
+  81       Operator...
+     171       -> Operator
+     172       -> Operator... Operator
+                ;
+  82       [NonterminalDef]...
+     173       ->
+     174       -> [NonterminalDef]... NonterminalDef
+                ;
+  83       [';']
+     175       ->
+     176       -> ';'
+                ;
+  84       BarRule...
+     177       -> BarRule
+     178       -> BarRule... BarRule
+                ;
+  85       ArrowRule...
+     179       -> ArrowRule
+     180       -> ArrowRule... ArrowRule
+                ;
+  86       TailPosition...
+     181       -> TailPosition
+     182       -> TailPosition... TailPosition
+                ;
+  87       [OrGroupExprList]...
+     183       ->
+     184       -> [OrGroupExprList]... OrGroupExprList
+                ;
+  88       TailExpr...
+     185       -> TailExpr
+     186       -> TailExpr... TailExpr
+                ;
+  89       Arg/','...
+     187       -> Arg
+     188       -> Arg/','... ',' Arg
+                ;
+  90       (Arg | NoArg)
+     189       -> Arg
+     190       -> NoArg
+                ;
+  91       (',' (Arg | NoArg))
+     191       -> ',' (Arg | NoArg)
+                ;
+  92       [',' (Arg | NoArg)]...
+     192       ->
+     193       -> [',' (Arg | NoArg)]... (',' (Arg | NoArg))
+                ;
+  93       ('|' ArgExprNum)
+     194       -> '|' ArgExprNum
+                ;
+  94       ('|' ArgExprNum)...
+     195       -> ('|' ArgExprNum)
+     196       -> ('|' ArgExprNum)... ('|' ArgExprNum)
+                ;
+
+/* End of PG grammar */
+

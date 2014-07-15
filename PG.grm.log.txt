@@ -1,0 +1,46 @@
+
+LRSTAR 5.0.002 Professional Copyright 2013 Paul Mann.
+
+Input     PG.grm /exp /k /g /ct 
+
+Grammar      197 rules, 42 terminals, 95 nonterminals.
+LR(1)        275 states in Minimal LR(1) state machine.
+             116 states after implementing shift-reduce actions.
+Conflicts      4 states, 4 shift-reduce, 0 reduce-reduce conflicts.
+
+Grammar is not LALR(1) and not LR(1).
+
+            rows   cols          matrix        list       vect      total
+B matrix      40 x   33 x 1 =     1,320 ->      126 +      200 =      326  
+T matrix      12 x   30 x 2 =       720 ->      368 +      158 =      526  
+N matrix      16 x   81 x 2 =     2,592 ->    1,214 +      429 =    1,643  
+R matrix       6 x    9 x 1 =        49 ->       49 +      274 =      323  
+Total                                         1,757 +    1,061 =    2,818
+
+Skeleton: PGParser.h.skl
+Output:   PGParser.h (259 lines)
+Skeleton: PGParser.cpp.skl
+Output:   PGParser.cpp (1,430 lines)
+
+Symbols                             309  "/sym   =     20,000"    2 % 
+States                              275  "/sta   =    300,000"    0 % 
+Final items                         240  "/fin   =    300,000"    0 % 
+Kernel items                      4,723  "/ker   = 10,000,000"    0 % 
+Nonterminal transitions             396  "/ntt   =    200,000"    0 % 
+Terminal transitions                373  "/tt    =  2,000,000"    0 % 
+Lookaheads                           48  "/la    = 10,000,000"    0 % 
+Lookbacks                         1,082  "/lb    =  2,000,000"    0 % 
+Includes                            396  "/inc   =    500,000"    0 % 
+Child nodes in graph                551  "/ch    =    500,000"    0 % 
+Nondeterministic actions              0  "/nd    =    100,000"    0 % 
+
+0 min 0.015 sec, 95.073 MB, 0 warnings, 0 errors.
+
+/* 3 keywords */
+
+   '<eof>';
+   '<error>';
+   '<keyword>';
+
+/* end of keywords */
+

@@ -1,0 +1,90 @@
+
+/* Apache Logfile Grammar for Netcom logfiles 
+   NCSA CLFX (Common Log File eXtended) format.
+   May 6th 1998 - Paul B Mann.
+*/
+
+/* Token declarations */
+
+   <error>    => error();
+   <eol>      => eol(); 
+   <url>      => lookup();
+   <path>     => lookup();
+   <file>     => lookup();
+   <word>     => lookup();
+   <numb>     => lookup();
+   <date>     => lookup();
+   <time>     => lookup(); 
+   <query>    => lookup();
+	{Path}	  ;
+
+/* Rules */
+              
+   Start      -> Day... <eof>              => Report ({Date},{Path},{Client},{Source})
+
+   Day        -> Session...                +> Day 
+   
+   Session    -> Record...                 +> Client 
+
+   Record     -> Client User Date Time Cmd Code Size Source Browser <eol> 
+              -> Client User Date Time Cmd Code Size Source Query Browser <eol> 
+
+   Client     -> <file>                    
+              -> {Client}
+              
+   User       -> '-'
+              -> '-' '-'
+              -> '-' Name...               +> FullName
+              ->     Name...               +> FullName 
+                                          
+   Name       -> <word>                    +> Name 
+              -> <numb>                    +> Name 
+
+   Date       -> '[' <date> ':'            => deftype (2, {Date})
+              -> '[' {Date} ':'               
+
+   Time       -> <time> '-' <numb> ']'     +> Time 
+              -> <time> '+' <numb> ']'     +> Time 
+              
+   Cmd        -> '-'                       +> File 
+              -> <word> <path> <file>      => deftype (2, {Path})
+              -> <word> <path> <error>...  => deftype (2, {Path})
+              -> <word> <Path> <file>      +> File 
+              -> <word> <Path> <error>...  +> File 
+
+   Code       -> <numb>                    +> Code 
+
+   Size       -> '-'                       +> Size 
+              -> <numb>                    +> Size 
+              
+   Source     -> '-'
+              -> <word>                    +> Source (1)
+              -> <url>                     +> Source (1)
+              -> {Source}                  +> Source 
+              
+   Query      -> <query>                   +> Query (1)
+              -> {Query}                   +> Query 
+
+   Browser    -> Thing
+              -> Browser Thing 
+              -> Browser '(' ItemList ')'
+   
+   Thing      -> <url>
+              -> <path>
+              -> <file> 
+              -> <word> 
+              -> <numb>   
+              -> <date>
+              -> <time>
+              -> <query>
+              -> <error>
+              -> '['
+              -> ']'
+              -> '-'
+
+   ItemList   -> Thing...
+              -> ItemList ';' Thing...
+
+///////////////////////////////////////////////////////////////////////////////
+
+

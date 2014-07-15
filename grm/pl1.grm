@@ -1,0 +1,3005 @@
+
+/* PL/I grammar.
+   by Ed Dobies
+      Xypro Technology
+      Simi Valley, CA
+      1988 ?
+*/
+
+   /****************/
+   /*              */
+   /*  PL1 Tokens  */
+   /*              */
+   /****************/
+
+   <error>         => error();
+   <identifier>    => lookup();
+   <character>     => lookup();
+   <string>        => lookup();
+   <integer>       => lookup();
+   <picture>       => lookup();
+
+
+
+   /*****************/
+   /*               */
+   /*  PL1 Grammar  */
+   /*               */
+   /*****************/
+
+   Start
+	   -> TranUnit <eof>
+
+   TranUnit
+	   ->
+	   -> TranList
+
+   TranList
+	   -> TranItem
+	   -> TranList TranItem
+
+   TranItem
+	   -> Procedure
+
+
+
+   /***************/
+   /*             */
+   /*  PROCEDURE  */
+   /*             */
+   /***************/
+
+   Procedure
+	   -> PfixList PrcdSpec PrcdUnitList PrcdEnd
+
+   PrcdSpec
+	   -> ProcStmt
+
+   PrcdUnitList
+	   ->
+	   -> PrcdUnitList PrcdUnitItem
+
+   PrcdUnitItem
+	   -> Unit
+
+   PrcdEnd
+	   -> PrcdSnamList PrcdEndStmt
+
+   PrcdSnamList
+	   ->
+	   -> PrcdSnamList PrcdSnamItem
+
+   PrcdSnamItem
+	   -> StmtName
+
+   PrcdEndStmt
+	   -> EndStmt
+
+
+
+
+   /**********/
+   /*        */
+   /*  UNIT  */
+   /*        */
+   /**********/
+
+   Unit
+	   -> PfixList UnitDeclStmt
+	   ->          UnitDeclStmt
+	   -> PfixList UnitDfltStmt
+	   ->          UnitDfltStmt
+	   -> PfixList UnitEntryStmt
+	   -> PfixList UnitFmtStmt
+	   ->          UnitPrcdStmt
+	   ->          UnitExecUnit
+
+   UnitDeclStmt
+	   -> DeclareStmt
+
+   UnitDfltStmt
+	   -> DefaultStmt
+
+   UnitEntryStmt
+	   -> EntryStmt
+
+   UnitFmtStmt
+	   -> FormatStmt
+
+   UnitPrcdStmt
+	   -> Procedure
+
+   UnitExecUnit
+	   -> ExecUnit
+
+
+
+   /***************/
+   /*             */
+   /*  EXEC UNIT  */
+   /*             */
+   /***************/
+
+   ExecUnit
+	   -> PfixList ExecGroup
+	   ->          ExecGroup
+	   -> PfixList ExecBlock
+	   ->          ExecBlock
+	   -> PfixList ExecOnStmt
+	   ->          ExecOnStmt
+	   -> PfixList ExecIfStmt
+	   ->          ExecIfStmt
+	   -> PfixList ExecSnglStmt
+	   ->          ExecSnglStmt
+
+   ExecGroup
+	   -> Group
+
+   ExecBlock
+	   -> Block
+
+   ExecOnStmt
+	   -> OnStmt
+
+   ExecIfStmt
+	   -> IfStmt
+
+   ExecSnglStmt
+	   -> AllocateStmt
+	   -> AssignmentStmt
+	   -> CallStmt
+	   -> CloseStmt
+	   -> DeleteStmt
+	   -> ExecStmt
+	   -> FreeStmt
+	   -> GetStmt
+	   -> GotoStmt
+	   -> LocateStmt
+	   -> NullStmt
+	   -> OpenStmt
+	   -> PutStmt
+	   -> ReadStmt
+	   -> ReturnStmt
+	   -> RevertStmt
+	   -> RewriteStmt
+	   -> SignalStmt
+	   -> StopStmt
+	   -> WriteStmt
+
+
+
+   /**************/
+   /*            */
+   /*  BAL UNIT  */
+   /*            */
+   /**************/
+
+   BalUnit
+	   -> PfixList BalExecStmt
+	   ->          BalExecStmt
+	   -> PfixList BalGroup
+	   ->          BalGroup
+	   -> PfixList BalBlock
+	   ->          BalBlock
+	   -> PfixList BalOnStmt
+	   ->          BalOnStmt
+	   -> PfixList BalClause BalUnit BalElse BalUnit
+	   ->          BalClause BalUnit BalElse BalUnit
+
+   BalExecStmt
+	   -> ExecSnglStmt
+
+   BalGroup
+	   -> Group
+
+   BalBlock
+	   -> Block
+
+   BalOnStmt
+	   -> OnStmt
+
+   BalClause
+	   -> IfClause
+
+   BalElse
+	   -> ELSE
+
+
+
+   /***********/
+   /*         */
+   /*  GROUP  */
+   /*         */
+   /***********/
+
+   Group
+	   -> GrpDoStmt GrpUnitList GrpEnd
+
+   GrpDoStmt
+	   -> DoStmt
+
+   GrpUnitList
+	   ->
+	   -> GrpUnitList GrpUnitItem
+
+   GrpUnitItem
+	   -> Unit
+
+   GrpEnd
+	   -> GrpSnamList GrpEndStmt
+
+   GrpSnamList
+	   ->
+	   -> GrpSnamList GrpSnamItem
+
+   GrpSnamItem
+	   -> StmtName
+
+   GrpEndStmt
+	   -> EndStmt
+
+
+
+   /***********/
+   /*         */
+   /*  BLOCK  */
+   /*         */
+   /***********/
+
+   Block
+	   -> BlkDoStmt BlkUnitList BlkEnd
+
+   BlkDoStmt
+	   -> BeginStmt
+
+   BlkUnitList
+	   ->
+	   -> BlkUnitList BlkUnitItem
+
+   BlkUnitItem
+	   -> Unit
+
+   BlkEnd
+	   -> BlkSnamList BlkEndStmt
+
+   BlkSnamList
+	   ->
+	   -> BlkSnamList BlkSnamItem
+
+   BlkSnamItem
+	   -> StmtName
+
+   BlkEndStmt
+	   -> EndStmt
+
+
+
+   /**************/
+   /*            */
+   /*  ALLOCATE  */
+   /*            */
+   /**************/
+
+   AllocateStmt
+	   -> AlocInit AlocList AlocDone
+
+   AlocInit
+	   -> ALLOCATE
+	   -> ALLOC
+
+   AlocList
+	   -> AlocItem
+	   -> AlocList ',' AlocItem
+
+   AlocItem
+	   -> AlocName AlocSet AlocIn
+	   -> AlocName AlocSet
+	   -> AlocName         AlocIn
+	   -> AlocName
+
+   AlocName
+	   -> <identifier>
+
+   AlocSet
+	   -> SET '(' AlocSet1 ')'
+
+   AlocSet1
+	   -> Reference
+
+   AlocIn
+	   -> IN '(' AlocIn1 ')'
+
+   AlocIn1
+	   -> Reference
+
+   AlocDone
+	   -> ';'
+
+
+
+   /****************/
+   /*              */
+   /*  ASSIGNMENT  */
+   /*              */
+   /****************/
+
+   AssignmentStmt
+	   -> /* AsgnInit */  AsgnList '=' AsgnExpr AsgnTail AsgnDone
+   /*
+   AsgnInit
+	   ->
+   */
+   AsgnList
+	   -> AsgnItem
+	   -> AsgnList ',' AsgnItem
+
+   AsgnItem
+	   -> Reference
+
+   AsgnExpr
+	   -> Expr
+
+   AsgnTail
+	   ->
+	   -> ',' BY NAME
+
+   AsgnDone
+	   -> ';'
+
+
+
+   /***********/
+   /*         */
+   /*  BEGIN  */
+   /*         */
+   /***********/
+
+   BeginStmt
+	   -> BgnInit BgnBody BgnDone
+
+   BgnInit
+	   -> BEGIN
+
+   BgnBody
+	   ->
+	   -> OPTIONS '(' BgnOptList ')'
+
+   BgnOptList
+	   -> BgnOptItem
+	   -> BgnOptList ',' BgnOptItem
+
+   BgnOptItem
+	   -> <identifier>
+
+   BgnDone
+	   -> ';'
+
+
+
+   /**********/
+   /*        */
+   /*  CALL  */
+   /*        */
+   /**********/
+
+   CallStmt
+	   -> CallInit CallBody CallDone
+
+   CallInit
+	   -> CALL
+
+   CallBody
+	   -> Reference
+
+   CallDone
+	   -> ';'
+
+
+
+   /***********/
+   /*         */
+   /*  CLOSE  */
+   /*         */
+   /***********/
+
+   CloseStmt
+	   -> CloseInit CloseList CloseDone
+
+   CloseInit
+	   -> CLOSE
+
+   CloseList
+	   -> CloseItem
+	   -> CloseList ',' CloseItem
+
+   CloseItem
+	   -> FILE '(' CloseFile ')' CloseTail
+	   -> FILE '(' CloseFile ')'
+
+   CloseFile
+	   -> Reference
+
+   CloseTail
+	   -> ENVIRONMENT '(' CloseEnvList ')'
+	   -> ENV         '(' CloseEnvList ')'
+
+   CloseEnvList
+	   -> CloseEnvItem
+	   -> CloseEnvList ',' CloseEnvItem
+
+   CloseEnvItem
+	   -> <identifier>
+
+   CloseDone
+	   -> ';'
+
+
+
+   /*************/
+   /*           */
+   /*  DECLARE  */
+   /*           */
+   /*************/
+
+   DeclareStmt
+	   -> DeclInit DeclList DeclDone
+
+   DeclInit
+	   -> DECLARE
+	   -> DCL
+
+   DeclList
+	   -> DeclItem
+	   -> DeclList ',' DeclItem
+
+   DeclItem
+	   -> DeclLevl DeclName DeclDimSfix DeclAttrList
+	   -> DeclLevl DeclList DeclDimSfix DeclAttrList
+
+   DeclLevl
+	   -> <integer>
+
+   DeclName
+	   -> <identifier>
+
+   DeclDimSfix
+	   ->
+	   -> '(' DeclBndList ')'
+
+   DeclBndList
+	   -> DeclBndItem
+	   -> DeclBndList ',' DeclBndItem
+
+   DeclBndItem
+	   -> BoundPair
+
+   DeclAttrList
+	   -> DeclAttrItem
+	   -> DeclAttrList DeclAttrItem
+
+   DeclAttrItem
+	   -> Attribute
+
+   DeclDone
+	   -> ';'
+
+
+
+   /*************/
+   /*           */
+   /*  DEFAULT  */
+   /*           */
+   /*************/
+
+   DefaultStmt
+	   -> DfltInit DfltBody DfltDone
+
+   DfltInit
+	   -> DEFAULT
+	   -> DFT
+
+   DfltBody
+	   -> NONE
+	   -> SYSTEM
+	   -> DfltHead DfltTail
+
+   DfltHead
+	   -> '(' DfltExpr ')'
+
+   DfltExpr
+	   -> DfltExpr '|' DfltExpr3
+	   ->              DfltExpr3
+
+   DfltExpr3
+	   -> DfltExpr3 '&' DfltExpr2
+	   ->               DfltExpr2
+
+   DfltExpr2
+	   -> '~' DfltExpr2
+	   ->     DfltExpr1
+
+   DfltExpr1
+	   -> '(' DfltExpr ')'
+	   -> DfltAttrKwrd
+	   -> DfltRange
+
+   DfltAttrKwrd
+	   -> AttrKwrd
+
+   DfltRange
+	   -> DfltRngHead '(' DfltRngSpec ')'
+
+   DfltRngHead
+	   -> RANGE
+
+   DfltRngSpec
+	   -> '*'
+	   -> <identifier>
+	   -> DfltRng1 ':' DfltRng2
+
+   DfltRng1
+	   -> <character>
+
+   DfltRng2
+	   -> <character>
+
+   DfltTail
+	   -> ERROR
+	   -> DfltAttrList
+
+   DfltAttrList
+	   -> DfltAttrItem
+	   -> DfltAttrList ',' DfltAttrItem
+	   -> DfltAttrList     DfltAttrItem
+
+   DfltAttrItem
+	   -> Attribute
+
+   DfltDone
+	   -> ';'
+
+
+
+   /************/
+   /*          */
+   /*  DELETE  */
+   /*          */
+   /************/
+
+   DeleteStmt
+	   -> DelInit DelFile DelKey  DelDone
+	   -> DelInit DelFile         DelDone
+
+   DelInit
+	   -> DELETE
+
+   DelFile
+	   -> FILE '(' DelFile1 ')'
+
+   DelFile1
+	   -> Reference
+
+   DelKey
+	   -> KEY '(' DelKey1 ')'
+
+   DelKey1
+	   -> Expr
+
+   DelDone
+	   -> ';'
+
+
+
+   /*********/
+   /*       */
+   /*  DO   */
+   /*       */
+   /*********/
+
+   DoStmt
+	   -> DoInit         DoDone
+	   -> DoInit DoWhile DoDone
+	   -> DoInit DoSpec  DoDone
+
+   DoInit
+	   -> DO
+
+   DoWhile
+	   -> WHILE '(' DoWhile1 ')'
+
+   DoWhile1
+	   -> Expr
+
+   DoSpec
+	   -> DoSpecRef '=' DoSpecList
+
+   DoSpecRef
+	   -> Reference
+
+   DoSpecList
+	   -> DoSpecItem
+	   -> DoSpecList ',' DoSpecItem
+
+   DoSpecItem
+	   -> DoSpec1 DoSpec2 DoWhile
+	   -> DoSpec1 DoSpec2
+	   -> DoSpec1         DoWhile
+
+   DoSpec1
+	   -> Expr
+
+   DoSpec2
+	   -> DoToBy
+	   -> DoRepeat
+
+   DoToBy
+	   -> DoTo DoBy
+	   -> DoTo
+	   -> DoBy
+	   -> DoBy DoTo
+
+   DoTo
+	   -> TO DoTo1
+
+   DoTo1
+	   -> Expr
+
+   DoBy
+	   -> BY DoBy1
+
+   DoBy1
+	   -> Expr
+
+   DoRepeat
+	   -> REPEAT DoRep1
+
+   DoRep1
+	   -> Expr
+
+   DoDone
+	   -> ';'
+
+
+
+   /**********/
+   /*        */
+   /*  END   */
+   /*        */
+   /**********/
+
+   EndStmt
+	   -> EndInit EndBody EndDone
+	   -> EndInit         EndDone
+
+   EndInit
+	   -> END
+
+   EndBody
+	   -> <identifier>
+
+   EndDone
+	   -> ';'
+
+
+
+   /************/
+   /*          */
+   /*  ENTRY   */
+   /*          */
+   /************/
+
+   EntryStmt
+	   -> EntryInit EntryBody EntryDone
+
+   EntryInit
+	   -> ENTRY
+
+   EntryBody
+	   -> EntryInfo1 EntryInfo2 EntryInfo3 EntryInfo4
+
+   EntryInfo1
+	   ->
+	   -> '(' EntryParmList ')'
+
+   EntryParmList
+	   -> EntryParmItem
+	   -> EntryParmList ',' EntryParmItem
+
+   EntryParmItem
+	   -> <identifier>
+
+   EntryInfo2
+	   ->
+	   -> EntryRtn1 '(' EntryRtn2 ')'
+	   -> EntryRtn1
+
+   EntryRtn1
+	   -> RETURNS
+
+   EntryRtn2
+	   -> EntryRtn3
+	   -> EntryRtn2 ',' EntryRtn3
+
+   EntryRtn3
+	   -> EntryRtn4 '(' EntryRtn5 ')' EntryRtn7
+	   -> EntryRtn4 '(' EntryRtn5 ')'
+	   -> EntryRtn4
+	   ->           '(' EntryRtn5 ')' EntryRtn7
+	   ->           '(' EntryRtn5 ')'
+	   ->                             EntryRtn7
+
+   EntryRtn4
+	   -> <integer>
+
+   EntryRtn5
+	   -> EntryRtn6
+	   -> EntryRtn5 ',' EntryRtn6
+
+   EntryRtn6
+	   -> BoundPair
+
+   EntryRtn7
+	   -> EntryRtn8
+	   -> EntryRtn7 EntryRtn8
+
+   EntryRtn8
+	   -> DataAttr
+
+   EntryInfo3
+	   ->
+	   -> EntryOpt1 '(' EntryOpt2 ')'
+
+   EntryOpt1
+	   -> OPTIONS
+
+   EntryOpt2
+	   -> EntryOpt3
+	   -> EntryOpt2 ',' EntryOpt3
+
+   EntryOpt3
+	   -> <identifier>
+
+   EntryInfo4
+	   ->
+	   -> RECURSIVE
+
+   EntryDone
+	   -> ';'
+
+
+
+   /***********/
+   /*         */
+   /*  EXEC   */
+   /*         */
+   /***********/
+
+   ExecStmt
+	   -> ExecInit ExecBody ExecDone
+
+   ExecInit
+	   -> EXEC
+
+   ExecBody
+	   -> CICS
+
+   ExecDone
+	   -> ';'
+
+
+
+   /*************/
+   /*           */
+   /*  FORMAT   */
+   /*           */
+   /*************/
+
+   FormatStmt
+	   -> FormatInit '(' FormatList ')' FormatDone
+
+   FormatInit
+	   -> FORMAT
+
+   FormatList
+	   -> FormatItem
+	   -> FormatList ',' FormatItem
+
+   FormatItem
+	   -> FmtSpec
+
+   FormatDone
+	   -> ';'
+
+
+
+   /***********/
+   /*         */
+   /*  FREE   */
+   /*         */
+   /***********/
+
+   FreeStmt
+	   -> FreeInit FreeList FreeDone
+
+   FreeInit
+	   -> FREE
+
+   FreeList
+	   -> FreeItem
+	   -> FreeList ',' FreeItem
+
+   FreeItem
+	   -> FreeRef FreeIn
+	   -> FreeRef
+
+   FreeRef
+	   -> Reference
+
+   FreeIn
+	   -> IN '(' FreeIn1 ')'
+
+   FreeIn1
+	   -> Reference
+
+   FreeDone
+	   -> ';'
+
+
+
+   /**********/
+   /*        */
+   /*  GET   */
+   /*        */
+   /**********/
+
+   GetStmt
+	   -> GetInit GetBody GetDone
+
+   GetInit
+	   -> GET
+
+   GetBody
+	   -> GetFile GetCopy GetSkip GetIpt
+	   -> GetFile GetCopy GetSkip
+	   -> STRING '(' GetStr1 ')' GetIpt GetCopy
+
+   GetFile
+	   ->
+	   -> FILE '(' GetFile1 ')'
+
+   GetFile1
+	   -> Reference
+
+   GetCopy
+	   ->
+	   -> COPY '(' GetCopy1 ')'
+	   -> COPY
+
+   GetCopy1
+	   -> Reference
+
+   GetSkip
+	   ->
+	   -> SKIP '(' GetSkip1 ')'
+	   -> SKIP
+
+   GetSkip1
+	   -> Expr
+
+   GetStr1
+	   -> Expr
+
+   GetIpt
+	   -> GetData
+	   -> GetList
+	   -> GetEdit
+
+   GetData
+	   -> DATA '(' GetDataList ')'
+	   -> DATA
+
+   GetDataList
+	   -> GetDataItem
+	   -> GetDataList ',' GetDataItem
+
+   GetDataItem
+	   -> GetDataNameList
+
+   GetDataNameList
+	   -> GetDataNameItem
+	   -> GetDataNameList '.' GetDataNameItem
+
+   GetDataNameItem
+	   -> <identifier>
+
+   GetList
+	   -> LIST '(' GetTargList ')'
+
+   GetTargList
+	   -> GetTargItem
+	   -> GetTargList ',' GetTargItem
+
+   GetTargItem
+	   -> Reference
+	   -> GetTarg1 GetTarg2
+
+   GetTarg1
+	   -> '(' GetTargList ')'
+
+   GetTarg2
+	   -> DO GetDo
+
+   GetDo
+	   -> GetDoRef '=' GetDoList
+
+   GetDoRef
+	   -> Reference
+
+   GetDoList
+	   -> GetDoItem
+	   -> GetDoList ',' GetDoItem
+
+   GetDoItem
+	   -> GetDoItem1 GetDoItem2 GetDoItem3
+	   -> GetDoItem1 GetDoItem2
+	   -> GetDoItem1            GetDoItem3
+
+   GetDoItem1
+	   -> Expr
+
+   GetDoItem2
+	   -> GetDoToBy
+	   -> GetDoRepeat
+
+   GetDoItem3
+	   -> WHILE '(' GetDoWhile ')'
+
+   GetDoWhile
+	   -> Expr
+
+   GetDoToBy
+	   -> GetDoTo GetDoBy
+	   -> GetDoTo
+	   -> GetDoBy
+	   -> GetDoBy GetDoTo
+
+   GetDoTo
+	   -> TO GetDoTo1
+
+   GetDoTo1
+	   -> Expr
+
+   GetDoBy
+	   -> BY GetDoBy1
+
+   GetDoBy1
+	   -> Expr
+
+   GetDoRepeat
+	   -> REPEAT GetDoRep1
+
+   GetDoRep1
+	   -> Expr
+
+   GetEdit
+	   -> EDIT GetEditList1
+
+   GetEditList1
+	   -> GetEditItem1
+	   -> GetEditList1 ',' GetEditItem1
+
+   GetEditItem1
+	   -> '(' GetTargList ')' '(' GetEditList2 ')'
+
+   GetEditList2
+	   -> GetEditItem2
+	   -> GetEditList2 ',' GetEditItem2
+
+   GetEditItem2
+	   -> FmtSpec
+
+   GetDone
+	   -> ';'
+
+
+
+   /***********/
+   /*         */
+   /*  GOTO   */
+   /*         */
+   /***********/
+
+   GotoStmt
+	   -> GotoInit GotoBody GotoDone
+
+   GotoInit
+	   -> GOTO
+	   -> GO TO
+
+   GotoBody
+	   -> Reference
+
+   GotoDone
+	   -> ';'
+
+
+
+   /*********/
+   /*       */
+   /*  IF   */
+   /*       */
+   /*********/
+
+   IfStmt
+	   -> IfClause IfExecUnit
+	   -> IfClause BalUnit IfElse IfExecUnit
+
+   IfClause
+	   -> IfInit IfExpr IfThen
+
+   IfInit
+	   -> IF
+
+   IfExpr
+	   -> Expr
+
+   IfThen
+	   -> THEN
+
+   IfElse
+	   -> ELSE
+
+   IfExecUnit
+	   -> ExecUnit
+
+
+
+   /*************/
+   /*           */
+   /*  LOCATE   */
+   /*           */
+   /*************/
+
+   LocateStmt
+	   -> LocInit LocName LocTail LocDone
+
+   LocInit
+	   -> LOCATE
+
+   LocName
+	   -> <identifier>
+
+   LocTail
+	   -> LocFile LocSet LocKey
+
+   LocFile
+	   -> FILE '(' LocFile1 ')'
+
+   LocFile1
+	   -> Reference
+
+   LocSet
+	   ->
+	   -> SET '(' LocSet1 ')'
+
+   LocSet1
+	   -> Reference
+
+   LocKey
+	   ->
+	   -> KEYFROM '(' LocKey1 ')'
+
+   LocKey1
+	   -> Expr
+
+   LocDone
+	   -> ';'
+
+
+
+   /***********/
+   /*         */
+   /*  NULL   */
+   /*         */
+   /***********/
+
+   NullStmt
+	   -> ';'
+
+
+
+   /*********/
+   /*       */
+   /*  ON   */
+   /*       */
+   /*********/
+
+   OnStmt
+	   -> OnInit OnList OnSnap OnTail
+
+   OnInit
+	   -> ON
+
+   OnList
+	   -> OnItem
+	   -> OnList ',' OnItem
+
+   OnItem
+	   -> CondName
+
+   OnSnap
+	   ->
+	   -> SNAP
+
+   OnTail
+	   -> SYSTEM ';'
+	   -> '(' CondPfixList ')' ':' OnExecStmt
+	   ->                          OnExecStmt
+	   -> '(' CondPfixList ')' ':' OnBlock
+	   ->                          OnBlock
+
+   OnExecStmt
+	   -> ExecSnglStmt
+
+   OnBlock
+	   -> Block
+
+
+
+   /***********/
+   /*         */
+   /*  OPEN   */
+   /*         */
+   /***********/
+
+   OpenStmt
+	   -> OpenInit OpenList1 OpenDone
+
+   OpenInit
+	   -> OPEN
+
+   OpenList1
+	   -> OpenItem1
+	   -> OpenList1 ',' OpenItem1
+
+   OpenItem1
+	   -> OpenList2
+
+   OpenList2
+	   -> OpenItem2
+	   -> OpenList2 OpenItem2
+
+   OpenItem2
+	   -> STREAM
+	   -> RECORD
+	   -> INPUT
+	   -> OUTPUT
+	   -> UPDATE
+	   -> SEQUENTIAL
+	   -> SEQL
+	   -> DIRECT
+	   -> PRINT
+	   -> KEYED
+	   -> FILE        '(' OpenFile     ')'
+	   -> TAB         '(' OpenTabList  ')'
+	   -> TITLE       '(' OpenTitle    ')'
+	   -> LINESIZE    '(' OpenLineSize ')'
+	   -> PAGESIZE    '(' OpenPageSize ')'
+	   -> ENVIRONMENT '(' OpenEnvList  ')'
+	   -> ENV         '(' OpenEnvList  ')'
+
+   OpenFile
+	   -> Reference
+
+   OpenTabList
+	   -> OpenTabItem
+	   -> OpenTabList ',' OpenTabItem
+
+   OpenTabItem
+	   -> Expr
+
+   OpenTitle
+	   -> Expr
+
+   OpenLineSize
+	   -> Expr
+
+   OpenPageSize
+	   -> Expr
+
+   OpenEnvList
+	   -> OpenEnvItem
+	   -> OpenEnvList ',' OpenEnvItem
+
+   OpenEnvItem
+	   -> <identifier>
+
+   OpenDone
+	   -> ';'
+
+
+
+   /***********/
+   /*         */
+   /*  PROC   */
+   /*         */
+   /***********/
+
+   ProcStmt
+	   -> ProcInit ProcBody ProcDone
+
+   ProcInit
+	   -> PROCEDURE
+	   -> PROC
+
+   ProcBody
+	   -> ProcInfo1 ProcInfo2 ProcInfo3 ProcInfo4
+
+   ProcInfo1
+	   ->
+	   -> '(' ProcParmList ')'
+
+   ProcParmList
+	   -> ProcParmItem
+	   -> ProcParmList ',' ProcParmItem
+
+   ProcParmItem
+	   -> <identifier>
+
+   ProcInfo2
+	   ->
+	   -> ProcRtn1 '(' ProcRtn2 ')'
+	   -> ProcRtn1
+
+   ProcRtn1
+	   -> RETURNS
+
+   ProcRtn2
+	   -> ProcRtn3
+	   -> ProcRtn2 ',' ProcRtn3
+
+   ProcRtn3
+	   -> ProcRtn4 '(' ProcRtn5 ')' ProcRtn7
+	   -> ProcRtn4 '(' ProcRtn5 ')'
+	   -> ProcRtn4
+	   ->          '(' ProcRtn5 ')' ProcRtn7
+	   ->          '(' ProcRtn5 ')'
+	   ->                           ProcRtn7
+
+   ProcRtn4
+	   -> <integer>
+
+   ProcRtn5
+	   -> ProcRtn6
+	   -> ProcRtn5 ',' ProcRtn6
+
+   ProcRtn6
+	   -> BoundPair
+
+   ProcRtn7
+	   -> ProcRtn8
+	   -> ProcRtn7 ProcRtn8
+
+   ProcRtn8
+	   -> DataAttr
+
+   ProcInfo3
+	   ->
+	   -> ProcOpt1 '(' ProcOpt2 ')'
+
+   ProcOpt1
+	   -> OPTIONS
+
+   ProcOpt2
+	   -> ProcOpt3
+	   -> ProcOpt2 ',' ProcOpt3
+
+   ProcOpt3
+	   -> <identifier>
+
+   ProcInfo4
+	   ->
+	   -> RECURSIVE
+
+   ProcDone
+	   -> ';'
+
+
+
+   /*********/
+   /*       */
+   /*  PUT  */
+   /*       */
+   /*********/
+
+   PutStmt
+	   -> PutInit PutBody PutDone
+
+   PutInit
+	   -> PUT
+
+   PutBody
+	   -> PutFile PutSkip PutLine PutPage PutOut
+	   -> PutFile PutSkip PutLine PutPage
+	   -> STRING '(' PutStr1 ')' PutOut
+
+   PutFile
+	   ->
+	   -> FILE '(' PutFile1 ')'
+
+   PutFile1
+	   -> Reference
+
+   PutSkip
+	   ->
+	   -> SKIP '(' PutSkip1 ')'
+	   -> SKIP
+
+   PutSkip1
+	   -> Expr
+
+   PutLine
+	   ->
+	   -> LINE '(' PutLine1 ')'
+
+   PutLine1
+	   -> Expr
+
+   PutPage
+	   ->
+	   -> PAGE
+
+   PutStr1
+	   -> Expr
+
+   PutOut
+	   -> PutData
+	   -> PutList
+	   -> PutEdit
+
+   PutData
+	   -> DATA '(' PutDataList ')'
+	   -> DATA
+
+   PutDataList
+	   -> PutDataItem
+	   -> PutDataList ',' PutDataItem
+
+   PutDataItem
+	   -> Reference
+	   -> PutData1 PutData2
+
+   PutData1
+	   -> '(' PutDataList ')'
+
+   PutData2
+	   -> DO PutDo
+
+   PutDo
+	   -> PutDoRef '=' PutDoList
+
+   PutDoRef
+	   -> Reference
+
+   PutDoList
+	   -> PutDoItem
+	   -> PutDoList ',' PutDoItem
+
+   PutDoItem
+	   -> PutDoItem1 PutDoItem2 PutDoItem3
+	   -> PutDoItem1 PutDoItem2
+	   -> PutDoItem1            PutDoItem3
+
+   PutDoItem1
+	   -> Expr
+
+   PutDoItem2
+	   -> PutDoToBy
+	   -> PutDoRepeat
+
+   PutDoItem3
+	   -> WHILE '(' PutDoWhile ')'
+
+   PutDoWhile
+	   -> Expr
+
+   PutDoToBy
+	   -> PutDoTo PutDoBy
+	   -> PutDoTo
+	   -> PutDoBy
+	   -> PutDoBy PutDoTo
+
+   PutDoTo
+	   -> TO PutDoTo1
+
+   PutDoTo1
+	   -> Expr
+
+   PutDoBy
+	   -> BY PutDoBy1
+
+   PutDoBy1
+	   -> Expr
+
+   PutDoRepeat
+	   -> REPEAT PutDoRep1
+
+   PutDoRep1
+	   -> Expr
+
+   PutList
+	   -> LIST '(' PutListList ')'
+
+   PutListList
+	   -> PutListItem
+	   -> PutListList ',' PutListItem
+
+   PutListItem
+	   -> Expr
+	   -> PutList1 PutList2
+
+   PutList1
+	   -> '(' PutListList ')'
+
+   PutList2
+	   -> DO PutDo
+
+   PutEdit
+	   -> EDIT PutEditList1
+
+   PutEditList1
+	   -> PutEditItem1
+	   -> PutEditList1 ',' PutEditItem1
+
+   PutEditItem1
+	   -> '(' PutListList ')' '(' PutEditList2 ')'
+
+   PutEditList2
+	   -> PutEditItem2
+	   -> PutEditList2 ',' PutEditItem2
+
+   PutEditItem2
+	   -> FmtSpec
+
+   PutDone
+	   -> ';'
+
+
+
+   /***********/
+   /*         */
+   /*  READ   */
+   /*         */
+   /***********/
+
+   ReadStmt
+	   -> ReadInit ReadList ReadDone
+
+   ReadInit
+	   -> READ
+
+   ReadList
+	   -> ReadItem
+	   -> ReadList ReadItem
+
+   ReadItem
+	   -> FILE   '(' ReadFile   ')'
+	   -> INTO   '(' ReadInto   ')'
+	   -> SET    '(' ReadSet    ')'
+	   -> IGNORE '(' ReadIgnore ')'
+	   -> KEY    '(' ReadKey    ')'
+	   -> KEYTO  '(' ReadKeyTo  ')'
+
+   ReadFile
+	   -> Reference
+
+   ReadInto
+	   -> Reference
+
+   ReadSet
+	   -> Reference
+
+   ReadIgnore
+	   -> Expr
+
+   ReadKey
+	   -> Expr
+
+   ReadKeyTo
+	   -> Reference
+
+   ReadDone
+	   -> ';'
+
+
+
+   /*************/
+   /*           */
+   /*  RETURN   */
+   /*           */
+   /*************/
+
+   ReturnStmt
+	   -> RtnInit RtnBody RtnDone
+
+   RtnInit
+	   -> RETURN
+
+   RtnBody
+	   ->
+	   -> '(' RtnExpr ')'
+
+   RtnExpr
+	   -> Expr
+
+   RtnDone
+	   -> ';'
+
+
+
+   /*************/
+   /*           */
+   /*  REVERT   */
+   /*           */
+   /*************/
+
+   RevertStmt
+	   -> RvrtInit RvrtList RvrtDone
+
+   RvrtInit
+	   -> REVERT
+
+   RvrtList
+	   -> RvrtItem
+	   -> RvrtList ',' RvrtItem
+
+   RvrtItem
+	   -> CondName
+
+   RvrtDone
+	   -> ';'
+
+
+
+   /**************/
+   /*            */
+   /*  REWRITE   */
+   /*            */
+   /**************/
+
+   RewriteStmt
+	   -> RewInit RewList RewDone
+
+   RewInit
+	   -> REWRITE
+
+   RewList
+	   -> RewItem
+	   -> RewList RewItem
+
+   RewItem
+	   -> FILE '(' RewFile ')'
+	   -> KEY  '(' RewKey  ')'
+	   -> FROM '(' RewFrom ')'
+
+   RewFile
+	   -> Reference
+
+   RewKey
+	   -> Expr
+
+   RewFrom
+	   -> Reference
+
+   RewDone
+	   -> ';'
+
+
+
+   /*************/
+   /*           */
+   /*  SIGNAL   */
+   /*           */
+   /*************/
+
+   SignalStmt
+	   -> SigInit SigCond SigDone
+
+   SigInit
+	   -> SIGNAL
+
+   SigCond
+	   -> CondName
+
+   SigDone
+	   -> ';'
+
+
+
+   /***********/
+   /*         */
+   /*  STOP   */
+   /*         */
+   /***********/
+
+   StopStmt
+	   -> StopInit StopDone
+
+   StopInit
+	   -> STOP
+
+   StopDone
+	   -> ';'
+
+
+
+   /************/
+   /*          */
+   /*  WRITE   */
+   /*          */
+   /************/
+
+   WriteStmt
+	   -> WriteInit WriteList WriteDone
+
+   WriteInit
+	   -> WRITE
+
+   WriteList
+	   -> WriteItem
+	   -> WriteList WriteItem
+
+   WriteItem
+	   -> FILE    '(' WriteFile    ')'
+	   -> FROM    '(' WriteFrom    ')'
+	   -> KEYFROM '(' WriteKeyFrom ')'
+
+   WriteFile
+	   -> Reference
+
+   WriteFrom
+	   -> Reference
+
+   WriteKeyFrom
+	   -> Expr
+
+   WriteDone
+	   -> ';'
+
+
+
+
+   /***************/
+   /*             */
+   /*  PFIX LIST  */
+   /*             */
+   /***************/
+
+   PfixList
+	   -> PfixItem
+	   -> PfixList PfixItem
+
+   PfixItem
+	   -> StmtName
+	   -> '(' CondPfixList ')' ':'
+
+   CondPfixList
+	   -> CondPfixItem
+	   -> CondPfixList ',' CondPfixItem
+
+   CondPfixItem
+	   -> CompCond
+
+
+
+   /***************/
+   /*             */
+   /*  STMT NAME  */
+   /*             */
+   /***************/
+
+   StmtName
+	   -> RefName StmtNameTail ':'
+
+   StmtNameTail
+	   ->
+	   -> '(' SnamIntList ')'
+
+   SnamIntList
+	   -> SnamIntItem
+	   -> SnamIntList ',' SnamIntItem
+
+   SnamIntItem
+	   -> '+' <integer>
+	   -> '-' <integer>
+	   ->     <integer>
+
+
+
+   /***************/
+   /*             */
+   /*  COND NAME  */
+   /*             */
+   /***************/
+
+   CondName
+	   -> CompCond
+	   -> IOCond    '(' CondRef ')'
+	   -> CONDITION '(' CondId ')'
+	   -> COND      '(' CondId ')'
+	   -> AREA
+	   -> ERROR
+	   -> FINISH
+	   -> STORAGE
+
+   IOCond
+	   -> ENDFILE
+	   -> ENDPAGE
+	   -> KEY
+	   -> NAME
+	   -> RECORD
+	   -> TRANSMIT
+	   -> UNDEFINEDFILE
+	   -> UNDF
+
+
+   CondRef
+	   -> Reference
+
+   CondId
+	   -> <identifier>
+
+
+
+   /***************/
+   /*             */
+   /*  COMP COND  */
+   /*             */
+   /***************/
+
+   CompCond
+	   -> NOCONVERSION
+	   -> NOCONV
+	   ->   CONVERSION
+	   ->   CONV
+	   -> NOFIXEDOVERFLOW
+	   -> NOFOFL
+	   ->   FIXEDOVERFLOW
+	   ->   FOFL
+	   -> NOOVERFLOW
+	   -> NOOFL
+	   ->   OVERFLOW
+	   ->   OFL
+	   -> NOSIZE
+	   ->   SIZE
+	   -> NOSTRINGRANGE
+	   -> NOSTRG
+	   ->   STRINGRANGE
+	   ->   STRG
+	   -> NOSTRINGSIZE
+	   -> NOSTRZ
+	   ->   STRINGSIZE
+	   ->   STRZ
+	   -> NOSUBSCRIPTRANGE
+	   -> NOSUBRG
+	   ->   SUBSCRIPTRANGE
+	   ->   SUBRG
+	   -> NOUNDERFLOW
+	   -> NOUFL
+	   ->   UNDERFLOW
+	   ->   UFL
+	   -> NOZERODIVIDE
+	   -> NOZDIV
+	   ->   ZERODIVIDE
+	   ->   ZDIV
+
+
+
+   /****************/
+   /*              */
+   /*  BOUND PAIR  */
+   /*              */
+   /****************/
+
+   BoundPair
+	   -> '*'
+	   -> BdprHead ':' BdprTail
+	   ->              BdprTail
+
+   BdprHead
+	   -> ExtExpr
+
+   BdprTail
+	   -> ExtExpr
+
+
+
+   /**************/
+   /*            */
+   /*  EXT EXPR  */
+   /*            */
+   /**************/
+
+   ExtExpr
+	   -> ExtExpr1 ExtExpr2 '(' ExtExpr3 ')'
+	   -> ExtExpr1
+
+   ExtExpr1
+	   -> Expr
+
+   ExtExpr2
+	   -> REFER
+
+   ExtExpr3
+	   -> ExtExpr4
+	   -> ExtExpr3 '.' ExtExpr4
+
+   ExtExpr4
+	   -> <identifier>
+
+
+
+   /***************/
+   /*             */
+   /*  ATTRIBUTE  */
+   /*             */
+   /***************/
+
+   Attribute
+	   -> AUTOMATIC
+	   -> AUTO
+	   -> AttrBased
+	   -> BUILTIN
+	   -> CONDITION
+	   -> COND
+	   -> CONSTANT
+	   -> CONTROLLED
+	   -> CTL
+	   -> AttrDefined
+	   -> DIRECT
+	   -> AttrEnv
+	   -> EXTERNAL
+	   -> EXT
+	   -> INPUT
+	   -> INTERNAL
+	   -> INT
+	   -> KEYED
+	   -> AttrLike
+	   -> LOCAL
+	   -> AttrOpt
+	   -> OUTPUT
+	   -> PARAMETER
+	   -> PARM
+	   -> AttrPos
+	   -> PRINT
+	   -> RECORD
+	   -> SEQUENTIAL
+	   -> SEQL
+	   -> STATIC
+	   -> STREAM
+	   -> UPDATE
+	   -> VARIABLE
+	   -> DataAttr
+	   -> GnrcAttr
+	   -> Initial
+
+   AttrBased
+	   -> AttrBased1 '(' AttrBased2 ')'
+	   -> AttrBased1
+
+   AttrBased1
+	   -> BASED
+
+   AttrBased2
+	   -> Reference
+
+   AttrDefined
+	   -> AttrDef1 '(' AttrDef2 ')'
+	   -> AttrDef1     AttrDef2
+
+   AttrDef1
+	   -> DEFINED
+	   -> DEF
+
+   AttrDef2
+	   -> Reference
+
+   AttrEnv
+	   -> AttrEnv1 '(' AttrEnv2 ')'
+
+   AttrEnv1
+	   -> ENVIRONMENT
+	   -> ENV
+
+   AttrEnv2
+	   -> AttrEnv3
+	   -> AttrEnv2 ',' AttrEnv3
+
+   AttrEnv3
+	   -> <identifier>
+
+   AttrLike
+	   -> AttrLike1 AttrLike2
+
+   AttrLike1
+	   -> LIKE
+
+   AttrLike2
+	   -> AttrLike3
+	   -> AttrLike2 '.' AttrLike3
+
+   AttrLike3
+	   -> <identifier>
+
+   AttrOpt
+	   -> AttrOpt1 '(' AttrOpt2 ')'
+
+   AttrOpt1
+	   -> OPTIONS
+
+   AttrOpt2
+	   -> AttrOpt3
+	   -> AttrOpt2 ',' AttrOpt3
+
+   AttrOpt3
+	   -> <identifier>
+
+   AttrPos
+	   -> AttrPos1 '(' AttrPos2 ')'
+	   -> AttrPos1
+
+   AttrPos1
+	   -> POSITION
+	   -> POS
+
+   AttrPos2
+	   -> Expr
+
+
+
+   /***************/
+   /*             */
+   /*  ATTR KWRD  */
+   /*             */
+   /***************/
+
+   AttrKwrd
+	   -> ALIGNED
+	   -> AREA
+	   -> AUTOMATIC
+	   -> AUTO
+	   -> BASED
+	   -> BINARY
+	   -> BIN
+	   -> BIT
+	   -> BUILTIN
+	   -> CHARACTER
+	   -> CHAR
+	   -> COMPLEX
+	   -> CPLX
+	   -> CONDITION
+	   -> COND
+	   -> CONSTANT
+	   -> CONTROLLED
+	   -> CTL
+	   -> DECIMAL
+	   -> DEC
+	   -> DEFINED
+	   -> DEF
+	   -> DIMENSION
+	   -> DIM
+	   -> DIRECT
+	   -> ENTRY
+	   -> ENVIRONMENT
+	   -> ENV
+	   -> EXTERNAL
+	   -> EXT
+	   -> FILE
+	   -> FIXED
+	   -> FLOAT
+	   -> FORMAT
+	   -> GENERIC
+	   -> INITIAL
+	   -> INIT
+	   -> INPUT
+	   -> INTERNAL
+	   -> INT
+	   -> KEYED
+	   -> LABEL
+	   -> LOCAL
+	   -> MEMBER
+	   -> NONVARYING
+	   -> NONVAR
+	   -> OFFSET
+	   -> OPTIONS
+	   -> OUTPUT
+	   -> PARAMETER
+	   -> PARM
+	   -> PICTURE
+	   -> PIC
+	   -> POINTER
+	   -> PTR
+	   -> POSITION
+	   -> POS
+	   -> PRECISION
+	   -> PREC
+	   -> PRINT
+	   -> REAL
+	   -> RECORD
+	   -> RETURNS
+	   -> SEQUENTIAL
+	   -> SEQL
+	   -> STATIC
+	   -> STREAM
+	   -> STRUCTURE
+	   -> UNALIGNED
+	   -> UNAL
+	   -> UPDATE
+	   -> VARIABLE
+	   -> VARYING
+	   -> VAR
+
+
+
+   /***************/
+   /*             */
+   /*  DATA ATTR  */
+   /*             */
+   /***************/
+
+   DataAttr
+	   -> ALIGNED
+	   -> DatrArea
+	   -> DatrBin
+	   -> DatrBit
+	   -> DatrChr
+	   -> DatrCplx
+	   -> DatrDec
+	   -> DatrDim
+	   -> DatrEntry
+	   -> FILE
+	   -> DatrFxd
+	   -> DatrFlt
+	   -> FORMAT
+	   -> LABEL
+	   -> MEMBER
+	   -> NONVARYING
+	   -> NONVAR
+	   -> DatrOffset
+	   -> DatrPic
+	   -> POINTER
+	   -> PTR
+	   -> DatrPrec
+	   -> DatrReal
+	   -> DatrRtn
+	   -> STRUCTURE
+	   -> UNALIGNED
+	   -> UNAL
+	   -> VARYING
+	   -> VAR
+
+   DatrArea
+	   -> DatrArea1 '(' DatrArea2 ')'
+	   -> DatrArea1
+
+   DatrArea1
+	   -> AREA
+
+   DatrArea2
+	   -> '*'
+	   -> ExtExpr
+
+   DatrBin
+	   -> DatrBin1 '(' DatrBin2 ',' '+' DatrBin3 ')'
+	   -> DatrBin1 '(' DatrBin2 ',' '-' DatrBin3 ')'
+	   -> DatrBin1 '(' DatrBin2 ','     DatrBin3 ')'
+	   -> DatrBin1 '(' DatrBin2                  ')'
+	   -> DatrBin1
+
+   DatrBin1
+	   -> BINARY
+	   -> BIN
+
+   DatrBin2
+	   -> <integer>
+
+   DatrBin3
+	   -> <integer>
+
+   DatrBit
+	   -> DatrBit1 '(' DatrBit2 ')'
+	   -> DatrBit1
+
+   DatrBit1
+	   -> BIT
+
+   DatrBit2
+	   -> '*'
+	   -> ExtExpr
+
+   DatrChr
+	   -> DatrChr1 '(' DatrChr2 ')'
+	   -> DatrChr1
+
+   DatrChr1
+	   -> CHARACTER
+	   -> CHAR
+
+   DatrChr2
+	   -> '*'
+	   -> ExtExpr
+
+   DatrCplx
+	   -> DatrCplx1 '(' DatrCplx2 ',' '+' DatrCplx3 ')'
+	   -> DatrCplx1 '(' DatrCplx2 ',' '-' DatrCplx3 ')'
+	   -> DatrCplx1 '(' DatrCplx2 ','     DatrCplx3 ')'
+	   -> DatrCplx1 '(' DatrCplx2                   ')'
+	   -> DatrCplx1
+
+   DatrCplx1
+	   -> COMPLEX
+	   -> CPLX
+
+   DatrCplx2
+	   -> <integer>
+
+   DatrCplx3
+	   -> <integer>
+
+   DatrDec
+	   -> DatrDec1 '(' DatrDec2 ',' '+' DatrDec3 ')'
+	   -> DatrDec1 '(' DatrDec2 ',' '-' DatrDec3 ')'
+	   -> DatrDec1 '(' DatrDec2 ','     DatrDec3 ')'
+	   -> DatrDec1 '(' DatrDec2                  ')'
+	   -> DatrDec1
+
+   DatrDec1
+	   -> DECIMAL
+	   -> DEC
+
+   DatrDec2
+	   -> <integer>
+
+   DatrDec3
+	   -> <integer>
+
+   DatrDim
+	   -> DatrDim1 DatrDim2
+	   -> DatrDim1
+
+   DatrDim1
+	   -> DIMENSION
+	   -> DIM
+
+   DatrDim2
+	   -> DatrDim3
+	   -> DatrDim2 ',' DatrDim3
+
+   DatrDim3
+	   -> BoundPair
+
+   DatrEntry
+	   -> DatrEntry1 '(' DatrEntry2 ')'
+	   -> DatrEntry1
+
+   DatrEntry1
+	   -> ENTRY
+
+   DatrEntry2
+	   ->
+	   -> DatrEntry2 ',' DatrEntry3
+
+   DatrEntry3
+	   -> DatrEntry4 '(' DatrEntry5 ')' DatrEntry7
+	   -> DatrEntry4 '(' DatrEntry5 ')'
+	   -> DatrEntry4
+	   ->            '(' DatrEntry5 ')' DatrEntry7
+	   ->            '(' DatrEntry5 ')'
+	   ->                               DatrEntry7
+
+   DatrEntry4
+	   -> <integer>
+
+   DatrEntry5
+	   -> DatrEntry6
+	   -> DatrEntry5 ',' DatrEntry6
+
+   DatrEntry6
+	   -> BoundPair
+
+   DatrEntry7
+	   -> DatrEntry8
+	   -> DatrEntry7 DatrEntry8
+
+   DatrEntry8
+	   -> DataAttr
+
+   DatrFxd
+	   -> DatrFxd1 '(' DatrFxd2 ',' '+' DatrFxd3 ')'
+	   -> DatrFxd1 '(' DatrFxd2 ',' '-' DatrFxd3 ')'
+	   -> DatrFxd1 '(' DatrFxd2 ','     DatrFxd3 ')'
+	   -> DatrFxd1 '(' DatrFxd2                  ')'
+	   -> DatrFxd1
+
+   DatrFxd1
+	   -> FIXED
+
+   DatrFxd2
+	   -> <integer>
+
+   DatrFxd3
+	   -> <integer>
+
+   DatrFlt
+	   -> DatrFlt1 '(' DatrFlt2 ')'
+	   -> DatrFlt1
+
+   DatrFlt1
+	   -> FLOAT
+
+   DatrFlt2
+	   -> <integer>
+
+   DatrOffset
+	   -> DatrOffset1 '(' DatrOffset2 ')'
+
+   DatrOffset1
+	   -> OFFSET
+
+   DatrOffset2
+	   -> Reference
+
+   DatrPic
+	   -> DatrPic1 DatrPic2
+
+   DatrPic1
+	   -> PICTURE
+	   -> PIC
+
+   DatrPic2
+	   -> <picture>
+
+   DatrPrec
+	   -> DatrPrec1 '(' DatrPrec2 ',' '+' DatrPrec3 ')'
+	   -> DatrPrec1 '(' DatrPrec2 ',' '-' DatrPrec3 ')'
+	   -> DatrPrec1 '(' DatrPrec2 ','     DatrPrec3 ')'
+	   -> DatrPrec1 '(' DatrPrec2                   ')'
+
+   DatrPrec1
+	   -> PRECISION
+	   -> PREC
+
+   DatrPrec2
+	   -> <integer>
+
+   DatrPrec3
+	   -> <integer>
+
+   DatrReal
+	   -> DatrReal1 '(' DatrReal2 ',' '+' DatrReal3 ')'
+	   -> DatrReal1 '(' DatrReal2 ',' '-' DatrReal3 ')'
+	   -> DatrReal1 '(' DatrReal2 ','     DatrReal3 ')'
+	   -> DatrReal1 '(' DatrReal2                   ')'
+
+   DatrReal1
+	   -> REAL
+
+   DatrReal2
+	   -> <integer>
+
+   DatrReal3
+	   -> <integer>
+
+   DatrRtn
+	   -> DatrRtn1 '(' DatrRtn2 ')'
+	   -> DatrRtn1
+
+   DatrRtn1
+	   -> RETURNS
+
+   DatrRtn2
+	   -> DatrRtn3
+	   -> DatrRtn2 ',' DatrRtn3
+
+   DatrRtn3
+	   -> DatrRtn4 '(' DatrRtn5 ')' DatrRtn7
+	   -> DatrRtn4 '(' DatrRtn5 ')'
+	   -> DatrRtn4
+	   ->          '(' DatrRtn5 ')' DatrRtn7
+	   ->          '(' DatrRtn5 ')'
+	   ->                           DatrRtn7
+
+   DatrRtn4
+	   -> <integer>
+
+   DatrRtn5
+	   -> DatrRtn6
+	   -> DatrRtn5 ',' DatrRtn6
+
+   DatrRtn6
+	   -> BoundPair
+
+   DatrRtn7
+	   -> DatrRtn8
+	   -> DatrRtn7 DatrRtn8
+
+   DatrRtn8
+	   -> DataAttr
+
+
+
+   /***************/
+   /*             */
+   /*  GNRC ATTR  */
+   /*             */
+   /***************/
+
+   GnrcAttr
+	   -> GatrInit '(' GatrList1 ')'
+	   -> GatrInit
+
+   GatrInit
+	   -> GENERIC
+
+   GatrList1
+	   -> GatrItem1
+	   -> GatrList1 ',' GatrItem1
+
+   GatrItem1
+	   -> GatrRef WHEN '(' GatrList2 ')'
+
+   GatrRef
+	   -> Reference
+
+   GatrList2
+	   ->
+	   -> GatrList2 ',' GatrItem2
+
+   GatrItem2
+	   -> GatrLev GatrList3 GatrList4
+	   -> GatrLev GatrList3
+	   -> GatrLev
+	   ->         GatrList3 GatrList4
+	   ->         GatrList3
+	   ->                   GatrList4
+
+   GatrLev
+	   -> <integer>
+
+   GatrList3
+	   -> GatrItem3
+	   -> GatrList3 ',' GatrItem3
+
+   GatrItem3
+	   -> '*'
+
+   GatrList4
+	   -> GatrItem4
+	   -> GatrList4 GatrItem4
+
+   GatrItem4
+	   -> ALIGNED
+	   -> AREA
+	   -> GatrBin
+	   -> BIT
+	   -> CHARACTER
+	   -> CHAR
+	   -> GatrCplx
+	   -> GatrDec
+	   -> GatrDim
+	   -> GatrEntry
+	   -> FILE
+	   -> GatrFxd
+	   -> GatrFlt
+	   -> FORMAT
+	   -> LABEL
+	   -> MEMBER
+	   -> NONVARYING
+	   -> NONVAR
+	   -> OFFSET
+	   -> GatrPic
+	   -> POINTER
+	   -> PTR
+	   -> GatrPrec
+	   -> GatrReal
+	   -> GatrRtn
+	   -> STRUCTURE
+	   -> UNALIGNED
+	   -> UNAL
+	   -> VARYING
+	   -> VAR
+
+   GatrBin
+	   -> GatrBin1 GatrBin2
+	   -> GatrBin1
+
+   GatrBin1
+	   -> BINARY
+	   -> BIN
+
+   GatrBin2
+	   -> GnrcPrec
+
+   GatrCplx
+	   -> GatrCplx1 GatrCplx2
+	   -> GatrCplx1
+
+   GatrCplx1
+	   -> COMPLEX
+	   -> CPLX
+
+   GatrCplx2
+	   -> GnrcPrec
+
+   GatrDec
+	   -> GatrDec1 GatrDec2
+	   -> GatrDec1
+
+   GatrDec1
+	   -> DECIMAL
+	   -> DEC
+
+   GatrDec2
+	   -> GnrcPrec
+
+   GatrDim
+	   -> GatrDim1 GatrDim2
+
+   GatrDim1
+	   -> DIMENSION
+	   -> DIM
+
+   GatrDim2
+	   -> GatrDim3
+	   -> GatrDim2 ',' GatrDim3
+
+   GatrDim3
+	   -> '*'
+
+   GatrEntry
+	   -> GatrEntry1 '(' GatrEntry2 ')'
+	   -> GatrEntry1
+
+   GatrEntry1
+	   -> ENTRY
+
+   GatrEntry2
+	   ->
+	   -> GatrEntry2 ',' GatrEntry3
+
+   GatrEntry3
+	   -> GatrEntry4 '(' GatrEntry5 ')' GatrEntry7
+	   -> GatrEntry4 '(' GatrEntry5 ')'
+	   -> GatrEntry4
+	   ->            '(' GatrEntry5 ')' GatrEntry7
+	   ->            '(' GatrEntry5 ')'
+	   ->                           GatrEntry7
+
+   GatrEntry4
+	   -> <integer>
+
+   GatrEntry5
+	   -> GatrEntry6
+	   -> GatrEntry5 ',' GatrEntry6
+
+   GatrEntry6
+	   -> BoundPair
+
+   GatrEntry7
+	   -> GatrEntry8
+	   -> GatrEntry7 GatrEntry8
+
+   GatrEntry8
+	   -> DataAttr
+
+   GatrFxd
+	   -> GatrFxd1 GatrFxd2
+	   -> GatrFxd1
+
+   GatrFxd1
+	   -> FIXED
+
+   GatrFxd2
+	   -> GnrcPrec
+
+   GatrFlt
+	   -> GatrFlt1 GatrFlt2
+	   -> GatrFlt1
+
+   GatrFlt1
+	   -> FLOAT
+
+   GatrFlt2
+	   -> GnrcPrec
+
+   GatrPic
+	   -> GatrPic1 GatrPic2
+
+   GatrPic1
+	   -> PICTURE
+	   -> PIC
+
+   GatrPic2
+	   -> <picture>
+
+   GatrPrec
+	   -> GatrPrec1 GatrPrec2
+
+   GatrPrec1
+	   -> PRECISION
+	   -> PREC
+
+   GatrPrec2
+	   -> GnrcPrec
+
+   GatrReal
+	   -> GatrReal1 GatrReal2
+	   -> GatrReal1
+
+   GatrReal1
+	   -> REAL
+
+   GatrReal2
+	   -> GnrcPrec
+
+   GatrRtn
+	   -> GatrRtn1 '(' GatrRtn2 ')'
+	   -> GatrRtn1
+
+   GatrRtn1
+	   -> RETURNS
+
+   GatrRtn2
+	   -> GatrRtn3
+	   -> GatrRtn2 ',' GatrRtn3
+
+   GatrRtn3
+	   -> GatrRtn4 '(' GatrRtn5 ')' GatrRtn7
+	   -> GatrRtn4 '(' GatrRtn5 ')'
+	   -> GatrRtn4
+	   ->          '(' GatrRtn5 ')' GatrRtn7
+	   ->          '(' GatrRtn5 ')'
+	   ->                       GatrRtn7
+
+   GatrRtn4
+	   -> <integer>
+
+   GatrRtn5
+	   -> GatrRtn6
+	   -> GatrRtn5 ',' GatrRtn6
+
+   GatrRtn6
+	   -> BoundPair
+
+   GatrRtn7
+	   -> GatrRtn8
+	   -> GatrRtn7 GatrRtn8
+
+   GatrRtn8
+	   -> DataAttr
+
+   GnrcPrec
+	   -> '(' GnrcPrec1 ':' GnrcPrec2 ',' GnrcTail ')'
+	   -> '(' GnrcPrec1 ':' GnrcPrec2              ')'
+	   -> '(' GnrcPrec1               ',' GnrcTail ')'
+
+   GnrcPrec1
+	   -> <integer>
+
+   GnrcPrec2
+	   -> <integer>
+
+   GnrcTail
+	   -> GnrcPrec3 ':' GnrcPrec4
+	   -> GnrcPrec3
+
+   GnrcPrec3
+	   -> <integer>
+
+   GnrcPrec4
+	   -> <integer>
+
+
+
+   /*************/
+   /*           */
+   /*  INITIAL  */
+   /*           */
+   /*************/
+
+   Initial
+	   -> InitInit '(' InitList ')'
+	   -> InitInit
+
+   InitInit
+	   -> INITIAL
+	   -> INIT
+
+   InitList
+	   -> InitItem
+	   -> InitList ',' InitItem
+
+   InitItem
+	   -> InitStar
+	   -> InitCons1
+	   -> '(' InitExpr ')' InitItem1
+
+   InitItem1
+	   ->
+	   -> '(' InitList ')'
+	   ->   InitStar
+	   ->   InitCons2
+
+   InitStar
+	   -> '*'
+
+   InitExpr
+	   -> Expr
+
+   InitCons1
+	   -> InitPfix InitStr1 InitRdx
+	   -> InitPfix InitStr1
+	   -> InitCons2
+
+   InitPfix
+	   ->
+	   -> '+'
+	   -> '-'
+	   -> '~'
+
+   InitStr1
+	   -> <string>
+
+   InitRdx
+	   -> B <integer>
+	   -> B
+
+   InitCons2
+	   -> InitPfix InitRef
+	   -> InitPfix '(' InitRepl ')' InitStr2
+	   -> InitPfix InitReal InitPfix InitImag
+	   -> InitNcon
+
+   InitRef
+	   -> Reference
+
+   InitRepl
+	   -> <integer>
+
+   InitStr2
+	   -> <string>
+
+   InitReal
+	   -> RealCons
+
+   InitImag
+	   -> ImagCons
+
+   InitNcon
+	   -> NumCons
+
+
+
+   /**************/
+   /*            */
+   /*  FMT SPEC  */
+   /*            */
+   /**************/
+
+   FmtSpec
+	   -> FmtSpecItem
+	   -> FmtSpecIter
+
+   FmtSpecIter
+	   -> FmtIterFact '(' FmtSpecList ')'
+	   -> FmtIterFact   FmtSpecItem
+
+   FmtIterFact
+	   -> <integer>
+	   -> '(' Expr ')'
+
+   FmtSpecList
+	   -> FmtSpecItem
+	   -> FmtSpecList ',' FmtSpecItem
+
+   FmtSpecItem
+	   -> FmtReal
+	   -> FmtCplx
+	   -> FmtPic
+	   -> FmtCstr
+	   -> FmtBstr
+	   -> FmtTab
+	   -> FmtLine
+	   -> FmtSpace
+	   -> FmtSkip
+	   -> FmtCol
+	   -> PAGE
+	   -> FmtRem
+
+   FmtReal
+	   -> E '(' FmtReal1 FmtReal2 ')'
+	   -> F '(' FmtReal1 FmtReal2 ')'
+
+   FmtReal1
+	   -> Expr
+
+   FmtReal2
+	   ->
+	   -> ',' FmtReal1 FmtReal2
+
+   FmtCplx
+	   -> C '(' FmtReal FmtCplx1 ')'
+	   -> C '(' FmtPic  FmtCplx1 ')'
+
+   FmtCplx1
+	   ->
+	   -> ',' FmtReal
+	   -> ',' FmtPic
+
+   FmtPic
+	   -> FmtPic1 FmtPic2
+
+   FmtPic1
+	   -> P
+
+   FmtPic2
+	   -> <picture>
+
+   FmtCstr
+	   -> A FmtCstr1
+
+   FmtCstr1
+	   ->
+	   -> '(' Expr ')'
+
+   FmtBstr
+	   -> FmtBstr1 FmtBstr2
+
+   FmtBstr1
+	   -> B <integer>
+
+   FmtBstr2
+	   ->
+	   -> '(' Expr ')'
+
+   FmtTab
+	   -> TAB FmtTab1
+
+   FmtTab1
+	   ->
+	   -> '(' Expr ')'
+
+   FmtLine
+	   -> LINE FmtLine1
+
+   FmtLine1
+	   -> '(' Expr ')'
+
+   FmtSpace
+	   -> SPACE FmtSpace1
+
+   FmtSpace1
+	   -> '(' Expr ')'
+
+   FmtSkip
+	   -> SKIP FmtSkip1
+
+   FmtSkip1
+	   ->
+	   -> '(' Expr ')'
+
+   FmtCol
+	   -> COLUMN FmtCol1
+	   -> COL    FmtCol1
+
+   FmtCol1
+	   ->
+	   -> '(' Expr ')'
+
+   FmtRem
+	   -> R '(' FmtRem1 ')'
+
+   FmtRem1
+	   -> Reference
+
+
+
+   /****************/
+   /*              */
+   /*  EXPRESSION  */
+   /*              */
+   /****************/
+
+   Expr
+	   -> Expr '|' Expr1
+	   ->          Expr1
+
+   Expr1
+	   -> Expr1 '&' Expr2
+	   ->           Expr2
+
+   Expr2
+	   -> Expr2 '>'  Expr3
+	   -> Expr2 '>=' Expr3
+	   -> Expr2 '='  Expr3
+	   -> Expr2 '<'  Expr3
+	   -> Expr2 '<=' Expr3
+	   -> Expr2 '~>' Expr3
+	   -> Expr2 '~=' Expr3
+	   -> Expr2 '~<' Expr3
+	   ->            Expr3
+
+   Expr3
+	   -> Expr3 '||' Expr4
+	   ->          Expr4
+
+   Expr4
+	   -> Expr4 '+' Expr5
+	   -> Expr4 '-' Expr5
+	   ->           Expr5
+
+   Expr5
+	   -> Expr5 '*' Expr6
+	   -> Expr5 '/' Expr6
+	   ->           Expr6
+
+   Expr6
+	   -> PrimExpr
+	   -> PfixExpr
+	   -> '(' Expr ')'
+	   -> Expr7
+
+   Expr7
+	   -> PrimExpr     '**' Expr6
+	   -> '(' Expr ')' '**' Expr6
+
+   PfixExpr
+	   -> '+' Expr6
+	   -> '-' Expr6
+	   -> '~' Expr6
+
+   PrimExpr
+	   -> Reference
+	   -> Constant
+	   -> Isub
+
+
+
+   /***************/
+   /*             */
+   /*  REFERENCE  */
+   /*             */
+   /***************/
+
+   Reference
+	   -> RefLoc RefBase '(' RefSubList ')'
+	   -> RefLoc RefBase
+	   ->        RefBase
+
+   RefLoc
+	   -> Reference RefPtr
+
+   RefPtr
+	   -> '->'
+
+   RefBase
+	   -> RefQual RefName
+	   ->         RefName
+
+   RefQual
+	   -> RefBase '(' RefSubList ')' RefDot
+	   -> RefBase                RefDot
+
+   RefDot
+	   -> '.'
+
+   RefName
+	   -> <identifier>
+
+   RefSubList
+	   ->
+	   -> RefSubList ',' RefSubItem
+
+   RefSubItem
+	   -> '*'
+	   -> Expr
+
+
+
+   /**************/
+   /*            */
+   /*  CONSTANT  */
+   /*            */
+   /**************/
+
+   Constant
+	   -> StrCons
+	   -> NumCons
+
+   StrCons
+	   -> '(' StrCons1 ')' StrCons2 StrCons3
+	   ->              StrCons2 StrCons3
+
+   StrCons1
+	   -> <integer>
+
+   StrCons2
+	   -> <string>
+
+   StrCons3
+	   ->
+	   -> B <integer>
+	   -> B
+
+   NumCons
+	   -> RealCons
+	   -> ImagCons
+
+
+
+   /***************/
+   /*             */
+   /*  REAL CONS  */
+   /*             */
+   /***************/
+
+   RealCons
+	   -> RealHead RealBody RealTail
+	   -> RealHead RealBody
+	   -> RealHead          RealTail
+
+   RealHead
+	   -> RealFix '.' RealDec
+	   -> RealFix '.'
+	   -> RealFix
+	   ->         '.' RealDec
+
+   RealFix
+	   -> <integer>
+
+   RealDec
+	   -> <integer>
+
+
+   RealBody
+	   -> E '+' RealExp
+	   -> E '-' RealExp
+	   -> E     RealExp
+	   -> F '+' RealExp
+	   -> F '-' RealExp
+	   -> F     RealExp
+
+   RealExp
+	   -> <integer>
+
+   RealTail
+	   -> B
+	   -> B P
+	   ->   P
+
+
+
+   /***************/
+   /*             */
+   /*  IMAG CONS  */
+   /*             */
+   /***************/
+
+   ImagCons
+	   -> RealCons I
+
+
+
+   /**********/
+   /*        */
+   /*  ISUB  */
+   /*        */
+   /**********/
+
+   Isub
+	   -> IsubInt SUB
+
+   IsubInt
+	   -> <integer>
+
+

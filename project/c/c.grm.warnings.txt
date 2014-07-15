@@ -1,0 +1,6 @@
+
+c.grm(0068) :       -> [ExternalDef...] <eof>          +> goal_(2)
+c.grm(0068) : ..................................................^.
+c.grm(0068) : Warning: First argument is greater than 1 and not pointing at a tail symbol.
+
+1 warning.

@@ -1,0 +1,4 @@
+
+STATE MACHINE LISTING:
+
+'s' option was not specified.

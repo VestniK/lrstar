@@ -1,0 +1,289 @@
+
+/* Modula-2 grammar 16-Jul-1990
+   by Taylor Hutt	(VMWare ?)
+
+   This grammar was input from the Logitech definition of the language, which
+   almost strictly adheres to the Version 3.0 specification.  There is now
+   a version 4.0 of the language specification, which removes extraneous
+   information, and introduces a few minor enhancements.  Most compilers
+   to-date are using 3.0 of the specification.
+
+   This grammar, like the Oberon grammar I have supplied, were initially input
+   for the fun of it, but they both began to take to much time.  Consequently,
+   this grammar my need some effort on your part to get it to work with your
+   application.
+*/
+
+   <error>         => error();
+   <identifier>    => lookup();
+   <string>        => lookup();
+   <integer>       => lookup();
+   <real>          => lookup();
+
+   Start
+       -> CompilationUnit <eof>
+
+   CompilationUnit
+       -> [IMPLEMENTATION] ProgramModule
+       -> DefinitionModule
+
+   DefinitionModule
+       -> DEFINITION MODULE Identifier ';'
+          [Import...]
+          [DefExport]
+          [Definition]...
+          END Identifier '.'
+
+   ProgramModule
+       -> MODULE Identifier [Priority] ';'
+          [Import...]
+          Block Identifier '.'
+
+   Import
+       -> [FROM Identifier] IMPORT IdentifierList ';'
+
+   DefExport
+       -> EXPORT QUALIFIED IdentifierList ';'
+
+   Priority
+       -> '[' ConstExpression ']'
+
+   Definition
+       -> CONST [ConstantDeclaration ';']...
+       -> TYPE [Identifier ['=' Type ';']]...
+       -> VAR [VariableDeclaration ';']...
+       -> ProcedureHeading ';'
+
+   Block
+       -> [Declaration]... [BEGIN StatementSequence] END
+
+   Declaration
+       -> CONST [ConstantDeclaration ';']...
+       -> TYPE [TypeDeclaration ';']...
+       -> VAR [VariableDeclaration ';']...
+       -> ProcedureDeclaration ';'
+       -> ModuleDeclaration ';'
+
+   ConstantDeclaration
+       -> Identifier '=' ConstExpression
+
+   TypeDeclaration
+       -> Identifier '=' Type
+
+   VariableDeclaration
+       -> IdentifierList ':' Type
+
+   ProcedureDeclaration
+       -> ProcedureHeading ';' Block Identifier
+
+   ModuleDeclaration
+       -> MODULE Identifier [Priority] ';'
+          [Import...]
+          [LocalExport...]
+          Block
+          Identifier
+
+   LocalExport
+       -> EXPORT [QUALIFIED] IdentifierList ';'
+
+   Type
+       -> SimpleType
+       -> ArrayType
+       -> RecordType
+       -> SetType
+       -> PointerType
+       -> ProcedureType
+
+   SimpleType
+       -> QualIdentifier
+       -> Enumeration
+       -> SubrangeType
+
+   Enumeration
+       -> '(' IdentifierList ')'
+
+   SubrangeType
+       -> [QualIdentifier] '[' ConstExpression '..' ConstExpression ']'
+
+   ArrayType
+       -> ARRAY SimpleType /','... OF Type
+
+   RecordType
+       -> RECORD FieldListSequence END
+
+   FieldListSequence
+       -> FieldList /';'...
+
+   FieldList
+       ->
+       -> IdentifierList ':' Type
+       -> CASE [Identifier] [':'] QualIdentifier OF
+          Variant /'|'...
+          [ELSE FieldListSequence]
+          END
+
+   Variant
+       ->
+       -> CaseLabels /','... ':' FieldListSequence
+
+   CaseLabels
+       -> ConstExpression ['..' ConstExpression]
+
+   SetType
+       -> SET OF SimpleType
+
+   PointerType
+       -> POINTER TO Type
+
+   ProcedureType
+       -> PROCEDURE [FormalTypeList]
+
+   FormalTypeList
+       -> '(' [([VAR] FormalType) /','...] ')' [':' QualIdentifier]
+
+   ProcedureHeading
+       -> PROCEDURE Identifier [FormalParameters]
+
+   FormalParameters
+       -> '(' [FPSection /';'...] ')' [':' QualIdentifier]
+
+   FPSection
+       -> [VAR] IdentifierList ':' FormalType
+
+   FormalType
+       -> [ARRAY OF] QualIdentifier
+
+   StatementSequence
+       -> Statement /';'...
+
+   Statement
+       ->
+       -> Assignment
+       -> ProcedureCall
+       -> IfStatement
+       -> CaseStatement
+       -> WhileStatement
+       -> RepeatStatement
+       -> LoopStatement
+       -> ForStatement
+       -> WithStatement
+       -> EXIT
+       -> RETURN [Expression]
+
+   Assignment
+       -> Designator ':=' Expression
+
+   ProcedureCall
+       -> Designator [ActualParameters]
+
+   ActualParameters
+       -> '(' [Expression /','...] ')'
+
+   IfStatement
+       -> IF Expression THEN StatementSequence
+          [ELSIF Expression THEN StatementSequence]...
+          [ELSE StatementSequence]
+          END
+
+   CaseStatement
+       -> CASE Expression OF
+          Case /'|'...
+          ELSE StatementSequence
+          END
+
+   Case
+       ->
+       -> CaseLabels /','... ':' StatementSequence
+
+   WhileStatement
+       -> WHILE Expression DO StatementSequence END
+
+   RepeatStatement
+       -> REPEAT StatementSequence UNTIL Expression
+
+   LoopStatement
+       -> LOOP StatementSequence END
+
+   ForStatement
+       -> FOR Identifier ':=' Expression TO Expression [BY ConstExpression] DO
+          StatementSequence
+          END
+
+   WithStatement
+       -> WITH Designator DO StatementSequence END
+
+   ConstExpression
+       -> Expression
+
+   Expression
+       -> SimpleExpression [Relation SimpleExpression]
+
+   Relation
+       -> '='
+       -> '#'
+       -> '<>'
+       -> '<'
+       -> '<='
+       -> '>'
+       -> '>='
+       -> IN
+
+   SimpleExpression
+       -> ['+' | '-'] Term [AddOperator Term]...
+
+   AddOperator
+       -> '+'
+       -> '-'
+       -> OR
+
+   Term
+       -> Factor [MulOperator Factor]...
+
+   MulOperator
+       -> '*'
+       -> '/'
+       -> DIV
+       -> MOD
+       -> AND
+
+   Factor
+       -> Number
+       -> String
+       -> Set
+       -> Designator [ActualParameters]
+       -> '(' Expression ')'
+       -> NOT Factor
+
+   Set
+       -> [QualIdentifier] '{' [Element /','...] '}'
+
+   Element
+       -> ConstExpression ['..' ConstExpression]
+
+   String
+       -> <string>
+
+   Designator
+       -> QualIdentifier ['^' |  '[' Expression /','... ']' | '.' Identifier]...
+
+   QualIdentifier
+       -> Identifier /'.'...
+
+   Identifier
+       -> <identifier>
+
+   IdentifierList
+       -> Identifier /','...
+
+   Number
+       -> Integer
+       -> Real
+
+   Integer
+       -> <integer>
+
+   Real
+       -> <real>
+
+/* End. */
+

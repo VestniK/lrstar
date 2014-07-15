@@ -1,0 +1,149 @@
+
+#ifdef DFASTAR
+
+		#include "ComGlobal.h"
+		#include "LGLexer.h"
+
+		Token  LGLexer::token;					
+		int    LGLexer::line_numb;
+		int    LGLexer::col_numb;			
+		int    LGLexer::line_pos;
+		char*  LGLexer::line_start;
+		int	 LGLexer::max_char_set;
+		int	 LGLexer::tab;
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//                                                                                                 // 
+//    Terminal Transition Matrix and Vectors.                            
+
+   // Terminal transition matrix. 
+      static @tmat_numb.t; Tm [@tmat_numb.d;] = 
+      {
+      @tmat_numb.20|%5d|,|,\n      |;
+      };
+
+   // T_matrix row. 
+      static @tmat_row.t; Tr [@tmat_row.d;] = 
+      {
+      @tmat_row.20|%5d|,|,\n      |;
+      };
+
+   // T_matrix column. 
+      static @tmat_col.t; Tc [@tmat_col.d;] = 
+      {
+      @tmat_col.20|%5d|,|,\n      |;
+      };
+
+   // token numbers for each state. 
+      static @term_numb.t; terminal [@term_numb.d;] = 
+      {
+      @term_numb.20|%5d|,|,\n      |;
+      };
+
+/*--- Defined Constants. ----------------------------------------------------*/
+
+@def_cons?;...
+      @def_cons.1|#define %40s %5d||\n      |;
+
+@@
+///////////////////////////////////////////////////////////////////////////////
+//                                                                           // 
+//    init                                                                   //
+
+void  LGLexer::init () // General purpose lexer.
+{
+		int i;
+		line_numb  = 1;
+		col_numb   = 0;
+		line_pos   = 0;
+		line_start = (input_start + 1);
+		token.end  = line_start;
+  		line_ptr[line_numb] = input_start + 1;
+		tab = optn[LG_TAB];
+		if (max_char_set == 128)
+		{
+			for (i = 128; i < 256; i++)
+			{
+				Tc[i] = Tc[0]; // Make higher characters an error.
+			}
+		}
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//                                                                           // 
+//    term                                                                   //
+
+void  LGLexer::term () // General purpose lexer.
+{
+		/* Nothing */
+}
+
+/*--- DFA Lexer Engine. -----------------------------------------------------*/
+
+int   LGLexer::get_token ()		// DFA LGLexer Engine.
+{
+      int state, next;		// State, next state, terminal, keyword.
+		do 
+		{
+			state = 0;									// Start in state zero.
+			token.start = token.end;				// Set start of token.
+			token.line  = line_numb;				// Set line number of token.
+			token.column = col_numb + 1;			// Set column number.
+       	while (next = Tm [Tr [state] + Tc [*token.end]])
+			{
+			   if (*token.end == '\n')				// If end-of-line character.
+				{
+					col_numb = 0;
+					line_pos = 0;
+					line_start = token.end + 1;	// Set beginning of next line.
+				  	line_ptr [++line_numb] = line_start;
+				}	  
+			   else if (*token.end == '\t')				// If tab character.
+				{
+					col_numb += tab - (col_numb % tab);	
+				}	  
+				else 
+				{
+					col_numb++;							// Increment column.
+				}
+				token.end++;							// Increment token pointer.
+				state = next;							// Set next state number.
+			}
+		}
+      while (terminal[state] == -1);			// If whitespace, continue.
+
+		line_pos++;
+      return terminal[state];					// Return terminal number.
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//                                                                           //
+
+int	LGLexer::get_lookahead()
+{
+      char* TS   = token.start;
+      char* TE   = token.end;
+      int   TSTI = token.sti;
+		int   TL   = token.line;
+      int   TC   = token.column;
+      int   LN   = line_numb;
+      int   LC   = col_numb;
+      int   LP   = line_pos;
+
+      int   la = get_token();    // Get look ahead token.
+
+      token.start  = TS;         // Reset token start.
+      token.end    = TE;         // Reset token end.
+		token.sti    = TSTI;
+      token.line   = TL;         // Reset token column.
+      token.column = TC;         // Reset token column.
+      line_numb    = LN;         // Reset line number.
+      col_numb     = LC;         // Reset line column.
+      line_pos     = LP;         // Reset line position.
+		return (la);
+}
+
+#endif
+
+//                                                                           //
+///////////////////////////////////////////////////////////////////////////////

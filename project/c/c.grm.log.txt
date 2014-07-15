@@ -1,0 +1,26 @@
+
+LRSTAR 6.3.006 Copyright 2014 Paul B Mann.
+
+Input     c.grm 
+
+Grammar      229 rules, 90 terminals, 77 nonterminals.
+LR(1)        380 states in Minimal LR(1) state machine.
+             221 states after implementing shift-reduce actions.
+Conflicts      1 state, 1 shift-reduce, 0 reduce-reduce conflicts.
+
+Grammar is not LALR(1) and not LR(1), 0 extra states were added.
+
+            rows   cols          matrix        list       vect      total
+B matrix      60 x   38 x 1 =     2,280 ->      236 +      401 =      637  
+T matrix      19 x   65 x 2 =     2,470 ->    1,500 +      532 =    2,032  
+N matrix      90 x   34 x 2 =     6,120 ->    2,726 +      671 =    3,397  
+R matrix       2 x    3 x 1 =         5 ->        5 +      532 =      537  
+Total                                         4,467 +    2,136 =    6,603
+
+0 min 0.093 sec, 94.581 MB, 1 warning, 0 errors.
+
+Skeleton: ..\..\skl\parser.cpp.skl
+Output:   c_parser.cpp (1,446 lines)
+Skeleton: ..\..\skl\parser.h.skl
+Output:   c_parser.h (350 lines)
+

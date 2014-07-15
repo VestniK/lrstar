@@ -1,0 +1,415 @@
+
+/* Turbo Pascal 5.5 Grammar                                    
+ * Written by Eric Beser, Baltimore MD, 1989 ?                                          
+ * Modified for use with LALR 3.0 by Paul B Mann.                
+ */
+
+/*--- Token Processing -----------------------------------------------------------*/
+
+   <error>       => error();
+   <identifier>  => lookup();  /* symbol table search */
+   <number>      => lookup();
+   <string>      => lookup();
+
+	{  OR                        } <<
+	{  XOR                       } <<
+	{  AND                       } <<
+	{  '='   '<>'                } <<
+	{  '<'   '>'   '<='   '>='   } <<
+	{  SHL   SHR                 } <<
+	{  '+'   '-'                 } <<
+	{  '*'   '/'   MOD  DIV  IN  } <<
+
+/*--- NonTerminal Processing -----------------------------------------------------*/
+
+   Start -> [Program | Unit]... <eof>                              +> Comp_Unit
+
+   Unit  -> UnitHeading ';'
+            InterfacePart
+            ImplementationPart
+            InitPart '.'                                           +> Unit_Tree
+
+   Program -> [ProgramHeading ';'] [UseClause] Block '.'           +> Prog_Tree
+
+   ProgramHeading -> PROGRAM Identifier
+                     ['(' Identifier /','... ')']                  +> Prog_ID
+
+   UseClause -> USES [Identifier /','... ';']...                   +> Use_List
+
+   UnitHeading -> UNIT Identifier                                  +> Unit_Head
+
+   /* Interface Part */
+
+   InterfacePart -> INTERFACE [UseClause] [InterfaceDecl]...       +> Iface_Part
+
+   InterfaceDecl -> ConDefPart                                     +> Con_Def
+                 -> TypeDefPart                                    +> Type_Def
+                 -> VarDeclPart                                    +> Var_Decl
+                 -> ProcAndFuncHeadingPart                         +> Proc_Func_Heading
+
+   ProcAndFuncHeadingPart -> ProcHeading ';' [InlineDirective]     +> Proc_Head
+                          -> FuncHeading ';' [InlineDirective]     +> Func_Head
+
+/* Implementation Part */
+
+   ImplementationPart -> IMPLEMENTATION [UseClause]
+                                   [DeclSection]...                +> Unit_Impl
+
+   Block -> [DeclSection] StmtPart                                 +> Block
+
+   DeclSection -> LabelDeclPart                                    +> Lable_Part
+               -> ConDefPart                                       +> ConDef_Part
+               -> TypeDefPart                                      +> TypeDef_Part
+               -> VarDeclPart                                      +> VarDecl_Part
+               -> ProcAndFuncDeclPart                              +> ProcFunc_Part
+
+   LabelDeclPart -> LABEL [<identifier> /','...] ';'
+                 => fixtype (LABEL, <identifier>, {label_identifier})
+
+   ConDefPart -> CONST (UntypedConDef | TypeConDef)...             +> ConDef_Decl
+
+   UntypedConDef -> (<identifier> '=' Constant ';')...
+                 => fixtype2 (<identifier>, {constant_identifier})
+
+/*
+   UntypedConDef ---> Identifier '=' constant ';' -+-->
+                  ^                            |
+                  +----------------------------+
+*/
+
+   TypeDefPart    -> TYPE TypeAssignment...
+
+   TypeAssignment -> Identifier '=' Type ';'
+                  => fixtype2 (<identifier>, {type_identifier})
+
+/* Typed Constants */
+
+   TypeConDef  -> <identifier> ':' Type '=' TypedConstant
+               => fixtype2 (<identifier>, {constant_identifier})
+
+   TypedConstant   -> Constant                                     +> Type_Const
+                   -> ArrayConstant                                +> Type_Array
+                   -> RecordConstant                               +> Type_Record
+
+   ArrayConstant   -> '(' TypedConstant /','... ')'                +> Array_Const
+
+   RecordConstant  -> '(' ({field_identifier} ':' TypedConstant) /';'... ')'
+                   +> Rec_Const
+
+   SetConstant     -> '[' [Constant ['..' Constant] /','...] ']'     +> Set_Const
+
+/* Types */
+
+   Type    -> SimpleType                                           +> Simple_Type
+           -> StrucType                                            +> Struc_Type
+           -> PointerType                                          +> Pointer_Type
+           -> StringType                                           +> String_Type
+           -> ProcedureType                                        +> Proced_Type
+           -> {type_identifier}                                    +> Type_Ident
+           -> ObjectType                                           +> Object_Type
+
+   SimpleType -> (OrdinalType | RealType)                          +> Simp_Ty
+
+   RealType -> REAL                                                +> Real_Ty
+            -> SINGLE                                              +> Sing_Ty
+            -> DOUBLE                                              +> Doub_Ty
+            -> EXTENDED                                            +> Exten_Ty
+            -> COMP                                                +> Comp_Ty
+
+   OrdinalType -> (SubrangeType | EnumeratedType | OrdIdentifier)  +> Ord_Ty
+
+   OrdIdentifier -> SHORTINT                                       +> SHORTINT
+                 -> INTEGER                                        +> INTEGER
+                 -> BYTE                                           +> BYTE
+                 -> LONGINT                                        +> LONG
+                 -> WORD                                           +> WORD
+                 -> BOOLEAN                                        +> BOOL
+                 -> CHAR                                           +> CHAR
+
+   SubrangeType  -> Constant '..' Constant                         +> Subrng_Ty
+
+   EnumeratedType -> '(' Identifier /','... ')'                    +> Enum_Ty
+
+   StringType -> STRING ['[' Integer ']']                          +> Str_Ty
+
+   StrucType -> [PACKED]
+                (ArrayType | SetType | FileType | RecType)         +> StrucTy
+
+   ArrayType -> ARRAY '[' OrdinalType /','... ']' OF Type          +> Array_Ty
+
+   RecType -> RECORD [FieldList] END                               +> Rec_Ty
+
+   FieldList ->  FixedPart [[';'] VariantPart] [';']               +> Field_Lst
+
+   FixedPart -> (<identifier> /','... ':' Type) /';'...
+             => fixtype2 (<identifier>, {field_identifier})
+
+   VariantPart -> CASE [Identifier ':'] TagFieldType OF
+                  Variant /';'...                                  +> Variant_Pt
+
+   Variant -> Constant /','...  ':' '(' [FieldList] ')'            +> Varnt
+
+   TagFieldType -> ORDIdentifier                                   +> TagFld
+
+   SetType -> SET OF OrdinalType                                   +> Set_Ty
+
+   FileType -> FILE OF Type                                        +> File_Ty
+
+   PointerType -> '^' TIdentifier                                  +> Ptr_Ty
+
+   ProcedureType -> (ProcHeading | FuncHeading)                    +> Proc_Type
+
+/* Variable Declarations */
+
+   VarDeclPart -> VAR VarDeclList...                               +> Var_Decl
+
+   VarDeclList -> <identifier> ':' Type ';'
+               -> <identifier> ':' Type ABSOLUTE VIdentifier ';'
+               -> <identifier> ':' Type ABSOLUTE Integer ':' Integer ';'
+
+   VarReference -> VIdentifier [Qualifier]...                      +> Var_Id
+                -> VarTypeCast [Qualifier]...                      +> Type_Cst
+                -> FunctionCall '^' [Qualifier]...                 +> Ptr_Deref
+
+   Qualifier -> '[' Expression /','... ']'                         +> Idx
+             -> '.' FiIdentifier                                   +> Fid
+             -> '^'                                                +> Ptr
+
+   VarTypeCast -> Identifier '(' VarReference ')'                  +> Typcst
+
+/* Expressions */
+
+   Expression -> SimpleExpression                                  +> SimpExp
+              -> Expression RelOp Expression                       +> LTGTOP
+              -> Expression '<='  Expression                       +> LTEOP
+              -> Expression '>='  Expression                       +> GTEOP
+              -> Expression '='   Expression                       +> EQOP
+              -> Expression '<>'  Expression                       +> NEQOP
+              -> Expression IN    Expression                       +> INOP
+
+   SimpleExpression -> Term                                        +> TOP
+                    -> SimpleExpression Sign SimpleExpression                              +> Addop
+                    -> SimpleExpression OR SimpleExpression                                +> OROP
+                    -> SimpleExpression XOR SimpleExpression                               +> XOROP
+
+   Term            -> Factor                                       +> Factor
+                   -> Term '*' Term                                +> MulOp
+                   -> Term '/' Term                                +> DIVOp
+                   -> Term DIV Term                                +> DIVOP
+                   -> Term MOD Term                                +> ModOp
+                   -> Term AND Term                                +> AndOp
+                   -> Term SHL Term                                +> SHLOP
+                   -> Term SHR Term                                +> SHROP
+
+   Factor          -> (VarReference | PIdentifier)                 +> Ref
+                   -> '@' (VarReference | PIdentifier)             +> AtRef
+                   -> UnsignedConstant                             +> UsCnst
+                   -> '(' Expression ')'                           +> Expr
+                   -> NOT Factor                                   +> Negat
+                   -> Sign Factor                                  +> Unary
+                   -> FunctionCall                                 +> FuncCall
+                   -> SetConstructor                               +> SetCnst
+                   -> ValueTypeCast                                +> ValCst
+
+
+   CExpression -> CTerm                                            +> TOP
+               -> CExpression Sign CExpression                     +> Addop
+               -> CExpression OR   CExpression                     +> OROP
+               -> CExpression XOR  CExpression                     +> XOROP
+
+   CTerm       -> CFactor                                          +> Factor
+               -> CTerm '*' CTerm                                  +> MulOp
+               -> CTerm '/' CTerm                                  +> DIVOp
+               -> CTerm DIV CTerm                                  +> DIVOP
+               -> CTerm MOD CTerm                                  +> ModOp
+               -> CTerm AND CTerm                                  +> AndOp
+               -> CTerm SHL CTerm                                  +> SHLOP
+               -> CTerm SHR CTerm                                  +> SHROP
+
+   CFactor         -> UnsignedConstant                             +> UsCnst
+                   -> '(' CExpression ')'                          +> Expr
+                   -> NOT CFactor                                  +> Negat
+                   -> Sign CFactor                                 +> Unary
+                   -> SetConstant                                  +> SetCnst
+                   -> PreDefinedFunction                           +> Predif
+
+   PreDefinedFunction -> ORD '(' CExpression ')'                   +> OrdFunc
+                      -> ODD '(' CExpression ')'                   +> OddFunc
+                      -> LO  '(' Number ')'                        +> LoFunc
+                      -> LENGTH '(' <string> ')'                   +> LenFunc
+                      -> HI  '(' Number ')'                        +> HiFunc
+                      -> CHR '(' CExpression ')'                   +> ChrFunc
+                      -> ABS  '(' CExpression ')'                  +> AbsFunc
+                      -> PRED '(' CExpression ')'                  +> PredFunc
+                      -> PTR  '(' CExpression ')'                  +> PtrFunc
+                      -> ROUND '(' CExpression ')'                 +> RndFunc
+                      -> SIZEOF '(' CExpression ')'                +> SizeFunc
+                      -> SUCC '(' CExpression ')'                  +> SuccFunc
+                      -> SWAP '(' CExpression ')'                  +> SwapFunc
+                      -> TRUNC '(' CExpression ')'                 +> TruncFunc
+
+   UnsignedConstant -> Number                                      +> CNum
+                    -> String                                      +> CString
+                    -> {constant_identifier}                       +> CId
+                    -> NIL                                         +> CNil
+
+   FunctionCall    -> FIdentifier ['(' Expression /','... ')']     +> FCall
+
+   SetConstructor  -> '[' [MemberGrp /','...] ']'                  +> Set
+
+   MemberGrp       -> Expression ['..' Expression]                 +> SetList
+
+   ValueTypeCast   -> TIdentifier '(' Expression ')'               +> ValTpCst
+
+/* Statements */
+
+   StmtPart        -> BEGIN Statement /';'... END                  +> Stmt_Pt
+
+   Statement       -> [LIdentifier ':']
+                      [SimpleStatement | StructStmt]               +> Stmt
+
+   SimpleStatement -> (ProcStmt | AssgStmt | GotoStmt)             +> Simp_Stmt
+
+   AssgStmt        -> (VarReference | FIdentifier) ':=' Expression +> Asg_Stmt
+
+   ProcStmt        -> PIdentifier ['(' Expression /','... ')']     +> Prc_Stmt
+
+   GotoStmt        -> GOTO Identifier                              +> Goto_Stmt
+
+   StructStmt      -> StmtPart                                     +> CmpdS
+                   -> CondStmt                                     +> Cond
+                   -> ReptStmt                                     +> Rept
+                   -> WithStmt                                     +> With
+
+   CondStmt -> (IfStmt | CaseStmt)                                 +> Cond_Stmt
+
+   IfStmt  -> IF Expression THEN Statement [ELSE Statement]        +> If_Stmt
+
+   CaseStmt -> CASE Expression OF  CasePart /';'...
+                   [ElsePart] [';'] END                            +> Case_Stmt
+
+   CasePart -> Constant ['..' Constant] /','...
+                   ':' Statement                                   +> Case_Part
+
+   ElsePart -> ELSE Statement                                      +> Else_Pt
+
+   ReptStmt -> (RepeatStmt | WhileStmt | ForStmt)                  +> RptSmt
+
+   RepeatStmt -> REPEAT Statement /';'...  UNTIL Expression        +> Repeat_Stmt
+
+   WhileStmt -> WHILE Expression DO Statement                      +> While_Stmt
+
+   ForStmt -> FOR VIdentifier ':=' Expression
+              UporDown Expression DO Statement                     +> For_Stmt
+
+   WithStmt -> WITH Identifier /','...  DO Statement               +> WithStmt
+
+
+/* Procedure and Functions */
+
+   ProcAndFuncDeclPart -> ProcDecl...                              +> Proc_Decl
+                       -> FuncDecl...                              +> Func_Decl
+
+   ProcDecl -> ProcHeading ';' ProcBody ';'                        +> Proc_Def
+
+   FuncDecl -> FuncHeading ';' FuncBody ';'                        +> Func_Def
+
+   FuncHeading -> FUNCTION Identifier
+                  ['(' FormalParSection /';'... ')'] ':'
+                  (SimpleType | STRING)
+               => fixtype3 ({func_identifier})
+
+   ProcHeading -> PROCEDURE Identifier
+                  ['(' FormalParSection /';'... ')']
+               => fixtype3 ({proc_identifier})
+
+   FuncBody -> Block                                               +> Func_Code
+            -> FORWARD                                             +> Func_For
+            -> EXTERNAL                                            +> Func_Ext
+            -> InlineDirective                                     +> Func_Asm
+
+
+   FormalParSection -> [VAR] Identifier /','...
+                       [':' SimpleType | STRING | FILE]            +> Parm_El
+
+   ProcBody -> [INTERUPT ';']  Block                               +> Proc_Code
+            -> [INTERUPT ';']  FORWARD                             +> Proc_For
+            -> [INTERUPT ';']  EXTERNAL                            +> Proc_Ext
+            -> InlineDirective                                     +> Proc_Asm
+
+   InlineDirective -> INLINE '(' InlineElement /'/'... ')'         +> Inline_Dir
+
+   InlineElement -> [RelOp]
+                    (Number | Identifier [Sign Number]...)         +> Inline_Element
+
+/* Objects */
+
+   ObjectType -> OBJECT [Heritage] OfieldList [';']
+                 [MethodList] END                                  +> OBJ_Ty
+
+   Heritage -> '(' ObjectId ')'                                    +> Heritg
+
+   MethodList -> (MethodHeading [';' VIRTUAL]) /';'...             +> Method_list
+
+   MethodHeading -> ProcHeading                                    +> Proc_Meth
+                 -> FuncHeading                                    +> Func_Meth
+                 -> ConstrucHeading                                +> Cnst_Meth
+                 -> DestrucHeading                                 +> Dest_Meth
+
+   ConstrucHeading -> CONSTRUCTOR <identifier>
+                      ['(' FormalParSection /';'... ')']
+                   => fixtype (CONSTRUCTOR, <identifier>, {proc_identifier})
+
+   DestrucHeading -> DESTRUCTOR <identifier>
+                     ['(' FormalParSection /';'... ')']
+                  => fixtype (DESTRUCTOR, <identifier>, {proc_identifier})
+
+   OfieldList -> [(Identifier /','... ':' Type) /';'...]                 +> O_Field
+
+/* Init Part */
+
+   InitPart -> END                                                 +> No_Init
+            -> StmtPart                                            +> Init_Stmts
+
+
+/* Identifier Structure */
+
+   Constant -> CExpression                                         +> Con
+
+   ObjectId -> [Identifier '.'] QualifiedIdentifier                +> Obj_Id
+
+   QualifiedIdentifier -> [Identifier '.'] Identifier              +> Qual_Id
+
+   Identifier -> <identifier>                                      +> Id
+
+   LIdentifier -> {label_identifier}                               +> LID
+
+   TIdentifier -> {type_identifier}                                +> TID
+
+   VIdentifier -> {variable_identifier}                            +> VID
+
+   PIdentifier -> {proc_identifier}                                +> PID
+
+   FIdentifier -> {func_identifier}                                +> FID
+
+   FiIdentifier -> {field_identifier}                              +> FiId
+
+   ORDIdentifier -> {ordinal_type_id}                              +> ORDId
+
+   Integer -> <number>                                             +> Int
+
+   Number  -> <number>                                             +> Numb
+
+   String  -> <string>                                             +> Str
+
+   Sign    -> '+'                                                  +> SiP
+           -> '-'                                                  +> SiM
+
+   UporDown -> TO                                                  +> Up
+            -> DOWNTO                                              +> Down
+
+   RelOp -> '<'                                                    +> LTH
+         -> '>'                                                    +> GTH
+
+/* End of Grammar. */
+

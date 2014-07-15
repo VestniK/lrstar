@@ -1,0 +1,11 @@
+lr1_parser
+Parsing test.input.txt ...
+
+     2  c a t ; 
+     3  c a n ; 
+     4  r a t ; 
+     5  r a n ; 
+
+Symbol Table is empty!
+
+End of Output.

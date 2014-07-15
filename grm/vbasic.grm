@@ -1,0 +1,750 @@
+                                          
+/*--------------------------------------------------------------------------*/
+/* Visual Basic Grammar, by Paul B Mann, 1997, tabs=3.                      */
+/*--------------------------------------------------------------------------*/
+
+// Token Declarations ...
+
+   <error>         => error  ();
+   <ident0>        => lookup ();       /* Identifier follow by special char. */
+   <ident>         => lookup ();       /* Normal identifier.                 */
+   <integer>       => lookup ();       /* Integers.                          */               
+   <hex>           => lookup ();       /* Hexadecimal constants.             */                                                       
+   <real>          => lookup ();       /* Real numbers.                      */              
+   <string>        => lookup ();       /* Character strings.                 */       
+   
+   {FuncName}      ;
+   {AppName}       ;
+   {AliasName}     ;
+   {DLLSubName}    ;
+   {DLLFuncName}   ;
+
+// Operator precedence ...
+
+	{ OR                         } <<
+	{ AND                        } <<                       
+	{ '=' '<>' '<' '>' '<=' '>=' } <<
+	{ '+' '-' '&'                } <<
+	{ MOD                        } <<
+	{ '*' '/'                    } <<
+	{ '^'                        } >>
+
+// Rules ...
+
+   Start 
+      -> [GlobalStmtEOL...] <eof>         
+ 
+   GlobalStmtEOL                            
+      -> <eol>
+      -> GlobalStmt <eol>                 
+
+   StmtEOL                                  
+      -> <eol>
+      -> Stmt <eol>
+      -> Label Stmt <eol>
+
+   Stmt   
+      -> SimpleStmt                       
+      -> ComplexStmt                      
+
+   Label        
+      -> NewLabelName ':'                     
+      -> NewLabelName ':' <eol>...                     
+
+   NewLabelName      
+      -> <ident>                           +> label (1)      
+
+/*---------------------------------------------------------------------------*/
+   
+   GlobalStmt                               
+      -> RemStmt                           +> RemStmt
+      -> DimStmt                           +> DimStmt
+      -> OptionStmt                        +> OptionStmt
+      -> G ConstStmt                       +> ConstStmt                             
+      -> P DeclareStmt                     +> DeclareStmt                             
+      -> P VarAsTypeStmt                   +> VarStmt
+      -> P TypeStmt                        +> TypeStmt
+      -> P Q SubStmt                       +> SubDef 
+      -> P Q FuncStmt                      +> FuncDef 
+
+   Q  -> [{Qualifier}]
+   P  -> [PUBLIC | PRIVATE]
+   G  -> [GLOBAL | PUBLIC | PRIVATE]
+
+/*---------------------------------------------------------------------------*/
+   
+   ComplexStmt
+      -> BeginDlgStmt                      +> BeginDlgStmt                     
+      -> DoStmt                            +> DoStmt
+      -> ForStmt                           +> ForStmt 
+      -> ForEachStmt                       +> ForEachStmt 
+      -> IfStmtComplex                     +> IfStmtComplex
+      -> SelectStmt                        +> SelectStmt
+      -> WhileStmt                         +> WhileStmt
+      -> WithStmt                          +> WithStmt
+   
+/*---------------------------------------------------------------------------*/
+   
+   SimpleStmt
+      -> CallStmt                        
+      -> CloseStmt                         +> CloseStmt
+      -> ConstStmt                         +> ConstStmt
+      -> DialogStmt                        +> DialogStmt
+      -> DimStmt                           +> DimStmt                            
+      -> ExitStmt                          +> ExitStmt
+      -> GotoStmt                          +> GotoStmt
+      -> GoSubStmt                         +> GoSubStmt
+      -> IfStmtSimple                      +> IfStmtSimple          
+      -> LetStmt                           +> LetStmt
+      -> LineInputStmt                     +> LineInputStmt
+      -> NameStmt                          +> NameStmt
+      -> OnErrorStmt                       +> OnErrorStmt
+      -> OpenStmt                          +> OpenStmt
+      -> PrintStmt                         +> PrintStmt
+      -> ResumeStmt                        +> ResumeStmt
+      -> WriteStmt                         +> WriteStmt
+      -> RemStmt                           +> RemStmt
+      -> ReturnStmt                        +> ReturnStmt
+      -> SeekStmt                          +> SeekStmt
+      -> SetStmt                           +> SetStmt
+      -> StaticStmt                        +> StaticStmt
+      -> StopStmt                          +> StopStmt
+
+/*--------------------------------------------------------------------------*/
+
+   BeginDlgStmt
+      -> BEGIN DIALOG DlgTypeName
+         Area ',' StrConst [',' DlgIdent] <eol>... 
+         [DialogThing]...
+         END DIALOG
+
+   DialogThing
+      -> OPTIONGROUP DlgIdent <eol>... 
+         OptionButton...            
+
+      -> OKBUTTON     Area                  [',' DlgIdent] <eol>...              
+      -> CANCELBUTTON Area                  [',' DlgIdent] <eol>...              
+      -> GROUPBOX     Area  ',' StrConst    [',' DlgIdent] <eol>... 
+      -> PUSHBUTTON   Area  ',' StrConst    [',' DlgIdent] <eol>... 
+      -> TEXT         Area  ',' StrConst    [',' DlgIdent] <eol>... 
+
+      -> CHECKBOX     Area  ',' StrConst     ',' DlgIdent  <eol>...  
+      -> TEXTBOX      Area                   ',' DlgIdent  <eol>...                
+
+      -> COMBOBOX     Area  ',' {ArrayName}  ',' DlgIdent  <eol>...  
+      -> DROPLISTBOX  Area  ',' {ArrayName}  ',' DlgIdent  <eol>...  
+      -> LISTBOX      Area  ',' {ArrayName}  ',' DlgIdent  <eol>...  
+
+   Area 
+      -> Constant ',' Constant ',' Constant ',' Constant                       
+
+   OptionButton
+      -> OPTIONBUTTON Area ',' StrConst [',' DlgIdent] <eol>... 
+
+   DlgIdent
+      -> '.' <ident>
+
+/*---------------------------------------------------------------------------*/
+                                                   
+   CallStmt
+      -> CALL Object  ['(' [MethodParamList] ')']   +> CallObj
+      ->      Object   '(' [MethodParamList] ')'    +> CallObj            
+
+      -> CALL SubName ['(' [ParamList] ')']         +> CallSub 
+      ->      SubName  '(' [ParamList] ')'          +> CallSub      
+
+   MethodParamList 
+      -> ParamList
+      -> NamedParamList
+
+   ParamList       
+      -> Param                     
+      -> ParamList Comma Param
+        
+   NamedParamList  
+      -> NamedParam 
+      -> NamedParamList Comma NamedParam
+
+   Param 
+      -> Exp                               +> param
+      -> ArrayNameParam                    +> param 
+
+   ArrayNameParam
+      -> {ArrayName}                       +> array 
+
+   NamedParam      
+      -> ParamName ':=' Exp                
+
+   ParamName       
+      -> {Ident}                           +> paramname 
+      -> {keyword}                         +> paramname 
+
+/*---------------------------------------------------------------------------*/
+                                                   
+   ConstStmt      
+      -> CONST ConstName [AsType] '=' ConstPrimary
+      -> CONST {TypedConstName}     '=' ConstPrimary
+
+   ConstPrimary
+      -> StrConst
+      -> NumConst
+
+/*---------------------------------------------------------------------------*/
+                                                   
+   CloseStmt
+      -> CLOSE [(['#'] Exp) /Comma...]                          
+
+/*---------------------------------------------------------------------------*/
+                                                   
+   DeclareStmt    
+      -> DECLARE SUB DLLSubName
+           (LIB LibName | APX AppName)
+           [ALIAS AliasName] [ArgumentList]
+
+      -> DECLARE FUNCTION DLLFuncName
+           (LIB LibName | APX AppName)
+           [ALIAS AliasName] [ArgumentList] [AsType]
+                  
+   LibName 
+      -> <string>                                   
+
+   ArgumentList  
+      -> '(' [Arg /Comma...] ')'         
+
+   Arg  
+      -> [ByRefOrVal] <ident>  [AsArray] [AsType]    
+      -> [ByRefOrVal] <ident0> [AsArray]            
+
+   AsArray       
+      -> '(' ')'
+
+/*---------------------------------------------------------------------------*/
+                                                   
+   DialogStmt                                           
+      -> DIALOG Dlg
+                                                   
+/*---------------------------------------------------------------------------*/
+                                                   
+   DimStmt
+      -> DIM VarAsType /Comma...                                         
+      -> DCL VarAsType /Comma...                                         
+
+   VarAsTypeStmt
+      -> VarAsType
+      -> VarAsType VarAsTypeStmt                                            
+
+   VarAsType      
+      -> TypedIdent
+      -> <ident>    AsType                 +> var (1)
+      -> <ident>    AsObject               +> var (1)
+      -> ArrayName  Subscripts [AsType]    +> array 
+      -> AnyName              
+                  
+   AsType        
+      -> PrimType
+      -> AS PrimType
+      -> AS ExtType
+
+   AsObject
+      -> OBJECT                            +> type (1)
+      -> AS OBJECT                         +> type (2)
+                  
+   PrimType     
+      -> INTEGER                           +> type (1)               
+      -> LONG                              +> type (1)               
+      -> SINGLE                            +> type (1)               
+      -> DOUBLE                            +> type (1)               
+      -> STRING ['*' StrSize]              +> type (1)               
+      -> BOOLEAN                           +> type (1)               
+      -> VARIANT                           +> type (1)               
+   /* -> ANY  */
+
+   ExtType
+      -> {TypeName}                        +> type (1)
+      -> {DlgTypeName}                     +> type (1)
+      -> {Ident}                           +> type (1)
+
+   Subscripts     
+      -> '(' [Bounds /','...] ')'          +> subscripts
+
+   Bounds         
+      -> NumConst [TO NumConst]                     
+
+   StrSize  
+      -> <integer>                         +> size 
+
+/*---------------------------------------------------------------------------*/
+                                                   
+   DoStmt
+      -> DO <eol> 
+         StmtEOL... 
+         LOOP 
+
+      -> DO <eol> 
+         StmtEOL... 
+         LOOP UNTIL Exp
+
+      -> DO <eol> 
+         StmtEOL... 
+         LOOP WHILE Exp
+
+      -> DO UNTIL Exp <eol> 
+         StmtEOL... 
+         LOOP                    
+
+      -> DO WHILE Exp <eol> 
+         StmtEOL... 
+         LOOP                     
+
+/*---------------------------------------------------------------------------*/
+                                                   
+   ExitStmt
+      -> EXIT ExitType
+
+   ExitType 
+      -> DO                                     
+      -> FOR                                    
+      -> FUNCTION                               
+      -> SUB                                    
+
+/*---------------------------------------------------------------------------*/
+                                                   
+   ForStmt
+      -> FOR Iterator '=' StartVal TO EndVal [STEP StepVal] <eol> 
+         StmtEOL... 
+         NextStmt                                     
+
+   StartVal 
+      -> Exp                               +> start 
+
+   EndVal   
+      -> Exp                               +> end 
+
+   StepVal  
+      ->                                   +> step 
+      -> Exp                               +> step 
+
+   Iterator       
+		-> <ident>                           +> ident (1)
+      -> {Ident}                           +> ident (1)
+      -> {Iterator}                        +> ident (1)
+
+/*---------------------------------------------------------------------------*/
+                                                   
+   ForEachStmt
+      -> FOR EACH Exp IN Exp <eol> 
+         StmtEOL... 
+         NextStmt
+      
+   NextStmt
+      -> NEXT                              +> next
+      -> NEXT {Iterator}                   +> next (1)
+   /* -> NEXT {Iterator} /','...           +> next (1) */
+
+/*---------------------------------------------------------------------------*/
+                                                   
+   FuncStmt
+      -> FUNCTION CurrFuncName [VList] [AsType] 
+         StmtEOL... 
+         EndFunc 
+
+   CurrFuncName   
+      -> <ident>                           +> ident (1)
+
+   VList          
+      -> '(' [FuncVarList] ')'
+
+   FuncVarList    
+      -> ([ByRefOrVal] FuncVarAsType) /Comma...        
+
+   ByRefOrVal    
+      -> BYREF
+      -> BYVAL                                      
+
+   FuncVarAsType  
+      -> FuncVar [AsType]                           
+
+   FuncVar        
+      -> <ident>
+      -> AnyName                            
+      -> {ArrayName} '(' ')'
+
+   EndFunc   
+      -> END FUNCTION                     +> endfunc (1)
+      -> END {CurrFuncName}               +> endfunc (1)
+
+/*---------------------------------------------------------------------------*/
+                                                   
+   GotoStmt
+      -> GOTO LabelName                    +> goto 
+
+   LabelName      
+      -> <ident>                           +> label (1)
+      -> {LabelName}                       +> label (1)
+
+/*---------------------------------------------------------------------------*/
+                                                   
+   GoSubStmt
+      -> GOSUB SubName                     +> gosub 
+
+/*---------------------------------------------------------------------------*/
+                                                   
+   IfStmtSimple  
+      -> IF Exp THEN SimpleStmt 
+      -> IF Exp THEN SimpleStmt ELSE SimpleStmt  
+
+   IfStmtComplex 
+      -> IF Exp Then EndIf
+      -> IF Exp Then Else EndIf
+      -> IF Exp Then ElseIfExp... Else EndIf
+
+   Then 
+      -> <eol> 
+         StmtEOL...
+
+      -> THEN <eol> 
+         StmtEOL...
+
+      -> <eol> 
+         THEN <eol> 
+         StmtEOL...
+
+   ElseIfExp     
+      -> ElseIf Exp Then 
+
+   Else 
+      -> ELSE <eol> 
+         StmtEOL...
+
+   ElseIf    
+      -> ELSEIF        // Original BASIC
+      -> ELSE IF       // Addition
+
+   EndIf
+      -> END IF        // Original BASIC
+      -> ENDIF         // Addition
+
+/*---------------------------------------------------------------------------*/
+                                                   
+   LetStmt
+      -> LET LValue '=' Exp                                  
+      ->     LValue '=' Exp                                  
+      ->     FuncName '=' Exp
+
+/*---------------------------------------------------------------------------*/
+                                                   
+   LineInputStmt
+      -> LINE INPUT '#' Exp Comma Exp                           
+
+/*---------------------------------------------------------------------------*/
+                                                   
+   NameStmt
+      -> NAME Exp AS Exp                                      
+
+/*---------------------------------------------------------------------------*/
+                                                   
+   OnErrorStmt
+      -> ON ERROR GOTO LabelName                    
+      -> ON ERROR RESUME NEXT                                 
+
+/*---------------------------------------------------------------------------*/
+                                                   
+   OpenStmt
+      -> OPEN Exp [FOR InOutApp] AS ['#'] Exp                 
+
+   InOutApp
+      -> INPUT                                               
+      -> OUTPUT                                              
+      -> APPEND  
+        
+/*---------------------------------------------------------------------------*/
+                                                   
+   OptionStmt
+      -> OPTION BASE <integer>                                         
+      -> OPTION EXPLICIT                                               
+
+/*---------------------------------------------------------------------------*/
+                                                   
+   PrintStmt
+      -> PRINT Exp /cs...                                     
+      -> PRINT '#' Exp Comma Exp /cs...                        
+
+/*---------------------------------------------------------------------------*/
+                                                   
+   RemStmt
+      -> REM                                               
+      -> REM <error>...                                              
+
+/*---------------------------------------------------------------------------*/
+                                                   
+   ResumeStmt
+      -> RESUME NEXT                                          
+      -> RESUME LabelName                  
+
+/*---------------------------------------------------------------------------*/
+                                                   
+   ReturnStmt
+      -> RETURN                                              
+
+/*---------------------------------------------------------------------------*/
+                                                   
+   SeekStmt
+      -> SEEK ['#'] Exp Comma Exp                              
+
+/*---------------------------------------------------------------------------*/
+                                                   
+   SelectStmt 
+      -> SELECT CaseExp                      EndSelect
+      -> SELECT CaseExp             CaseElse EndSelect
+      -> SELECT CaseExp CaseStmt...          EndSelect
+      -> SELECT CaseExp CaseStmt... CaseElse EndSelect
+
+   CaseExp    
+      -> CASE Exp <eol>...
+
+   CaseStmt   
+      -> CASE Exp <eol> 
+         [StmtEOL...]                   
+
+   CaseElse   
+      -> CASE ELSE <eol> 
+         [StmtEOL...]                  
+
+   EndSelect 
+      -> END SELECT
+
+/*---------------------------------------------------------------------------*/
+                                                   
+   SetStmt
+      -> SET Object '=' RValue                                
+      -> SET Object '=' NOTHING                           
+      ->     Object '=' RValue                                      
+
+/*---------------------------------------------------------------------------*/
+                                                   
+   StaticStmt
+      -> STATIC VarAsType /Comma...                                              
+
+/*---------------------------------------------------------------------------*/
+                                                   
+   StopStmt
+      -> STOP                                                
+
+/*---------------------------------------------------------------------------*/
+                                                   
+   SubStmt
+      -> SUB CurrSubName [VList] 
+         StmtEOL... 
+         EndSub                  
+
+   CurrSubName    
+      -> <ident>                          +> ident (1)
+
+   EndSub    
+      -> END SUB                          +> endsub (1)
+      -> END {CurrSubName}                +> endsub (1)
+
+/*---------------------------------------------------------------------------*/
+                                                   
+   TypeStmt 
+      -> TYPE TypeName TypeElemList EndType                            
+
+   TypeElemList   
+      -> ([MemberAsType] <eol>)...
+
+   MemberAsType   
+      -> Member AsType                                
+
+   EndType   
+      -> END TYPE
+
+/*---------------------------------------------------------------------------*/
+                                                   
+   WhileStmt
+      -> WHILE Exp <eol> StmtEOL... EndWhile                       
+   
+   EndWhile  
+      -> WEND          // Original BASIC
+      -> END WHILE     // Addition
+
+/*---------------------------------------------------------------------------*/
+                                                   
+   WithStmt
+      -> WITH WithObject <eol> StmtEOL... EndWith        
+   
+   WithObject
+      -> {ObjectName}
+      -> Object
+      -> {TypeName}
+
+   EndWith   
+      -> END WITH
+
+/*---------------------------------------------------------------------------*/
+                                                   
+   WriteStmt
+      -> WRITE '#' Exp /Comma...                     
+
+/*--------------------------------------------------------------------------*/
+
+   Exp  
+      -> RValue                      
+      -> Exp '+'  Exp                      +> add          
+      -> Exp '-'  Exp                      +> sub          
+      -> Exp '*'  Exp                      +> mul         
+      -> Exp '/'  Exp                      +> div      
+      -> Exp '^'  Exp                      +> pow   
+      -> Exp MOD  Exp                      +> mod          
+      -> Exp '&'  Exp                      +> concat          
+      -> Exp '='  Exp                      +> is_eq         
+      -> Exp '<>' Exp                      +> is_ne          
+      -> Exp '<'  Exp                      +> is_lt         
+      -> Exp '>'  Exp                      +> is_gt          
+      -> Exp '<=' Exp                      +> is_le         
+      -> Exp '>=' Exp                      +> is_ge      
+      -> Exp AND  Exp                      +> and           
+      -> Exp OR   Exp                      +> or           
+
+/*---------------------------------------------------------------------------*/
+                                                   
+   RValue
+      -> LValue
+      -> NOT RValue                                   
+      -> '-' RValue                                   
+      -> '+' RValue                                                
+      -> <string>                          +> string 
+      -> Constant                            
+      -> Object                                       
+      -> GetProp 
+      -> {TypeName}                                     
+      -> SEEK       '(' Exp ')'                             
+      -> DIALOG     '(' Dlg ')'                           
+      -> FuncName   '(' [ParamList] ')'              
+      -> StrFunc    '(' [ParamList] ')'               
+      -> INPUT      '(' Exp Comma ['#'] Exp ')'              
+      -> '(' Exp ')' 
+
+/*---------------------------------------------------------------------------*/
+                                                   
+   LValue
+      -> {Ident}                           +> id (1)
+      -> {Iterator}                        +> id (1)
+      -> ArrayRef                          
+      -> DlgMember
+      -> UserType
+
+   ArrayRef 
+      -> {ArrayName} '(' SubList ')'       +> array_ref(1)
+
+   SubList
+      -> Exp /','...                       +> subscripts
+
+   DlgMember  
+      -> Dlg '.' Member                                
+
+   Dlg   
+      -> {DlgTypeName}
+
+   UserType
+      -> UserTypeDot Member
+
+   UserTypeDot
+      -> {TypeName} '.'
+      -> UserTypeDot Member '.'                      
+
+   GetProp    
+      -> Object '(' [MethodParamList] ')'              
+
+   Object  
+      -> ObjectDotMember                   +> object    
+
+   ObjectDotMember
+      -> '.' Member
+      -> ObjectDot   Member
+      -> GetProp '.' Member
+      -> ObjectDotMember  '.' Member
+
+   ObjectDot
+      -> {ObjectName} '.'                  +> name (1)
+
+   Member     
+      -> (<ident>|<keyword>|{Member})      +> member (1)
+
+/*---------------------------------------------------------------------------*/
+                                                   
+   NumConst
+      -> Constant
+      -> NumConst '+' NumConst                        
+      -> NumConst '-' NumConst                        
+      -> NumConst '*' NumConst                        
+      -> NumConst '/' NumConst                        
+
+   Constant
+      -> <hex>                             +> constant (1)
+      -> <real>                            +> constant (1)
+      -> <integer>                         +> constant (1)
+      -> {ConstName}                       +> constant (1)
+
+   StrConst
+      -> <string>                                     
+
+   StrFunc   
+      -> STRING                               
+
+   AnyName  
+      -> {SubName}                         +> sub_name   (1)
+      -> FuncName                          +> func_name  (1)
+      -> {ConstName}                       +> const_name (1)
+      -> {ArrayName}                       +> array_name (1)
+      -> {TypeName}                        +> type_name  (1)
+      -> {ObjectName}                      +> object_name(1)
+
+   TypedIdent     
+      -> <ident0>                          
+
+   ArrayName      
+      -> <ident>                           +> ident (1)
+
+   SubName        
+      -> <ident>                           +> ident (1)
+      -> {SubName}                         +> ident (1)
+
+   TypeName       
+      -> <ident>                           +> ident (1)
+
+   AppName        
+      -> <ident>                           +> ident (1)
+
+   AliasName      
+      -> <string>                          +> string (1)
+
+   FuncName       
+      -> <ident>                           +> ident (1)
+
+   DlgTypeName    
+      -> <ident>                           +> ident (1)
+
+   ConstName      
+      -> <ident>                           +> ident (1)
+
+   DLLSubName     
+      -> <ident>                           +> ident (1)
+
+   DLLFuncName    
+      -> <ident>                           +> ident (1)
+
+/*---------------------------------------------------------------------------*/
+                                                   
+   cs 
+      -> ','
+      -> ';'
+      -> ',' <eol>
+      -> ';' <eol>
+
+   Comma 
+      -> ','
+      -> ',' <eol>
+
+/*--- End of Grammar. ------------------------------------------------------*/
+
+

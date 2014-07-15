@@ -1,0 +1,333 @@
+
+/* C Syntactical Grammar */
+
+	<error>		 => error();
+   <identifier> => lookup();  /* Symbol table lookup. */
+   <constant>   => lookup();
+   <string>     => lookup(); 
+	<eof>			 ;
+
+/*--- Keywords ---*/
+  
+	auto         ;
+	break			 ;		 
+	case			 ;
+	cdecl			 ;
+  	char			 ;
+  	const			 ;
+  	continue 	 ;
+	default		 ;
+	do				 ;								  
+	double		 ;
+	else			 ;
+	enum			 ;
+	extern		 ;
+	far			 ;
+	float			 ;
+	for			 ;
+	goto			 ;
+	huge			 ;
+	if				 ;
+	int			 ;
+	interrupt 	 ;
+	long			 ;
+	near			 ;
+	pascal		 ;
+	register		 ;
+	return		 ;
+	short			 ;
+	signed		 ;
+	sizeof		 ;
+	static		 ;
+	struct		 ;
+	switch		 ;
+	typedef		 ;
+	union			 ;
+	unsigned		 ;
+	void			 ;
+	volatile	    ;
+	while			 ;
+  
+/*--- Operator Precedence. ---*/
+
+	{  '?'                      } <<
+	{  '||'                     } << 
+	{  '&&'                     } <<
+	{  '|'                      } <<
+	{  '^'                      } <<
+	{  '&'                      } <<
+	{  '=='  '!='               } <<
+	{  '<'   '>'   '<='   '>='  } <<
+	{  '<<'  '>>'               } <<
+	{  '+'   '-'                } <<
+	{  '*'   '/'   '%'          } <<
+
+/*--- Productions. ---*/
+
+   Start
+      -> [ExternalDef...] <eof>										+> goal_(2)
+		;  																		
+   ExternalDef
+      -> ExtDeclaration													+> extdef_
+      -> FunctionDef														+> extdef_
+      ;
+   ExtDeclaration
+		-> typedef TypeSpec... ([Pointer] TypedefIdentifier) /','... ';' 	+> typedef_decl_
+      ->         [DeclarationSpec]... [InitDeclarator /','...] ';'		+> extdecl_
+      ;
+   Declaration
+      -> DeclarationSpec... InitDeclarator /','... ';'		+> decl_
+      ;
+   FunctionDef
+		-> FunctionDecl FunctionBody									+> funcdef_ 
+      ;
+   FunctionDecl
+      -> [DeclarationSpec]...	Declarator [Declaration]...	+> funcdecl_
+      ;
+   FunctionBody
+      -> Block																+> funcbody_
+      ;
+   DeclarationSpec
+      -> TypeSpec															+> type_(1)
+      -> StorageClassSpec												+> class_(1)
+      ;
+   TypeSpec
+      -> int
+      -> char
+      -> long
+      -> void
+      -> short
+      -> const
+      -> float
+      -> double
+      -> signed
+      -> unsigned
+      -> volatile
+      -> far
+      -> near
+      -> huge
+      -> cdecl
+      -> pascal
+      -> interrupt
+      -> EnumSpec
+      -> StructSpec
+      -> UnionSpec
+      -> {typedef}
+      ;
+   StorageClassSpec
+      -> extern
+      -> static
+      -> auto
+      -> register
+      ;
+   InitDeclarator
+      -> Declarator														+> declarator_
+      -> Declarator '=' Init											+> declaratorinit_
+      ;
+   StructSpec
+      -> struct <identifier>											+> struct_
+      -> struct '{' StructDeclaration... '}'						+> struct_
+      -> struct <identifier> '{' StructDeclaration... '}'	+> struct_
+      ;
+   UnionSpec
+      -> union <identifier>											+> union_
+      -> union '{' StructDeclaration... '}'						+> union_
+      -> union <identifier> '{' StructDeclaration... '}'		+> union_
+      ;
+   StructDeclaration
+      -> TypeSpec... StructDeclarator /','... ';'				+> structdecl_
+      ;
+   StructDeclarator
+      -> ':' ConstExp													+> structdeclarator_
+      -> Declarator ':' ConstExp										+> structdeclarator_
+      -> Declarator														+> structdeclarator_
+      ;
+   EnumSpec
+      -> enum <identifier>												+> enumspec_
+      -> enum '{' Enumerator /','... '}'							+> enumspec_
+      -> enum <identifier> '{' Enumerator /','... '}'			+> enumspec_
+      ;
+   Enumerator
+      -> <identifier>													+> enumident_
+      -> <identifier> '=' ConstExp									+> enumequals_
+      ;
+   Declarator
+      -> DirectDeclarator												+> directdecl_
+      -> Pointer DirectDeclarator									+> directdecl_
+      ;
+   DirectDeclarator
+      -> Identifier														+> ident_
+      -> '(' Declarator ')'											+> declarator_
+      -> DirectDeclarator '[' [ConstExp] ']'						+> arraydecl_
+      -> DirectDeclarator '(' Arguments ')'						+> funcdecl_
+      -> DirectDeclarator '(' AbsArguments ')'					+> funcdecl_
+      ;
+   Pointer
+      -> '*' [TypeSpec]...												+> pointer_
+      -> '*' [TypeSpec]... Pointer									+> pointer_
+      ;
+   Arguments
+      -> ArgDecl /','...												+> argdecl_
+      -> ArgDecl /','... ',' '...'									+> argdecl_
+      ;
+   AbsArguments
+      -> AbsArgDecl /','...											+> absargdecl_
+      -> AbsArgDecl /','... ',' '...'								+> absargdecl_
+      ;
+   ArgDecl
+      ->                    Declarator								+> declarator_
+      -> DeclarationSpec... Declarator								+> declarator_
+      ;
+   AbsArgDecl
+      ->																		
+      -> DeclarationSpec...											+> absarg_
+      ->                    AbstractDeclarator					+> absarg_
+      -> DeclarationSpec... AbstractDeclarator					+> absarg_
+      ;
+   TypeName
+      -> TypeSpec...														+> typespec_
+      -> TypeSpec... AbstractDeclarator							+> typespec_
+      ;
+   AbstractDeclarator
+      -> Pointer															+> absdeclarator_
+      ->         DirectAbstractDeclarator							+> absdeclarator_
+      -> Pointer DirectAbstractDeclarator							+> absdeclarator_
+      ;
+   DirectAbstractDeclarator
+      -> '[' [ConstExp] ']'											+> constexp_
+      -> '(' AbstractDeclarator ')'									+> absdeclarator_
+      -> DirectAbstractDeclarator '[' [ConstExp] ']'			+> absarray_
+      -> DirectAbstractDeclarator '(' AbsArguments ')'		+> absfunc_
+      ;
+   Init
+      -> AssignExp														+> assign_
+      -> '{' Init /','... [','] '}'									+> init_
+      ;
+/* Statements */
+
+   Stmt
+		-> ';'																+> empty_
+      -> Exp ';'															+> exp_
+      -> goto Identifier ';'											+> goto_
+      -> continue ';'													+> continue_
+      -> break ';'														+> break_
+      -> return [Exp] ';'												+> return_
+      -> Label Stmt														+> labeledstmt_
+      -> Block																+> block_
+      -> if '(' Exp ')' Stmt											+> if_
+      -> if '(' Exp ')' Stmt else Stmt								+> ifelse_
+      -> switch '(' Exp ')' '{' Case Default '}'				+> switch_
+      -> while '(' Exp ')' Stmt										+> while_
+      -> do Stmt while '(' Exp ')' ';'								+> do_
+      -> for '(' Exp1 ';' Exp2 ';' Exp3 ')' Stmt				+> for_
+      ;
+   Case    -> [case ConstExp ':' [Stmt]...]...					+> case_
+           ;
+   Default -> [default ':' [Stmt]...]								+> default_
+           ;
+   Exp1 ->
+        -> Exp																+> exp1_
+        ;
+   Exp2 ->
+        -> Exp																+> exp2_
+        ;
+   Exp3 ->
+        -> Exp																+> exp3_
+        ;
+   Label
+       /-> Identifier ':'												+> label_
+        ;
+   Block
+        -> '{'                        '}'
+        -> '{' Declaration...         '}'
+        -> '{'                Stmt... '}'
+        -> '{' Declaration... Stmt... '}'
+        ;
+/* Expressions */
+
+   ConstExp
+       -> CondExp															+> condexp_
+       ;
+   Exp
+       -> AssignExp														+> assignment_
+       -> Exp ',' AssignExp											+> comma_
+       ;
+   AssignExp
+       -> CondExp
+      /-> UnaryExp '='   AssignExp									+> equals_
+      /-> UnaryExp '*='  AssignExp									+> muleq_
+      /-> UnaryExp '/='  AssignExp									+> diveq_
+      /-> UnaryExp '%='  AssignExp									+> modeq_
+      /-> UnaryExp '+='  AssignExp									+> addeq_
+      /-> UnaryExp '-='  AssignExp									+> subeq_
+      /-> UnaryExp '<<=' AssignExp									+> shleq_
+      /-> UnaryExp '>>=' AssignExp									+> shreq_
+      /-> UnaryExp '&='  AssignExp									+> andeq_
+      /-> UnaryExp '^='  AssignExp									+> xoreq_
+      /-> UnaryExp '|='  AssignExp									+> oreq_
+       ;
+	CondExp
+		-> CastExp
+      -> CondExp '?'  CondExp ':' CondExp							+> question_
+      -> CondExp '||' CondExp											+> or_
+      -> CondExp '&&' CondExp											+> and_
+      -> CondExp '|'  CondExp											+> bitor_
+      -> CondExp '^'  CondExp											+> bitxor_
+      -> CondExp '&'  CondExp											+> bitand_
+      -> CondExp '==' CondExp											+> eq_
+      -> CondExp '!=' CondExp											+> ne_
+      -> CondExp '<'  CondExp											+> lt_
+      -> CondExp '>'  CondExp											+> gt_
+      -> CondExp '<=' CondExp											+> le_
+      -> CondExp '>=' CondExp											+> ge_
+      -> CondExp '<<' CondExp											+> shl_
+      -> CondExp '>>' CondExp											+> shr_
+      -> CondExp '+'  CondExp											+> add_
+      -> CondExp '-'  CondExp											+> sub_
+      -> CondExp '*'  CondExp											+> mul_
+      -> CondExp '/'  CondExp											+> div_
+      -> CondExp '%'  CondExp											+> mod_
+      ;
+   CastExp
+      -> UnaryExp
+      -> '(' TypeName ')' CastExp									+> cast_
+      ;
+   UnaryExp
+      -> PostfixExp
+      -> '++' UnaryExp													+> preinc_
+      -> '--' UnaryExp													+> predec_
+      -> '~'  CastExp													+> complement_
+      -> '&'  CastExp													+> addressof_
+      -> '*'  CastExp													+> contentsof_
+      -> '+'  CastExp													+> positive_
+      -> '-'  CastExp													+> negative_
+      -> '!'  CastExp													+> not_
+      -> sizeof UnaryExp												+> sizeof_
+      -> sizeof '(' TypeName ')'										+> sizeof_
+      ;
+   PostfixExp
+      -> PrimaryExp
+      -> PostfixExp '[' Subscript ']'								+> array_
+      -> PostfixExp '.' Identifier									+> member_
+      -> PostfixExp '(' Args ')'										+> funccall_
+      -> PostfixExp '->' Identifier									+> ptrto_
+      -> PostfixExp '++'												+> postinc_
+      -> PostfixExp '--'												+> postdec_
+      ;
+   Subscript -> Exp														+> subscript_
+             ;
+   Args -> [AssignExp] /','...										+> arguments_
+        ;
+   PrimaryExp
+      -> <string>...														+> string_(1)
+      -> <constant>														+> const_(1)
+      -> Identifier														 
+      -> '(' Exp ')'														+> exp_
+      ;
+   Identifier -> <identifier>											+> identifier_(1)
+              ;
+	TypedefIdentifier -> <identifier>      					  =+> typedefidentifier_(1,{typedef})
+                     ;
+
+/*--- End. ---*/
+

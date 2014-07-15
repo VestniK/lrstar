@@ -1,0 +1,23 @@
+
+DFASTAR 6.3.006 Copyright 2014 Paul B Mann.
+
+Input     typedef.lgr 
+
+Grammar     1134 rules, 256 terminals, 36 nonterminals.
+              22 reductions added during 2459 traces.
+Conflicts      5 conflict states, 5 shift-reduce, 0 reduce-reduce.
+              60 states, after converting to a DFA.
+              10 states removed, 1228 comparisons.
+              50 states, in final DFA state machine.
+
+            rows   cols          matrix        list       vect      total
+T matrix      45 x   26 x 1 =     1,170 ->    1,030 +      406 =    1,436 
+Total                                         1,030 +      406 =    1,436
+
+0 min 0.046 sec, 97.330 MB, 3 warnings, 0 errors.
+
+Skeleton: ..\..\skl\lexer.cpp.skl
+Output:   typedef_lexer.cpp (157 lines)
+Skeleton: ..\..\skl\lexer.h.skl
+Output:   typedef_lexer.h (55 lines)
+

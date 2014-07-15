@@ -1,0 +1,20 @@
+
+// LR1 Grammar, tab=3. 
+
+   G -> S... <eof>
+
+   S -> c A1 t ';'
+     -> c A2 n ';'						
+     -> r A2 t ';'
+     -> r A1 n ';'
+
+   A1 -> a 
+   A2 -> a 
+
+/* End of grammar. */
+
+				 
+
+
+
+

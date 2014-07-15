@@ -1,0 +1,145 @@
+
+CONFLICTS REPORT:
+
+///////////////////////////// STATE 56 /////////////////////////////
+
+*   118 MakeNodeWithAction -> '*>' . NodeSpec BlankNodeAction 
+*   119 MakeNodeWithAction -> '*>' . NodeSpec NodeAction 
+*   130 NodeName -> . 
+
+Conflict on lookahead <alpha>, shift or reduce 130, choosing shift and goto state 219.
+
+Conflict impact: (9 states come here) x (1 conflicts) = 9.
+
+TRACE BACK from state 56:
+
+    //STATE   56 ////////////////////////////////////////////////////////////////
+    // rule  118 MakeNodeWithAction -> '*>' . NodeSpec BlankNodeAction 
+    // rule  119 MakeNodeWithAction -> '*>' . NodeSpec NodeAction 
+    // rule  130 NodeName -> . 
+    /////////////////////////////////////////////////////////////////////////////
+
+CHOICES for lookahead: <alpha>
+
+ 1. shift        <alpha>
+    goto     219
+
+    //STATE  219 ////////////////////////////////////////////////////////////////
+    // rule  129 NodeName -> <alpha> . 
+    /////////////////////////////////////////////////////////////////////////////
+
+ 2. reduce   130 NodeName -> . 
+    backto    56
+
+    //STATE   56 ////////////////////////////////////////////////////////////////
+    // rule  118 MakeNodeWithAction -> '*>' . NodeSpec BlankNodeAction 
+    // rule  119 MakeNodeWithAction -> '*>' . NodeSpec NodeAction 
+    // rule  130 NodeName -> . 
+    /////////////////////////////////////////////////////////////////////////////
+
+    goto      84
+
+    //STATE   84 ////////////////////////////////////////////////////////////////
+    // rule  118 MakeNodeWithAction -> '*>' NodeSpec . BlankNodeAction 
+    // rule  119 MakeNodeWithAction -> '*>' NodeSpec . NodeAction 
+    // rule  137 BlankNodeActionName -> . 
+    /////////////////////////////////////////////////////////////////////////////
+
+    shift        <alpha>
+    goto     223
+
+    //STATE  223 ////////////////////////////////////////////////////////////////
+    // rule  135 NodeActionName -> <alpha> . 
+    /////////////////////////////////////////////////////////////////////////////
+
+
+///////////////////////////// STATE 58 /////////////////////////////
+
+*   121 ParseActionMakeNodeWA -> '=*>' . PANodeSpec BlankParseAction BlankNodeAction 
+*   122 ParseActionMakeNodeWA -> '=*>' . PANodeSpec BlankParseAction NodeAction 
+*   133 PANodeName -> . 
+
+Conflict on lookahead <alpha>, shift or reduce 133, choosing shift and goto state 221.
+
+Conflict impact: (9 states come here) x (1 conflicts) = 9.
+
+TRACE BACK from state 58:
+
+    //STATE   58 ////////////////////////////////////////////////////////////////
+    // rule  121 ParseActionMakeNodeWA -> '=*>' . PANodeSpec BlankParseAction BlankNodeAction 
+    // rule  122 ParseActionMakeNodeWA -> '=*>' . PANodeSpec BlankParseAction NodeAction 
+    // rule  133 PANodeName -> . 
+    /////////////////////////////////////////////////////////////////////////////
+
+CHOICES for lookahead: <alpha>
+
+ 1. shift        <alpha>
+    goto     221
+
+    //STATE  221 ////////////////////////////////////////////////////////////////
+    // rule  132 PANodeName -> <alpha> . 
+    /////////////////////////////////////////////////////////////////////////////
+
+ 2. reduce   133 PANodeName -> . 
+
+///////////////////////////// STATE 83 /////////////////////////////
+
+*   128 NodeSpec -> NodeName . NNArgs 
+*   141 NNArgs -> . 
+
+Conflict on lookahead '(', shift or reduce 141, choosing shift and goto state 94.
+
+Conflict impact: (2 states come here) x (1 conflicts) = 2.
+
+TRACE BACK from state 83:
+
+    //STATE   83 ////////////////////////////////////////////////////////////////
+    // rule  128 NodeSpec -> NodeName . NNArgs 
+    // rule  141 NNArgs -> . 
+    /////////////////////////////////////////////////////////////////////////////
+
+CHOICES for lookahead: '('
+
+ 1. shift        '('
+    goto      94
+
+    //STATE   94 ////////////////////////////////////////////////////////////////
+    // rule  142 NNArgs -> '(' . ')' 
+    // rule  143 NNArgs -> '(' . FirstArg [',' (Arg | NoArg)]... ')' 
+    /////////////////////////////////////////////////////////////////////////////
+
+ 2. reduce   141 NNArgs -> . 
+
+///////////////////////////// STATE 86 /////////////////////////////
+
+*   131 PANodeSpec -> PANodeName . NNArgs 
+*   141 NNArgs -> . 
+
+Conflict on lookahead '(', shift or reduce 141, choosing shift and goto state 94.
+
+Conflict impact: (2 states come here) x (1 conflicts) = 2.
+
+TRACE BACK from state 86:
+
+    //STATE   86 ////////////////////////////////////////////////////////////////
+    // rule  131 PANodeSpec -> PANodeName . NNArgs 
+    // rule  141 NNArgs -> . 
+    /////////////////////////////////////////////////////////////////////////////
+
+CHOICES for lookahead: '('
+
+ 1. shift        '('
+    goto      94
+
+    //STATE   94 ////////////////////////////////////////////////////////////////
+    // rule  142 NNArgs -> '(' . ')' 
+    // rule  143 NNArgs -> '(' . FirstArg [',' (Arg | NoArg)]... ')' 
+    /////////////////////////////////////////////////////////////////////////////
+
+ 2. reduce   141 NNArgs -> . 
+
+/////////////////////////////////////////////////////////////////////
+
+CONFLICTS: 4 states, 4 shift-reduce, 0 reduce-reduce conflicts.
+Grammar is not LALR(1) and not LR(1).
+

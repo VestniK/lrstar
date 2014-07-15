@@ -1,0 +1,74 @@
+
+/* LRSTAR Lexical-Grammar Tokens. */	 
+
+	<alpha>              =>     1
+	<lexical>            =>     2
+	<escape>             =>     3
+	<literal>            =>     4
+	<string>             =>     5
+	<integer>            =>     6
+	<eof>                =>     7
+
+	'->'                 =>     8
+	'=>'                 =>     9
+	'('                  =>    10
+	')'                  =>    11
+	'+'                  =>    12
+	'*'                  =>    13
+	'?'                  =>    14
+	'..'                 =>    15
+	'|'                  =>    16
+	'-'                  =>    17
+	'[]'                 =>    18
+	'...'                =>    19
+	'['                  =>    20
+	']'                  =>    21
+	';'                  =>    22
+	'%%'                 =>    29
+
+	<spaces>				[]	
+	<commentline>		[]
+	<commentblock>		[]
+
+  	<eof>					-> \z
+
+	<alpha>     		-> alpha
+
+	<lexical>   		-> '<' alpha '>' 
+
+	<escape>				-> '\' letter
+
+	alpha       		-> (letter|'_') (letter|digit|'_')*
+
+	<integer>   		-> digit+
+
+	<literal>   		-> ''' ''' '''
+							-> ''' ' ' '''
+							-> ''' nonquote+  '''
+
+	<string>	   		-> '"' nondquote+ '"'
+
+	letter      		-> 'a'..'z' | 'A'..'Z'
+	digit       		-> '0'..'9'
+
+	nonquote				-> 33..254 - ''' 
+	nondquote			-> 32..254 - '"' 
+
+	<spaces>				-> ( \t | \n | ' ' )+
+	<commentline>		-> '/' '/' neol*
+  	<commentblock>		-> '/' '*' na* '*'+ (nans na* '*'+)* '/'												// Allows inside comments.
+// <commentblock>		-> '/' '*' nans* ('/' na nans*)* '*'+ (nans+ ('/' na nans*)* '*'+)* '/'		// Does not allow inside comments.
+
+	na             	-> any - '*'			// not asterisk
+	nans           	-> any - '*' - '/'	// not asterisk not slash
+	neol           	-> any - \n				// not end of line
+	any					-> 0..255 - \z			// any character except end of file
+
+	\t						->  9						// tab
+	\n						-> 10						// newline
+	\f						-> 12						// form feed
+	\r						-> 13						// return
+	\z						-> 26						// end of file
+
+/* End of Lexical Grammar. */
+

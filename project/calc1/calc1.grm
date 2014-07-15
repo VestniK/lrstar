@@ -1,0 +1,55 @@
+
+/* Calculator Grammar. */
+
+/* Input Tokens. */
+
+   <error>			=> error() ;  
+   <identifier>	=> lookup();   // Lookup & store in symbol table.
+   <integer>		=> lookup();   // Lookup & store in symbol table. 
+	<eof>				;
+
+/* Operator precedence. */
+
+   { '==' '!=' }  <<		// Lowest priority.    
+   { '+'  '-'  }  <<         
+   { '*'  '/'  }  <<		// Highest priority.
+
+/* Productions. */
+
+	Goal     -> Program... <eof>							   *> goal_()     emit ("\t\tSTART\n"     ,,"\t\tEOF\n")          
+             
+	Program  -> 'program' <identifier> '{' Stmt... '}'	*> program_(2) emit ("\t\tPROGRAM %s\n",,"\t\tEND PROGRAM %s\n")
+				
+   Stmt		-> Assignment
+				-> IfThen
+				-> IfElse
+				-> IfThenElse
+		
+	Assignment	~> Target '=' Exp ';'						*> assign_()   emit (         	,,"\t\tSTORE\n")         
+	IfThen		-> 'if' RelExp Then 'endif'				*> if_()       emit ("if&0:\n"	,,"endif&0:\n" )
+	IfElse		-> 'if' RelExp Else 'endif'				*> if_()       emit ("if&0:\n"	,,"endif&0:\n" )
+	IfThenElse	-> 'if' RelExp Then2 Else2 'endif'		*> if_()       emit ("if&0:\n"	,,"endif&0:\n" )
+              
+   Target   -> <identifier>									*> ident_(1)   emit (				,,"\t\tLADR %s\n")
+             
+   RelExp   -> Exp '==' Exp									*> eq_(2)      emit (				,,"\t\tEQ\n" ) 
+            -> Exp '!=' Exp									*> ne_(2)      emit (				,,"\t\tNE\n" ) 
+                                                        
+   Exp      -> Primary          
+            -> Exp '+' Exp										*> add_(2)     emit (				,,"\t\tADD\n") 
+            -> Exp '-' Exp										*> sub_(2)     emit (				,,"\t\tSUB\n") 
+            -> Exp '*' Exp									   *> mul_(2)     emit (				,,"\t\tMUL\n") 
+            -> Exp '/' Exp										*> div_(2)     emit (				,,"\t\tDIV\n") 
+             
+   Primary  -> <integer>										*> intr_(1)    emit (				,,"\t\tLOAD %s\n")
+            -> <identifier>									*> ident_(1)   emit (				,,"\t\tLOAD %s\n")
+            -> '(' Exp ')'  
+             
+   Then     -> 'then' Stmt...									*> then_()     emit ("\t\tBR NZ endif&1\nthen&1:\n",,)
+   Else     -> 'else' Stmt...									*> else_()     emit ("\t\tBR Z endif&1\nelse&1:\n" ,,)
+   Then2    -> 'then' Stmt...									*> then2_()    emit ("\t\tBR NZ else&1\nthen&1:\n" ,,)
+   Else2    -> 'else' Stmt...									*> else2_()    emit ("\t\tBR endif&1\nelse&1:\n"   ,,)
+
+/* End of Grammar. */
+
+

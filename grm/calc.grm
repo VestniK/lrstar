@@ -1,0 +1,50 @@
+
+/* Calc Grammar. */
+
+/* Input Tokens. */
+
+	ERROR    <error>			=> error();
+   IDENT    <identifier>	=> lookup();  // Lookup & store in symbol table.
+   INTEGER  <integer>		=> lookup();  // Lookup & store in symbol table. 
+   EOFILE   <eof>				;
+
+/* Operator precedence. */
+
+   { '==' '!=' }  <<    // Lowest priority.
+   { '+'  '-'  }  <<         
+   { '*'  '/'  }  <<    // Highest priority.
+
+/* Productions. */
+
+   Start    -> Program... <eof>				 					*> goal_		
+            
+	Program  -> 'program' <identifier> '{' Stmt... '}'		*> program_(2)
+            
+   Stmt     ~> Target '=' Exp ';'                  		*> store_			
+            -> 'if' RelExp Then 'endif'              		*> if_				
+            -> 'if' RelExp Else 'endif'              		*> if_				
+            -> 'if' RelExp Then2 Else2 'endif'       		*> if_				
+            
+   Target   -> <identifier>                           	*> target_(1)		
+            
+   RelExp   -> Exp '==' Exp                        		*> eq_				
+            -> Exp '!=' Exp                        		*> ne_				
+            
+   Exp      -> Primary
+				-> Exp '+' Exp                         		*> add_				
+            -> Exp '-' Exp                         		*> sub_				
+            -> Exp '*' Exp                         		*> mul_				
+            -> Exp '/' Exp                         		*> div_				
+            
+	Primary  -> <integer>                             		*> int_(1)			
+            -> <identifier>                           	*> ident_(1)		
+            -> '(' Exp ')'  
+            
+   Then     -> 'then' Stmt...                        		*> then_				
+   Else     -> 'else' Stmt...                        		*> else_				
+   Then2    -> 'then' Stmt...                        		*> then2_				
+   Else2    -> 'else' Stmt...                        		*> else2_				
+
+/* End of Grammar. */
+
+

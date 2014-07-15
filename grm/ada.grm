@@ -1,0 +1,670 @@
+
+/* Ada Grammar, by Paul B Mann, 1988, tabs=3. */
+
+/* TOKENS. */
+
+   <error>       => error ();
+   <identifier>  => lookup ();
+   <number>      => lookup ();
+   <string>      => lookup ();
+
+/* NONTERMINALS. */
+
+   Start
+     -> Units <eof>
+
+   Units
+     -> Unit
+     -> Units Unit
+
+   Unit
+     -> [Pragma]... [Context]... UnitType
+
+   Pragma
+     -> PRAGMA <identifier> ';'
+     -> PRAGMA <identifier> '(' ArgList ')' ';'
+
+   ArgList
+     -> Arg
+     -> ArgList ',' Arg
+
+   Arg
+     -> Exp
+     -> <identifier> '=>' Exp
+
+   Context
+     -> WithClause [UseClause]
+
+   WithClause
+     -> WITH NameList ';'
+
+   NameList
+     -> Name
+     -> NameList ',' Name
+
+   Name
+     -> OpSymbol
+     -> Attribute
+     -> IndexedComp
+     -> SelectedComp
+     -> FunctionCall
+     -> <identifier>
+
+   UseClause
+     -> USE NameList ';'
+
+   UnitType
+     -> Subunit
+     -> Subpgm
+     -> Package
+     -> SubpgmDecl
+     -> PackageDecl
+
+   Subunit
+     -> SEPARATE '(' Name ')' Body
+
+   Subpgm
+     -> SubpgmSpecIs DecltvPart BEGIN Stmts [Excp] END [Designator] ';'
+
+   Package
+     -> PACKAGE BODY <identifier> IS DecltvPart [BeginStmts] END [Identifier] ';'
+
+   SubpgmDecl
+     -> SubpgmSpec ';'
+     -> GenericSubpgmDecl
+     -> GenericSubpgmInst
+
+   PackageDecl
+     -> PackageSpec ';'
+     -> GenericPackageDecl
+     -> GenericPackageInst
+
+   SubtypeInd
+     -> Name
+     -> SubtypeIndWithConstr
+
+   SubtypeIndWithConstr
+     -> Name RangeConstr
+     -> Name AccuracyConstr
+
+   DerivedTypeDef
+     -> NEW SubtypeInd
+
+   RangeConstr
+     -> RANGE Range
+
+   Range
+     -> SimpleExp '..' SimpleExp
+
+   EnumTypeDef
+     -> '(' EnumLiteralList ')'
+
+   EnumLiteralList
+     -> EnumLiteral
+     -> EnumLiteralList ',' EnumLiteral
+
+   EnumLiteral
+     -> <identifier>
+     -> <string>
+
+   IntegerTypeDef
+     -> RangeConstr
+
+   RealTypeDef
+     -> AccuracyConstr
+
+   AccuracyConstr
+     -> FloatingPointConstr
+     -> FixedPointConstr
+
+   FloatingPointConstr
+     -> DIGITS SimpleExp [RangeConstr]
+
+   FixedPointConstr
+     -> DELTA SimpleExp [RangeConstr]
+
+   ArrayTypeDef
+     -> ARRAY '(' IndexList ')'   OF SubtypeInd
+     -> ARRAY IndexConstr OF SubtypeInd
+
+   IndexList
+     -> Index
+     -> IndexList ',' Index
+
+   Index
+     -> Name RANGE '<>'
+
+   IndexConstr
+     -> '(' DiscreteRangeList ')'
+
+   DiscreteRangeList
+     -> DiscreteRange
+     -> DiscreteRangeList ',' DiscreteRange
+
+   DiscreteRange
+     -> Name [RangeConstr]
+     -> Range
+
+   RecordTypeDef
+     -> RECORD CompList END RECORD
+
+   CompList
+     -> [CompDecl]... [VariantPart]
+     -> NULL ';'
+
+   CompDecl
+     -> DiscrDecl ';'
+     -> IdentifierList ':' ArrayTypeDef [Init] ';'
+
+   DiscrPart
+     -> '(' DiscrDeclList ')'
+
+   DiscrDeclList
+     -> DiscrDecl
+     -> DiscrDeclList ';' DiscrDecl
+
+   DiscrDecl
+     -> IdentifierList ':' SubtypeInd [Init]
+
+   VariantPart
+     -> CASE Name IS [Variant]... END CASE ';'
+
+   Variant
+     -> WHEN ChoiceList '=>' CompList
+
+   Choice
+     -> Range
+     -> SimpleExp
+     -> Name RangeConstr
+     -> OTHERS
+
+   ChoiceList
+     -> Choice
+     -> ChoiceList '|' Choice
+
+   AccessTypeDef
+     -> ACCESS SubtypeInd
+
+   IncompleteTypeDecl
+     -> TYPE <identifier> [DiscrPart] ';'
+
+   DecltvPart
+     -> [DecltvItem]... [ReprSpec]... [ProgramComp]...
+     -> [DecltvItem]... BodyOrStub [ProgramComp]...
+
+   DecltvItem
+     -> Decl
+     -> UseClause
+
+   Decl
+     -> Pragma
+     -> TypeDecl
+     -> TaskDecl
+     -> ExcpDecl
+     -> ObjectDecl
+     -> NumberDecl
+     -> PackageDecl
+     -> SubtypeDecl
+     -> RenamingDecl
+     -> SubpgmDecl
+
+   TypeDecl
+     -> TYPE <identifier> [DiscrPart] IS TypeDef ';'
+     -> IncompleteTypeDecl
+
+   TaskDecl
+     -> TaskSpec
+
+   ExcpDecl
+     -> <identifier> ':' EXCEPTION ';'
+
+   ObjectDecl
+     -> CompDecl
+     -> IdentifierList ':' CONSTANT SubtypeInd [Init] ';'
+     -> IdentifierList ':' CONSTANT ArrayTypeDef [Init] ';'
+
+   NumberDecl
+     -> IdentifierList ':' CONSTANT ':=' Exp ';'
+
+   SubtypeDecl
+     -> SUBTYPE <identifier> IS SubtypeInd ';'
+
+   RenamingDecl
+     -> SubpgmSpec RENAMES Name ';'
+     -> TASK <identifier> RENAMES Name ';'
+     -> PACKAGE <identifier> RENAMES Name ';'
+     -> <identifier> ':' Name RENAMES Name ';'
+     -> <identifier> ':' EXCEPTION RENAMES Name ';'
+
+   TypeDef
+     -> EnumTypeDef
+     -> IntegerTypeDef
+     -> RealTypeDef
+     -> ArrayTypeDef
+     -> RecordTypeDef
+     -> AccessTypeDef
+     -> DerivedTypeDef
+     -> PrivateTypeDef
+
+   Init
+     -> ':=' Exp
+
+   BodyOrStub
+     -> Body
+     -> BodyStub
+
+   ProgramComp
+     -> Body
+     -> TaskDecl
+     -> BodyStub
+     -> PackageDecl
+
+   Body
+     -> Subpgm
+     -> Package
+     -> Task
+
+   IndexedComp
+     -> Name '(' GeneralExpList ')'
+
+   GeneralExpList
+     -> GeneralExp
+     -> GeneralExpList ',' GeneralExp
+
+   GeneralExp
+     -> Exp
+     -> Range
+     -> ChoiceList '=>' Exp
+     -> ChoiceList '=>' SubtypeIndWithConstr
+     -> SubtypeIndWithConstr
+
+   SelectedComp
+     -> Name '.' ALL
+     -> Name '.' OpSymbol
+     -> Name '.' <identifier>
+
+   Attribute
+     -> Name '\'' <identifier>
+
+   Literal
+     -> <number>
+     -> <string>
+     -> NULL
+
+   Aggregate
+     -> '(' CompAssocList2 ')'
+     -> '(' ChoiceList '=>' Exp ')'
+
+   CompAssocList2
+     -> CompAssoc ',' CompAssoc
+     -> CompAssocList2 ',' CompAssoc
+
+   CompAssoc
+     -> Exp
+     -> ChoiceList '=>' Exp
+
+   Exp
+     -> OrExp
+     -> AndExp
+     -> XorExp
+     -> OrElseExp
+     -> AndThenExp
+     -> Relation
+
+   AndExp
+     -> Relation AND Relation
+     -> AndExp AND Relation
+
+   OrExp
+     -> Relation OR Relation
+     -> OrExp OR Relation
+
+   XorExp
+     -> Relation XOR Relation
+     -> XorExp XOR Relation
+
+   AndThenExp
+     -> Relation AND THEN Relation
+     -> AndThenExp AND THEN Relation
+
+   OrElseExp
+     -> Relation OR ELSE Relation
+     -> OrElseExp OR ELSE Relation
+
+   Relation
+     -> SimpleExp
+     -> SimpleExp RelOp SimpleExp
+     -> SimpleExp MembOp Range
+     -> SimpleExp MembOp SubtypeInd
+
+   MembOp
+     -> IN
+     -> NOT IN
+
+   SimpleExp
+     -> TermList
+     -> UnaryOp TermList
+
+   TermList
+     -> Term
+     -> TermList AddOp Term
+
+   Term
+     -> Factor
+     -> Term MultOp Factor
+
+   Factor
+     -> Primary
+     -> Primary '**' Primary
+
+   Primary
+     -> Name
+     -> Literal
+     -> QualExp
+     -> Aggregate
+     -> Allocator
+     -> '(' Exp ')'
+
+   RelOp -> ( '=' | '<' | '>' | '/=' | '<=' | '>=' )
+
+   AddOp -> ( '+' | '-' | '&' )
+
+   UnaryOp -> ( '+' | '-' | NOT )
+
+   MultOp -> ( '*' | '/' | MOD | REM )
+
+   QualExp
+     -> Name '\'' '(' Exp ')'
+     -> Name '\'' Aggregate
+
+   Allocator
+     -> NEW Name
+
+   Stmts
+     -> Stmt
+     -> Stmts Stmt
+
+   Stmt
+     -> Pragma
+     -> [Label]... SimpleStmt
+     -> [Label]... CompoundStmt
+
+   SimpleStmt
+     -> NullStmt
+     -> AssignStmt
+     -> ExitStmt
+     -> ReturnStmt
+     -> GotoStmt
+     -> CallStmt
+     -> DelayStmt
+     -> AbortStmt
+     -> RaiseStmt
+     -> CodeStmt
+
+   NullStmt
+     -> NULL ';'
+
+   AssignStmt
+     -> Name ':=' Exp ';'
+
+   ExitStmt
+     -> EXIT [Name] [When] ';'
+
+   ReturnStmt
+     -> RETURN ';'
+     -> RETURN Exp ';'
+
+   GotoStmt
+     -> GOTO Name ';'
+
+   CallStmt
+     -> Name ';'
+
+   DelayStmt
+     -> DELAY SimpleExp ';'
+
+   AbortStmt
+     -> ABORT NameList ';'
+
+   RaiseStmt
+     -> RAISE [Name] ';'
+
+   CodeStmt
+     -> QualExp ';'
+
+   CompoundStmt
+     -> IfStmt
+     -> CaseStmt
+     -> LoopStmt
+     -> Block
+     -> AcceptStmt
+     -> SelectStmt
+
+   Label
+     -> '<<' <identifier> '>>'
+
+   IfStmt
+     -> IF Condition THEN Stmts [ElseIf]... [Else] END IF ';'
+
+   ElseIf
+     -> ELSEIF Condition THEN Stmts
+
+   Else
+     -> ELSE Stmts
+
+   Condition
+     -> Exp
+
+   CaseStmt
+     -> CASE Exp IS [Alt]... END CASE ';'
+
+   Alt
+     -> WHEN ChoiceList '=>' Stmts
+
+   LoopStmt
+     -> [IterationClause] BasicLoop ';'
+     -> <identifier> ':' [IterationClause] BasicLoop <identifier> ';'
+
+   BasicLoop
+     -> LOOP Stmts END LOOP
+
+   IterationClause
+     -> FOR <identifier> IN DiscreteRange
+     -> FOR <identifier> IN REVERSE DiscreteRange
+     -> WHILE Condition
+
+   Block
+     -> [DeclPart] BEGIN Stmts [Excp] END ';'
+     -> <identifier> ':' [DeclPart] BEGIN Stmts [Excp] END <identifier> ';'
+
+   DeclPart
+     -> DECLARE DecltvPart
+
+   Excp
+     -> EXCEPTION [ExcpHandler]...
+
+   When
+     -> WHEN Condition
+
+   SubpgmSpec
+     -> PROCEDURE <identifier> [FormalPart]
+     -> FUNCTION  Designator   [FormalPart] RETURN SubtypeInd
+
+   SubpgmSpecIs
+     -> PROCEDURE <identifier> IS
+     -> PROCEDURE <identifier> FormalPart IS
+     -> FUNCTION  Designator   [FormalPart] RETURN SubtypeInd IS
+
+   Designator
+     -> <identifier>
+     -> OpSymbol
+
+   OpSymbol
+     -> <string>
+
+   FormalPart
+     -> '(' ParmDeclList ')'
+
+   ParmDeclList
+     -> ParmDecl
+     -> ParmDeclList ';' ParmDecl
+
+   ParmDecl
+     -> IdentifierList ':' [Mode] SubtypeInd [Init]
+
+   Mode
+     -> IN
+     -> OUT
+     -> IN OUT
+
+   FunctionCall
+     -> Name '(' ')'
+
+   PackageSpec
+     -> PACKAGE <identifier> IS [DecltvItem]... [PrivatePart] END [Identifier]
+
+   PrivatePart
+     -> PRIVATE [DecltvItem]... [ReprSpec]...
+
+   Identifier
+     -> <identifier>
+
+   BeginStmts
+     -> BEGIN Stmts [Excp]
+
+   PrivateTypeDef
+     -> PRIVATE
+     -> LIMITED PRIVATE
+
+   TaskSpec
+     -> TASK <identifier> TaskSpecifier
+     -> TASK TYPE <identifier> TaskSpecifier
+
+   TaskSpecifier
+     -> ';'
+     -> IS [EntryDecl]... [ReprSpec]... END [Identifier] ';'
+
+   Task
+     -> TASK BODY <identifier> IS DecltvPart BEGIN Stmts [Excp] END [Identifier] ';'
+
+   EntryDecl
+     -> ENTRY <identifier> [FormalPart] ';'
+     -> ENTRY <identifier> '(' DiscreteRange ')' [FormalPart] ';'
+
+   EntryCall
+     -> CallStmt
+
+   AcceptStmt
+     -> ACCEPT EntryName [FormalPart] ';'
+     -> ACCEPT EntryName [FormalPart] DO Stmts END [Identifier] ';'
+
+   EntryName
+     -> <identifier>
+     -> OpSymbol
+     -> EntryName '(' Exp ')'
+     -> EntryName '.' OpSymbol
+     -> EntryName '.' <identifier>
+
+   SelectStmt
+     -> SelectiveWait
+     -> TimedEntryCall
+     -> ConditionalEntryCall
+
+   SelectiveWait
+     -> SELECT [Cond] [Select]... [Else] END SELECT ';'
+
+   Select
+     -> OR [Cond] SelectAlt
+
+   Cond
+     -> WHEN Condition '=>'
+
+   SelectAlt
+     -> TERMINATE ';'
+     -> AcceptStmt [Stmt]...
+     -> DelayStmt  [Stmt]...
+
+   ConditionalEntryCall
+     -> SELECT EntryCall [Stmt]... ELSE Stmts END SELECT ';'
+
+   TimedEntryCall
+     -> SELECT EntryCall [Stmt]... OR DelayStmt [Stmts]... END SELECT ';'
+
+   BodyStub
+     -> SubpgmSpecIs SEPARATE ';'
+     -> PACKAGE BODY <identifier> IS SEPARATE ';'
+     -> TASK BODY    <identifier> IS SEPARATE ';'
+
+   ExcpHandler
+     -> WHEN ExcpChoiceList '=>' Stmts
+
+   ExcpChoiceList
+     -> ExcpChoice
+     -> ExcpChoiceList '|' ExcpChoice
+
+   ExcpChoice
+     -> Name
+     -> OTHERS
+
+   GenericSubpgmDecl
+     -> GenericPart SubpgmSpec ';'
+
+   GenericPackageDecl
+     -> GenericPart PackageSpec ';'
+
+   GenericPart
+     -> GENERIC
+     -> GenericPart GenericFormalParm
+
+   GenericFormalParm
+     -> ParmDecl ';'
+     -> WITH SubpgmSpec ';'
+     -> WITH SubpgmSpecIs '<>' ';'
+     -> WITH SubpgmSpecIs Name ';'
+     -> TYPE <identifier> [DiscrPart] IS GenericTypeDef ';'
+
+   GenericTypeDef
+     -> '(' '<>' ')'
+     -> RANGE '<>'
+     -> DELTA '<>'
+     -> DIGITS '<>'
+     -> ArrayTypeDef
+     -> AccessTypeDef
+     -> PrivateTypeDef
+
+   GenericSubpgmInst
+     -> FUNCTION  Designator   IS GenericInst ';'
+     -> PROCEDURE <identifier> IS GenericInst ';'
+
+   GenericPackageInst
+     -> PACKAGE <identifier> IS GenericInst ';'
+
+   GenericInst
+     -> NEW Name
+
+   ReprSpec
+     -> LengthSpec
+     -> RecordTypeRepr
+     -> AddressSpec
+
+   LengthSpec
+     -> FOR Name USE Exp ';'
+
+   RecordTypeRepr
+     -> FOR Name USE RECORD [AlignClause] [LocList] END RECORD ';'
+
+   AddressSpec
+     -> FOR Name USE AT SimpleExp ';'
+
+   AlignClause
+     -> AT MOD SimpleExp ';'
+
+   LocList
+     -> Name AT SimpleExp RANGE Range ';'
+
+   IdentifierList
+     -> <identifier>
+     -> IdentifierList ',' <identifier>
+
+/* END. */
+

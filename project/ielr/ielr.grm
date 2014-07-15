@@ -1,0 +1,75 @@
+   
+/* IELR grammar, an LR(2) grammar taken from the paper: 
+   IELR(1): Practical LR(1) Parser Tables for Non-LR(1) Grammars with Conflict Resolution.
+   by Joel E. Denny and Brian A. Malloy, Clemson University.
+*/
+
+/* Operator precedence. */
+
+   { a } <<     // a is left associative.
+
+/* Productions. */
+
+   G -> S+ <eof>
+
+   S -> a A a ';'
+     -> b A b ';'
+
+   A -> a 
+     -> a a
+
+/* Notes:
+
+   Yacc and Bison use the left associativity specification:
+
+      %left a
+
+   to resolve a shift-reduce conflict found in the LALR(1) state:
+
+      A -> a .    { a, b }  // reduce for lookahead 'a'
+      A -> a . a  { a, b }  // shift  for lookahead 'a'
+
+   where { a, b } are the possible lookahead symbols for a production.  
+   Bison can create an LR(1) state machine which simplifies the 
+   conflict state to this: 
+
+      A -> a .    { a }
+      A -> a . a  { a }
+
+   The left associativity of 'a' will force the parser generator
+   to ignore the situation:
+
+      A -> a . a  { a }
+
+   which means that you are now recognizing the language defined by 
+   this modified grammar:
+
+      G -> S... <eof>
+
+      S -> a A a ';'
+        -> b A b ';'
+        -> b X b ';'
+
+      A -> a 
+
+      X -> a a
+
+   LRSTAR treats the left associativity of 'a' as having no influence,
+   because no production of the form:
+
+      X -> X a X 
+
+   is present in the grammar.  This stricter interpretation of left 
+   associativity means that no "side effects" will occur which 
+   changes the literal meaning of a grammar.  
+   
+   If you want to use LRSTAR to define the same language Bison recognizes 
+   (when given the original grammar with left associativity), you would 
+   use the modified grammar shown above.
+
+   If you want to use LRSTAR to recognize the language specified by the 
+   original grammar, you should use the "nd=2" option.
+
+*/
+
+/* End of grammar */

@@ -1,0 +1,462 @@
+/*
+   C++ grammar
+*/
+
+   <error>      => error();
+   <identifier> => lookup();  /*--- Symbol table and keyword lookup. ---*/
+   <constant>   => lookup();
+   <string>     => lookup();
+
+/*--- Operator Precedence. ---*/
+
+	{ '?'                     } <<
+	{ '||'                    } <<
+	{ '&&'                    } <<
+	{ '|'                     } <<
+	{ '^'                     } <<
+	{ '&'                     } <<
+	{ '=='  '!='              } <<
+	{ '<'   '>'   '<='   '>=' } <<
+	{ '<<'  '>>'              } <<
+	{ '+'   '-'               } <<
+	{ '*'   '/'   '%'         } <<
+
+/*---  A.3 Declarations  ---*/
+
+   Start
+      -> [ExtDeclaration]... <eof>      => process()
+
+   ExtDeclaration
+      -> DeclSpec...                ';'
+      -> DeclSpec... DeclaratorList ';'
+      ->             DeclaratorList ';'
+      -> FuncDefinition
+      -> AsmDeclaration
+      -> LinkageSpec
+
+   IntDeclaration
+      -> DeclSpec...                ';'
+      -> DeclSpec... DeclaratorList ';'
+      -> AsmDeclaration
+      -> LinkageSpec
+
+   DeclSpec
+      -> TypeSpec
+      -> friend
+      -> typedef
+      -> auto
+      -> register
+      -> static
+      -> extern
+      -> inline
+      -> virtual
+
+   TypeSpec
+      -> enum EnumName
+      -> const
+      -> volatile
+      -> EnumSpec
+      -> ClassSpec
+      -> SimpleTypeName
+
+   SimpleTypeName
+      -> ClassName
+      -> TypeDefName
+      -> char
+      -> short
+      -> int
+      -> long
+      -> signed
+      -> unsigned
+      -> float
+      -> double
+      -> void
+
+   ClassKey
+      -> class
+      -> struct
+      -> union
+
+   EnumSpec
+      -> enum [<identifier>] '(' EnumList ')'
+
+   EnumList
+      -> Enumerator /','...
+
+   Enumerator
+      -> <identifier>
+      -> <identifier> '=' ConstantExp
+
+   LinkageSpec
+      -> extern <string> '{' [DeclarationList] '}'
+      -> extern <string> Declaration
+
+   DeclarationList
+      -> Declaration /';'...
+
+   AsmDeclaration
+      -> asm '(' <string> ')' ';'
+
+/*---  A.4 Declarators  ---*/
+
+   DeclaratorList
+      -> InitDeclarator /','...
+
+   InitDeclarator
+      -> Declarator [Init]
+
+   Declarator
+      -> Name
+      -> PtrOper Declarator
+      -> Declarator '(' ArgDeclarationList ')' [CvQualifierList]
+      -> Declarator '[' [ConstantExp] ']'
+      -> '(' Declarator ')'
+
+   PtrOper
+      -> '*' [CvQualifierList]
+      -> '&' [CvQualifierList]
+      -> ClassName '::' '*' [CvQualifierList]
+
+   CvQualifierList
+      -> const
+      -> volatile
+
+   TypeName
+      -> TypeSpec
+      -> TypeSpec AbsDeclarator
+
+   AbsDeclarator
+      -> PtrOper
+      -> PtrOper AbsDeclarator
+      -> AbsDeclarator '(' ArgDeclarationList ')' [CvQualifierList]
+      -> AbsDeclarator '[' [ConstantExp] ']'
+      -> '(' ArgDeclarationList ')' [CvQualifierList]
+      -> '[' [ConstantExp] ']'
+      -> '(' AbsDeclarator ')'
+
+   ArgDeclarationList
+      ->
+      -> '...'
+      -> ArgDeclaration /','...
+      -> ArgDeclaration /','... '...'
+      -> ArgDeclaration /','... ',' '...'
+
+   Declaration
+      -> DeclSpec... Declarator
+
+   ArgDeclaration
+      -> DeclSpec... Declarator
+      -> DeclSpec... Declarator '=' Exp
+      -> DeclSpec... [AbsDeclarator]
+      -> DeclSpec... [AbsDeclarator] '=' Exp
+
+   FuncDefinition
+      -> DeclSpec... Declarator [CtorInit] Funcbody
+      ->             Declarator [CtorInit] Funcbody
+
+   Funcbody
+      -> CompoundStmt
+
+   InitList
+      -> Exp
+      -> InitList ',' Exp
+      -> '{' InitList [','] '}'
+
+   Init
+      -> '=' Exp
+      -> '=' '{' InitList [','] '}'
+      -> '(' Exp ')'
+
+/*---  A.5 Class Declarations  ---*/
+
+   ClassSpec
+      -> ClassKey                                   '{' [MemberList] '}'
+      -> ClassKey              ':' BaseSpec /','... '{' [MemberList] '}'
+      -> ClassKey ClassName                         '{' [MemberList] '}'
+      -> ClassKey ClassName    ':' BaseSpec /','... '{' [MemberList] '}'
+      -> ClassKey <identifier>                      '{' [MemberList] '}'
+      -> ClassKey <identifier> ':' BaseSpec /','... '{' [MemberList] '}'
+
+   MemberList
+      -> MemberDeclaration [MemberList]
+      -> AccessSpec    ':' [MemberList]
+
+   MemberDeclaration
+      ->               ';'
+      -> FuncDefinition
+      -> FuncDefinition ';'
+      -> QualName ';'
+      ->               MemberDeclaratorList ';'
+      -> DeclSpec...                        ';'
+      -> DeclSpec...   MemberDeclaratorList ';'
+
+   MemberDeclaratorList
+      -> MemberDeclarator...
+
+   MemberDeclarator
+      -> Declarator
+      -> Declarator PureSpec
+      -> <identifier> ':' ConstantExp
+      -> ':' ConstantExp
+
+   PureSpec
+      -> '=' '0'
+
+   BaseSpec
+      -> ClassName
+      -> virtual [AccessSpec] ClassName
+      -> AccessSpec [virtual] ClassName
+
+   AccessSpec
+      -> private
+      -> protected
+      -> public
+
+   ConvFuncName
+      -> Operator ConvTypeName
+
+   ConvTypeName
+      -> TypeSpec
+      -> TypeSpec PtrOper
+
+   CtorInit
+      -> ':' MemInitList
+
+   MemInitList
+      -> MemInit /','...
+
+   MemInit
+      -> ClassName '(' [Exp] ')'
+      -> <identifier> '(' [Exp] ')'
+
+   OperFuncName
+      -> operator Oper
+
+   Oper
+      -> new
+      -> delete
+      -> '+'
+      -> '-'
+      -> '*'
+      -> '/'
+      -> '%'
+      -> '^'
+      -> '&'
+      -> '|'
+      -> '~'
+      -> '!'
+      -> '='
+      -> '<'
+      -> '>'
+      -> '+='
+      -> '-='
+      -> '*='
+      -> '/='
+      -> '%='
+      -> '^='
+      -> '&='
+      -> '|='
+      -> '<<'
+      -> '>>'
+      -> '>>='
+      -> '<<='
+      -> '=='
+      -> '!='
+      -> '<='
+      -> '>='
+      -> '&&'
+      -> '||'
+      -> '++'
+      -> '--'
+      -> ','
+      -> '->*'
+      -> '->'
+
+/*---  A.6 Stmts  ---*/
+
+   Stmt
+      -> LabeledStmt
+      -> ExpStmt
+      -> CompoundStmt
+      -> SelectionStmt
+      -> IterationStmt
+      -> JumpStmt
+      -> IntDeclaration
+
+   LabeledStmt
+      -> <identifier> ':' Stmt
+      -> case ConstantExp ':' Stmt
+      -> default ':' Stmt
+
+   ExpStmt
+      -> [Exp] ';'
+
+   CompoundStmt
+      -> '{' [StmtList] '}'
+
+   StmtList
+      -> Stmt...
+
+   SelectionStmt
+      -> if '(' Exp ')' Stmt
+      -> if '(' Exp ')' Stmt else Stmt
+      -> switch '(' Exp ')' Stmt
+
+   IterationStmt
+      -> while '(' Exp ')' Stmt
+      -> do Stmt while '(' Exp ')'
+      -> for '(' ForInitStmt [Exp] ';' [Exp] ')' Stmt
+
+   ForInitStmt
+      -> ExpStmt
+      -> Declaration
+
+   JumpStmt
+      -> break ';'
+      -> continue ';'
+      -> return [Exp] ';'
+      -> goto <identifier> ';'
+
+/*---  A.2 Exps  ---*/
+
+   Exp
+      -> AssignExp /','...
+
+   AssignExp
+      -> CondExp
+      -> UnaryExp '='   AssignExp
+      -> UnaryExp '*='  AssignExp
+      -> UnaryExp '/='  AssignExp
+      -> UnaryExp '%='  AssignExp
+      -> UnaryExp '+='  AssignExp
+      -> UnaryExp '-='  AssignExp
+      -> UnaryExp '>>=' AssignExp
+      -> UnaryExp '<<=' AssignExp
+      -> UnaryExp '&='  AssignExp
+      -> UnaryExp '^='  AssignExp
+      -> UnaryExp '|='  AssignExp 
+
+   ConstantExp
+      -> CondExp
+
+   CondExp
+      -> PmExp
+      -> CondExp '?'  CondExp ':' CondExp
+      -> CondExp '||' CondExp
+      -> CondExp '&&' CondExp
+      -> CondExp '|'  CondExp
+      -> CondExp '^'  CondExp
+      -> CondExp '&'  CondExp
+      -> CondExp '==' CondExp
+      -> CondExp '!=' CondExp
+      -> CondExp '<'  CondExp
+      -> CondExp '>'  CondExp
+      -> CondExp '<=' CondExp
+      -> CondExp '>=' CondExp
+      -> CondExp '<<' CondExp
+      -> CondExp '>>' CondExp
+      -> CondExp '+'  CondExp
+      -> CondExp '-'  CondExp
+      -> CondExp '*'  CondExp
+      -> CondExp '/'  CondExp
+      -> CondExp '%'  CondExp
+
+   PmExp
+      -> CastExps
+      -> PmExp '.*' CastExps
+      -> PmExp '->*' CastExps
+
+   CastExps
+      -> UnaryExp
+      -> CastExp CastExps
+
+   CastExp
+      -> '(' TypeName ')'
+
+   UnaryExp
+      -> PostfixExp
+      -> '++' UnaryExp
+      -> '--' UnaryExp
+      -> '*'  CastExps
+      -> '&'  CastExps
+      -> '+'  CastExps
+      -> '-'  CastExps
+      -> '!'  CastExps
+      -> '~'  CastExps
+      -> sizeof UnaryExp
+      -> sizeof CastExp
+      -> AllocationExp
+      -> DeallocationExp
+
+   AllocationExp
+      -> ['::'] new [Placement] RestTypeName
+      -> ['::'] new [Placement] RestTypeName Init
+      -> ['::'] new [Placement] CastExp
+      -> ['::'] new [Placement] CastExp Init
+
+   Placement
+      -> '(' Exp ')'
+
+   RestTypeName
+      -> TypeSpec
+      -> TypeSpec RestDeclarator
+
+   RestDeclarator
+      -> PtrOper
+      -> PtrOper RestDeclarator
+      -> RestDeclarator '[' Exp ']'
+
+   DeallocationExp
+      -> ['::'] delete                    CastExps
+      -> ['::'] delete '[' Exp ']' CastExps
+
+   PostfixExp
+      -> PrimaryExp
+      -> SimpleTypeName '(' [Exp] ')'
+      -> PostfixExp '[' Exp ']'
+      -> PostfixExp '(' [Exp] ')'
+      -> PostfixExp '.' Name
+      -> PostfixExp '->' Name
+      -> PostfixExp '++'
+      -> PostfixExp '--'
+
+   PrimaryExp
+      -> Literal
+      -> this
+      -> '::' <identifier>
+      -> '::' OperFuncName
+      -> '(' Exp ')'
+      -> Name
+
+   Name
+      -> <identifier>
+      -> OperFuncName
+      -> ConvFuncName
+      -> QualName
+
+   QualName
+      -> ClassName '::' <identifier>
+      -> ClassName '::' OperFuncName
+      -> ClassName '::' ConvFuncName
+      -> ClassName '::' ClassName
+      -> ClassName '::' '~' ClassName
+
+   Literal
+      -> <constant>
+      -> <string>
+      -> '0'
+
+   ClassName
+      -> {classname}   
+
+   TypeDefName
+      -> {typedefname}
+
+   EnumName
+      -> {enumname}
+
+   Operator
+      -> {operator}
+
+/*--- End. ---*/
+

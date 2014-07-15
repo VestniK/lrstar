@@ -1,0 +1,477 @@
+
+STATE MACHINE LISTING:
+
+      +=>  Shift and goto next state.
+      +<=  Shift and reduce.
+       <=  Reduce.
+
+///////////////////////////// STATE 0 /////////////////////////////
+//
+// *    0  Start -> . Program... <eof> 
+
+           'program'             +=>    2
+
+           Program               +<=   21
+           Program...            +=>    1
+
+///////////////////////////// STATE 1 /////////////////////////////
+//
+// *    0  Start -> Program... . <eof> 
+// *   22  Program... -> Program... . Program 
+
+           <eof>                 +=>   36
+           'program'             +=>    2
+
+           Program               +<=   22
+
+Came from: 0
+
+///////////////////////////// STATE 2 /////////////////////////////
+//
+// *    1  Program -> 'program' . <identifier> '{' Stmt... '}' 
+
+           <identifier>          +=>    3
+
+Came from: 0 1
+
+///////////////////////////// STATE 3 /////////////////////////////
+//
+// *    1  Program -> 'program' <identifier> . '{' Stmt... '}' 
+
+           '{'                   +=>    4
+
+Came from: 2
+
+///////////////////////////// STATE 4 /////////////////////////////
+//
+// *    1  Program -> 'program' <identifier> '{' . Stmt... '}' 
+
+           <identifier>          +<=    6
+           'if'                  +=>    7
+
+           Stmt                  +<=   23
+           Target                +=>    5
+           Stmt...               +=>    6
+
+Came from: 3
+
+///////////////////////////// STATE 5 /////////////////////////////
+//
+// *    2  Stmt -> Target . '=' Exp ';' 
+
+           '='                   +=>    8
+
+Came from: 4 6 16 17 26 27 28 35
+
+///////////////////////////// STATE 6 /////////////////////////////
+//
+// *    1  Program -> 'program' <identifier> '{' Stmt... . '}' 
+// *   24  Stmt... -> Stmt... . Stmt 
+
+           <identifier>          +<=    6
+           '}'                   +<=    1
+           'if'                  +=>    7
+
+           Stmt                  +<=   24
+           Target                +=>    5
+
+Came from: 4
+
+///////////////////////////// STATE 7 /////////////////////////////
+//
+// *    3  Stmt -> 'if' . RelExp Then 'endif' 
+// *    4  Stmt -> 'if' . RelExp Else 'endif' 
+// *    5  Stmt -> 'if' . RelExp Then2 Else2 'endif' 
+
+           <identifier>          +<=   15
+           <integer>             +<=   14
+           '('                   +=>   11
+
+           RelExp                +=>    9
+           Exp                   +=>   10
+           Primary               +<=    9
+
+Came from: 4 6 16 17 26 27 28 35
+
+///////////////////////////// STATE 8 /////////////////////////////
+//
+// *    2  Stmt -> Target '=' . Exp ';' 
+
+           <identifier>          +<=   15
+           <integer>             +<=   14
+           '('                   +=>   11
+
+           Exp                   +=>   12
+           Primary               +<=    9
+
+Came from: 5
+
+///////////////////////////// STATE 9 /////////////////////////////
+//
+// *    3  Stmt -> 'if' RelExp . Then 'endif' 
+// *    4  Stmt -> 'if' RelExp . Else 'endif' 
+// *    5  Stmt -> 'if' RelExp . Then2 Else2 'endif' 
+
+           'then'                +=>   16
+           'else'                +=>   17
+
+           Then                  +=>   13
+           Else                  +=>   14
+           Then2                 +=>   15
+
+Came from: 7
+
+///////////////////////////// STATE 10 /////////////////////////////
+//
+// *    7  RelExp -> Exp . '==' Exp 
+// *    8  RelExp -> Exp . '!=' Exp 
+// *   10  Exp -> Exp . '+' Exp 
+// *   11  Exp -> Exp . '-' Exp 
+// *   12  Exp -> Exp . '*' Exp 
+// *   13  Exp -> Exp . '/' Exp 
+
+           '=='                  +=>   18
+           '!='                  +=>   19
+           '+'                   +=>   20
+           '-'                   +=>   21
+           '*'                   +=>   22
+           '/'                   +=>   23
+
+Came from: 7
+
+///////////////////////////// STATE 11 /////////////////////////////
+//
+// *   16  Primary -> '(' . Exp ')' 
+
+           <identifier>          +<=   15
+           <integer>             +<=   14
+           '('                   +=>   11
+
+           Exp                   +=>   24
+           Primary               +<=    9
+
+Came from: 7 8 11 18 19 20 21 22 23
+
+///////////////////////////// STATE 12 /////////////////////////////
+//
+// *    2  Stmt -> Target '=' Exp . ';' 
+// *   10  Exp -> Exp . '+' Exp 
+// *   11  Exp -> Exp . '-' Exp 
+// *   12  Exp -> Exp . '*' Exp 
+// *   13  Exp -> Exp . '/' Exp 
+
+           '+'                   +=>   20
+           '-'                   +=>   21
+           '*'                   +=>   22
+           '/'                   +=>   23
+           ';'                   +<=    2
+
+Came from: 8
+
+///////////////////////////// STATE 13 /////////////////////////////
+//
+// *    3  Stmt -> 'if' RelExp Then . 'endif' 
+
+           'endif'               +<=    3
+
+Came from: 9
+
+///////////////////////////// STATE 14 /////////////////////////////
+//
+// *    4  Stmt -> 'if' RelExp Else . 'endif' 
+
+           'endif'               +<=    4
+
+Came from: 9
+
+///////////////////////////// STATE 15 /////////////////////////////
+//
+// *    5  Stmt -> 'if' RelExp Then2 . Else2 'endif' 
+
+           'else'                +=>   26
+
+           Else2                 +=>   25
+
+Came from: 9
+
+///////////////////////////// STATE 16 /////////////////////////////
+//
+// *   17  Then -> 'then' . Stmt... 
+// *   19  Then2 -> 'then' . Stmt... 
+
+           <identifier>          +<=    6
+           'if'                  +=>    7
+
+           Stmt                  +<=   23
+           Target                +=>    5
+           Stmt...               +=>   27
+
+Came from: 9
+
+///////////////////////////// STATE 17 /////////////////////////////
+//
+// *   18  Else -> 'else' . Stmt... 
+
+           <identifier>          +<=    6
+           'if'                  +=>    7
+
+           Stmt                  +<=   23
+           Target                +=>    5
+           Stmt...               +=>   28
+
+Came from: 9
+
+///////////////////////////// STATE 18 /////////////////////////////
+//
+// *    7  RelExp -> Exp '==' . Exp 
+
+           <identifier>          +<=   15
+           <integer>             +<=   14
+           '('                   +=>   11
+
+           Exp                   +=>   29
+           Primary               +<=    9
+
+Came from: 10
+
+///////////////////////////// STATE 19 /////////////////////////////
+//
+// *    8  RelExp -> Exp '!=' . Exp 
+
+           <identifier>          +<=   15
+           <integer>             +<=   14
+           '('                   +=>   11
+
+           Exp                   +=>   30
+           Primary               +<=    9
+
+Came from: 10
+
+///////////////////////////// STATE 20 /////////////////////////////
+//
+// *   10  Exp -> Exp '+' . Exp 
+
+           <identifier>          +<=   15
+           <integer>             +<=   14
+           '('                   +=>   11
+
+           Exp                   +=>   31
+           Primary               +<=    9
+
+Came from: 10 12 24 29 30 31 32 33 34
+
+///////////////////////////// STATE 21 /////////////////////////////
+//
+// *   11  Exp -> Exp '-' . Exp 
+
+           <identifier>          +<=   15
+           <integer>             +<=   14
+           '('                   +=>   11
+
+           Exp                   +=>   32
+           Primary               +<=    9
+
+Came from: 10 12 24 29 30 31 32 33 34
+
+///////////////////////////// STATE 22 /////////////////////////////
+//
+// *   12  Exp -> Exp '*' . Exp 
+
+           <identifier>          +<=   15
+           <integer>             +<=   14
+           '('                   +=>   11
+
+           Exp                   +=>   33
+           Primary               +<=    9
+
+Came from: 10 12 24 29 30 31 32 33 34
+
+///////////////////////////// STATE 23 /////////////////////////////
+//
+// *   13  Exp -> Exp '/' . Exp 
+
+           <identifier>          +<=   15
+           <integer>             +<=   14
+           '('                   +=>   11
+
+           Exp                   +=>   34
+           Primary               +<=    9
+
+Came from: 10 12 24 29 30 31 32 33 34
+
+///////////////////////////// STATE 24 /////////////////////////////
+//
+// *   10  Exp -> Exp . '+' Exp 
+// *   11  Exp -> Exp . '-' Exp 
+// *   12  Exp -> Exp . '*' Exp 
+// *   13  Exp -> Exp . '/' Exp 
+// *   16  Primary -> '(' Exp . ')' 
+
+           '+'                   +=>   20
+           '-'                   +=>   21
+           '*'                   +=>   22
+           '/'                   +=>   23
+           ')'                   +<=   16
+
+Came from: 11
+
+///////////////////////////// STATE 25 /////////////////////////////
+//
+// *    5  Stmt -> 'if' RelExp Then2 Else2 . 'endif' 
+
+           'endif'               +<=    5
+
+Came from: 15
+
+///////////////////////////// STATE 26 /////////////////////////////
+//
+// *   20  Else2 -> 'else' . Stmt... 
+
+           <identifier>          +<=    6
+           'if'                  +=>    7
+
+           Stmt                  +<=   23
+           Target                +=>    5
+           Stmt...               +=>   35
+
+Came from: 15
+
+///////////////////////////// STATE 27 /////////////////////////////
+//
+// *   24  Stmt... -> Stmt... . Stmt 
+// *   17  Then -> 'then' Stmt... . 
+// *   19  Then2 -> 'then' Stmt... . 
+
+           <identifier>          +<=    6
+           'if'                  +=>    7
+           'endif'                <=   17
+           'else'                 <=   19
+
+           Stmt                  +<=   24
+           Target                +=>    5
+
+Came from: 16
+
+///////////////////////////// STATE 28 /////////////////////////////
+//
+// *   24  Stmt... -> Stmt... . Stmt 
+// *   18  Else -> 'else' Stmt... . 
+
+           <identifier>          +<=    6
+           'if'                  +=>    7
+           (default)              <=   18
+
+           Stmt                  +<=   24
+           Target                +=>    5
+
+Came from: 17
+
+///////////////////////////// STATE 29 /////////////////////////////
+//
+// *   10  Exp -> Exp . '+' Exp 
+// *   11  Exp -> Exp . '-' Exp 
+// *   12  Exp -> Exp . '*' Exp 
+// *   13  Exp -> Exp . '/' Exp 
+// *    7  RelExp -> Exp '==' Exp . 
+
+           '+'                   +=>   20
+           '-'                   +=>   21
+           '*'                   +=>   22
+           '/'                   +=>   23
+           (default)              <=    7
+
+Came from: 18
+
+///////////////////////////// STATE 30 /////////////////////////////
+//
+// *   10  Exp -> Exp . '+' Exp 
+// *   11  Exp -> Exp . '-' Exp 
+// *   12  Exp -> Exp . '*' Exp 
+// *   13  Exp -> Exp . '/' Exp 
+// *    8  RelExp -> Exp '!=' Exp . 
+
+           '+'                   +=>   20
+           '-'                   +=>   21
+           '*'                   +=>   22
+           '/'                   +=>   23
+           (default)              <=    8
+
+Came from: 19
+
+///////////////////////////// STATE 31 /////////////////////////////
+//
+// *   10  Exp -> Exp . '+' Exp 
+// *   11  Exp -> Exp . '-' Exp 
+// *   12  Exp -> Exp . '*' Exp 
+// *   13  Exp -> Exp . '/' Exp 
+// *   10  Exp -> Exp '+' Exp . 
+
+           '*'                   +=>   22
+           '/'                   +=>   23
+           (default)              <=   10
+
+Came from: 20
+
+///////////////////////////// STATE 32 /////////////////////////////
+//
+// *   10  Exp -> Exp . '+' Exp 
+// *   11  Exp -> Exp . '-' Exp 
+// *   12  Exp -> Exp . '*' Exp 
+// *   13  Exp -> Exp . '/' Exp 
+// *   11  Exp -> Exp '-' Exp . 
+
+           '*'                   +=>   22
+           '/'                   +=>   23
+           (default)              <=   11
+
+Came from: 21
+
+///////////////////////////// STATE 33 /////////////////////////////
+//
+// *   10  Exp -> Exp . '+' Exp 
+// *   11  Exp -> Exp . '-' Exp 
+// *   12  Exp -> Exp . '*' Exp 
+// *   13  Exp -> Exp . '/' Exp 
+// *   12  Exp -> Exp '*' Exp . 
+
+           (default)              <=   12
+
+Came from: 22
+
+///////////////////////////// STATE 34 /////////////////////////////
+//
+// *   10  Exp -> Exp . '+' Exp 
+// *   11  Exp -> Exp . '-' Exp 
+// *   12  Exp -> Exp . '*' Exp 
+// *   13  Exp -> Exp . '/' Exp 
+// *   13  Exp -> Exp '/' Exp . 
+
+           (default)              <=   13
+
+Came from: 23
+
+///////////////////////////// STATE 35 /////////////////////////////
+//
+// *   24  Stmt... -> Stmt... . Stmt 
+// *   20  Else2 -> 'else' Stmt... . 
+
+           <identifier>          +<=    6
+           'if'                  +=>    7
+           (default)              <=   20
+
+           Stmt                  +<=   24
+           Target                +=>    5
+
+Came from: 26
+
+///////////////////////////// STATE 36 /////////////////////////////
+//
+// *    0  Start -> Program... <eof> . 
+
+           (default)              <=    0
+
+Came from: 1
+
+//
+////////////////////////////////////////////////////////////////////
+

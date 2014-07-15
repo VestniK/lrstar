@@ -1,0 +1,116 @@
+calc1_parser
+Parsing test.input.txt ...
+
+     2  program test
+     3  {
+     4        if a == 0 
+     5        then 
+     6           if x == 0 
+     7           then b = 10;     
+     8           else b = 20;     
+     9           endif
+    10        else 
+    11           if x == 1 
+    12           then b = 30;     
+    13           else b = 40;     
+    14           endif
+    15        endif
+    16  }
+
+Symbol Table ...
+
+  sti  leng  type  term  
+    1     4     0     1   <identifier>                    test
+    2     1     0     1   <identifier>                    a
+    3     1     0     2   <integer>                       0
+    4     1     0     1   <identifier>                    x
+    5     1     0     1   <identifier>                    b
+    6     2     0     2   <integer>                       10
+    7     2     0     2   <integer>                       20
+    8     1     0     2   <integer>                       1
+    9     2     0     2   <integer>                       30
+   10     2     0     2   <integer>                       40
+
+Abstract Syntax Tree ...
+
+  node  prev  next parent child  line   sti 
+    32     0     0      0    31     0     0   + goal_
+    31     0     0     32    30     0     1     + program_ (test)
+    30     0     0     31     3     0     0       + if_
+     3     0    16     30     1     0    -4         + eq_ ('==')
+     1     0     2      3     0     4     2         | + ident_ (a)
+     2     1     0      0     0     4     3         | + intr_ (0)
+    16     3    29      0    15     0     0         + then2_
+    15     0     0     16     6     0     0         | + if_
+     6     0    10     15     4     0    -4         |   + eq_ ('==')
+     4     0     5      6     0     6     4         |   | + ident_ (x)
+     5     4     0      0     0     6     3         |   | + intr_ (0)
+    10     6    14      0     9     0     0         |   + then2_
+     9     0     0     10     8     0     0         |   | + assign_
+     8     0     7      9     0     7     6         |   |   + intr_ (10)
+     7     8     0      0     0     7     5         |   |   + ident_ (b)
+    14    10     0      0    13     0     0         |   + else2_
+    13     0     0     14    12     0     0         |     + assign_
+    12     0    11     13     0     8     7         |       + intr_ (20)
+    11    12     0      0     0     8     5         |       + ident_ (b)
+    29    16     0      0    28     0     0         + else2_
+    28     0     0     29    19     0     0           + if_
+    19     0    23     28    17     0    -4             + eq_ ('==')
+    17     0    18     19     0    11     4             | + ident_ (x)
+    18    17     0      0     0    11     8             | + intr_ (1)
+    23    19    27      0    22     0     0             + then2_
+    22     0     0     23    21     0     0             | + assign_
+    21     0    20     22     0    12     9             |   + intr_ (30)
+    20    21     0      0     0    12     5             |   + ident_ (b)
+    27    23     0      0    26     0     0             + else2_
+    26     0     0     27    25     0     0               + assign_
+    25     0    24     26     0    13    10                 + intr_ (40)
+    24    25     0      0     0    13     5                 + ident_ (b)
+
+Output ...
+
+		START
+		PROGRAM test
+if1:
+		LOAD a
+		LOAD 0
+		EQ
+		BR NZ else1
+then1:
+if2:
+		LOAD x
+		LOAD 0
+		EQ
+		BR NZ else2
+then2:
+		LOAD 10
+		LADR b
+		STORE
+		BR endif2
+else2:
+		LOAD 20
+		LADR b
+		STORE
+endif2:
+		BR endif1
+else1:
+if3:
+		LOAD x
+		LOAD 1
+		EQ
+		BR NZ else3
+then3:
+		LOAD 30
+		LADR b
+		STORE
+		BR endif3
+else3:
+		LOAD 40
+		LADR b
+		STORE
+endif3:
+endif1:
+		END PROGRAM test
+		EOF
+
+End of Output.
