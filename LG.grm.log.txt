@@ -20,7 +20,7 @@ Total                                           339 +      448 =      787
 Skeleton: LGParser.h.skl
 Output:   LGParser.h (124 lines)
 Skeleton: LGParser.cpp.skl
-Output:   LGParser.cpp (864 lines)
+Output:   LGParser.cpp (860 lines)
 
 Symbols                             135  "/sym   =     20,000"    1 % 
 States                              130  "/sta   =    300,000"    0 % 

@@ -326,26 +326,6 @@ int   PGParseAction::errordecl_ (int prod)
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 
-int   PGParseAction::lexer_ (int p)
-{
-		int x;
-      x = arg_numb [pact_arg[p]];
-		if (x == 1) 
-		{
-			lexer_input    = token.end;		// Set lexer grammar start.	
-			while (*lexer_input != '\n') lexer_input++;
-			lexer_linenumb = line_numb;
-			token.end      = token.start;		// Backup to '%%'
-			*token.start++ = 26;					// Change '%%' to <eof><eof>
-			*token.start   = 26;
-		}
-		else lexer_input = 0;
-		return 0;
-}
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-
 int   PGParseAction::options_ (int prod)
 {
 		char *p, *opt, c;

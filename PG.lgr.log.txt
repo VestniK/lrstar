@@ -17,7 +17,7 @@ Total                                         1,951 +     526 =    2,477
 Skeleton: PGLexer.h.skl
 Output:   PGLexer.h (42 lines)
 Skeleton: PGLexer.cpp.skl
-Output:   PGLexer.cpp (253 lines)
+Output:   PGLexer.cpp (254 lines)
 
 Symbols                             318  "/sym   =     10,000"    3 % 
 Productions                       2,163  "/pro   =     50,000"    4 % 
@@ -34,4 +34,4 @@ Lookbacks                         5,953  "/lb    =  2,000,000"    0 %
 Includes                            126  "/inc   =    200,000"    0 % 
 Child nodes in graph             11,883  "/ch    =    200,000"    6 % 
 
-0 min 0.078 sec, 33.608 MB, 0 warnings, 0 errors.
+0 min 0.046 sec, 33.608 MB, 0 warnings, 0 errors.

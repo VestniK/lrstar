@@ -266,7 +266,7 @@ int   LGParser::parse ()                        // LR Parser.
       int p;												// Production.  
       int x;												// State.  
 
-		LGLexer::init ();									// Initialize lexer.
+		LGLexer::init_lexer ();							// Initialize lexer.
       PS = P_stack;										// Set parse stack pointer.   
       n_errors = 0;										// Set number of errors.    
       x = 0;												// Set state to zero.
@@ -288,10 +288,6 @@ Cont:	if (tact_numb[t] >= 0)							// If input action ...
          T_start = token.start;						// Set token start.
          T_end   = token.end;							// Set token end.
          t = (*tact_func[tact_numb [t]]) (t, tact_arg[t]);	// Call token action.  
-		//	if (t != t1 && tact_numb[t] >= 0)		// Secondary token action (not needed at this time).
-		//	{
-	   //    t = (*tact_func[tact_numb [t]]) (t, tact_arg[t]);	// Call token action.  
-		//	}
       }
 	/*	if (0)
 		{
@@ -409,9 +405,9 @@ void  LGParser::syntax_error (int t)
 			do 
 			{
 				for (ls--; *ls != '\n'; ls--);
-				ls++;
 			}
 			while (token.start < ls);
+			ls++;
 		}
 		le = prt_line (ls, ln);
 		prt_pointer (ls, ln, token.start);

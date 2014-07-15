@@ -5,7 +5,7 @@
 		#ifdef DFASTAR
       char* program = "DFASTAR";
 		#endif
-      char* version = "6.3.007";
+      char* version = "6.3.008";
       char* copywrt = "Copyright 2014 Paul B Mann";
 
 		#ifdef  _DEBUG
@@ -43,7 +43,7 @@
 			"o",			"Optimize parser speed",										PG_OPTIMIZE,			0,
 			"q",			"Quiet mode, minimal screen display",						PG_QUIET,				0,
 			"rr",			"Reduce-reduce conflicts only",								PG_REDUCEONLY,			0,
-			"s",			"State machine listing (1, 2)",								PG_STATELIST,			0,
+			"s",			"State machine listing (1,2)",								PG_STATELIST,			0,
 		//	"sra",		"Shift-Reduce Actions in parser",							PG_SHIFTREDUCE,		1,
 			"tab",		"Tab setting in grammar (2,3,4)",							PG_TAB,					3,
 			"v",			"Verbose mode, output more information",					PG_VERBOSE,				1,

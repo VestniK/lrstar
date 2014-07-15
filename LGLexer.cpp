@@ -103,7 +103,7 @@
 //                                                                           // 
 //    init                                                                   //
 
-void  LGLexer::init () // General purpose lexer.
+void  LGLexer::init_lexer () // General purpose lexer.
 {
 		int i;
 		line_numb  = 1;
@@ -113,20 +113,20 @@ void  LGLexer::init () // General purpose lexer.
 		token.end  = line_start;
   		line_ptr[line_numb] = input_start + 1;
 		tab = optn[LG_TAB];
-		if (max_char_set == 128)
+/*		if (max_char_set == 128)
 		{
 			for (i = 128; i < 256; i++)
 			{
 				Tc[i] = Tc[0]; // Make higher characters an error.
 			}
-		}
+		}  */
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           // 
 //    term                                                                   //
 
-void  LGLexer::term () // General purpose lexer.
+void  LGLexer::term_lexer () // General purpose lexer.
 {
 		/* Nothing */
 }

@@ -26,8 +26,8 @@
 
 			static int    get_token ();
 			static int    get_lookahead ();
-			static void   init ();
-			static void   term ();
+			static void   init_lexer ();
+			static void   term_lexer ();
 			static void   prt_line ();
 
 			static char* token_name[1];

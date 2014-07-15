@@ -155,6 +155,7 @@
       // Production actions ...
          static int   	EOGI (int, int);
          static int   	PRO_OPTNS (int, int);
+         static int   	pro_optns (int, int);
          static int   	ADD_TAIL (int, int);
          static int   	PUSH_UNDEF (int, int);
          static int   	PUSH_TAIL (int, int);

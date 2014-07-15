@@ -47,7 +47,7 @@
 													   
 /*--- Token Definitions ---*/
 
-	PP						-> '%%'											=> EOGI(0)
+	PP 					-> '%%'											=> EOGI(0)
 
    TokenProd      	-> Token ReturnValue 
                   	-> Token ReturnValue ';' 

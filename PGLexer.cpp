@@ -27,6 +27,7 @@
 void  PGLexer::init_lexer (char* input_start) 
 {
 		tab = optn[PG_TAB]; 
+		line_pos    = 0;
 		line_numb   = 1;
 		token.end   = input_start+1;
 		line_start  = input_start+1;

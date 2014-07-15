@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="LRSTAR 6.3.007"
+	Name="LRSTAR 6.4.001"
 	ProjectGUID="{EA5645D7-512C-454E-8B96-1D2F01E5F755}"
 	RootNamespace="LALR 6.0.025"
 	TargetFrameworkVersion="131072"
@@ -696,7 +696,7 @@
 					>
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="make_lrstar&#x0D;&#x0A;"
+						CommandLine="make&#x0D;&#x0A;"
 						Outputs="PG.grm.log.txt"
 					/>
 				</FileConfiguration>
@@ -711,7 +711,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="DFASTAR_Debug|Win32"
-					ExcludedFromBuild="true"
 					>
 					<Tool
 						Name="VCCustomBuildTool"

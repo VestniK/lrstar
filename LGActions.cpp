@@ -221,45 +221,19 @@ int   LGActions::checkstring (int t, int a)
 
 int   LGActions::EOGI (int t, int a)                                   
 {
-#ifdef LRSTAR
-		if (lexer_input) // %% found in .grm file?
-		{
-			strcpy (gft, ".grm");
-			strcpy (grmfid, gdn);
-			strcat (grmfid, gfn);
-			strcat (grmfid, gft);
-			token.start = lexer_input;
-			token.end   = lexer_input;
-			line_start  = lexer_input;
-			line_numb   = lexer_linenumb;	
-		}
-		else // %% found in .lgr file!
-		{
-			/* nothing */
-		}
-	  	line_ptr    = PG::line_ptr; 
-		input_start = PG::input_start;
-		input_end   = PG::input_end;
-#else  
 		if (lexer_input == 0) // %% found in .lex file?
 		{
 			strcpy (gft, ".lgr");
 			strcpy (grmfid, gdn);
 			strcat (grmfid, gfn);
 			strcat (grmfid, gft);
-
 			if (!inputi ()) return 0;
-
-			token.start = input_start+1;
-			token.end   = input_start+1;
-			line_start  = input_start+1;
-			line_numb   = 1;	
+			init_lexer ();
 		}
 		else // %% found in .lgr file!
 		{
 			/* nothing */
 		}
-#endif
 		return (0);
 }
 
@@ -312,8 +286,23 @@ int   LGActions::arrow (int t, int a) // New version
 
 ////////////////////////////////////////////////////////////////////////////////
 //                                                                            //
+//    Process Options and Initialize Actions.
 
 int   LGActions::PRO_OPTNS (int prod, int a) 
+{
+      if (pro_optns (prod, a) == 0) // Success?
+		{
+			init ();	// Paction initialization. 
+			return (0);
+		}
+		return (1);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//                                                                            //
+//    process options code.
+
+int   LGActions::pro_optns (int prod, int a) 
 {
 		int  rc = 0, x, OK;
 		char *p, *opt, c;
@@ -349,7 +338,6 @@ Top:			while (*p == ' ' || *p == '\t' || *p == ',') p++;   // bypass spaces, tab
 Done:	if (rc > 0) return 1;
 		rc = CheckOptions ();
 		if (rc == 0) return 1;	// error
-		init ();						// Paction initialization. 
 		return (0);
 }
 

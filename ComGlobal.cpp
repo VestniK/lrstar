@@ -1132,32 +1132,6 @@ void  T_GRAPH (char **g, int nr, int nc) // Traverse graph, do transitive closur
       FREE (N, nr);
 }
 
-void  P_GRAPH (char** graph, int nr, int nc) // Print graph.
-{
-      int r, c;
-      printf ("\nGraph [%d x %d]\n", nr, nc);
-		printf ("     ");
-      for (c = 0; c < nc; c++)
-      {
-         printf ("%3d", c);
-		}
-      printf ("\n");
-      for (r = 0; r < nr; r++)
-      {
-         printf ("%3d: ", r);
-         for (c = 0; c < nc; c++)
-         {
-				#ifdef USINGBITS
-            ifbit2(graph, r, c) printf ("  1");
-				#else
-            if (graph[r][c])    printf ("  1");
-				#endif
-				else                printf ("  0");
-         }
-	      printf ("\n");
-      }
-}
-
 void  TRAVERSE (int x) // Traverse node x in a graph.
 {
       int i;                           // Index of a child node. 
@@ -1189,6 +1163,32 @@ void  TRAVERSE (int x) // Traverse node x in a graph.
             if (y == x) break;            // If we are back to the root.
             FASTCPY (graph [x], graph [y], nw); // Copy set x to set y.
          }
+      }
+}
+
+void  P_GRAPH (char** graph, int nr, int nc) // Print graph.
+{
+      int r, c;
+      printf ("\nGraph [%d x %d]\n", nr, nc);
+		printf ("     ");
+      for (c = 0; c < nc; c++)
+      {
+         printf ("%3d", c);
+		}
+      printf ("\n");
+      for (r = 0; r < nr; r++)
+      {
+         printf ("%3d: ", r);
+         for (c = 0; c < nc; c++)
+         {
+				#ifdef USINGBITS
+            ifbit2(graph, r, c) printf ("  1");
+				#else
+            if (graph[r][c])    printf ("  1");
+				#endif
+				else                printf ("  0");
+         }
+	      printf ("\n");
       }
 }
 

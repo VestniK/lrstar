@@ -75,34 +75,24 @@ int   LG::Start (int na, char *arg []) /* Display program information. */
 		strcat (grmfid, gfn);
 		strcat (grmfid, gft);
 
-		if (lexer_input == 0) // Lexical grammar not part of .grm file?
-		{
-			filedesc = open (grmfid, 0); // Open .lex file first. 
-			if (filedesc < 0) // .lex file not found?
-			{
-				strcpy (gft, ".lgr");
-				strcpy (grmfid, gdn);
-				strcat (grmfid, gfn);
-				strcat (grmfid, gft);
-				if (!inputi ()) return 0;
-				lex_input_start = 0;
-				lex_input_end   = 0;
-				lex_line_ptr    = 0;
-			}
-			else
-			{
-				if (!inputi ()) return 0;
-				lex_input_start = input_start;
-				lex_input_end   = input_end;
-				lex_line_ptr    = line_ptr;
-			}
-		}
-		else
+		filedesc = open (grmfid, 0);	// Open .lex file first. 
+		if (filedesc >= 0)				// .lex file found!
 		{
 			if (!inputi ()) return 0;
 			lex_input_start = input_start;
 			lex_input_end   = input_end;
 			lex_line_ptr    = line_ptr;
+		}
+		else
+		{
+			strcpy (gft, ".lgr");
+			strcpy (grmfid, gdn);
+			strcat (grmfid, gfn);
+			strcat (grmfid, gft);
+			if (!inputi ()) return 0;
+			lex_input_start = 0;
+			lex_input_end   = 0;
+			lex_line_ptr    = 0;
 		}
 
 		for (i = 0; i < 159; i++) spaces [i] = ' ';

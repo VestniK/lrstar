@@ -1,5 +1,5 @@
 
-LRSTAR 6.3.006 Copyright 2014 Paul B Mann.
+LRSTAR 6.4.000 Copyright 2014 Paul B Mann.
 
 Input     calc1.grm /d /g /w 
 
@@ -17,7 +17,7 @@ N matrix       9 x   16 x 1 =       144 ->       87 +       66 =      153
 R matrix       2 x    3 x 1 =         5 ->        5 +       58 =       63  
 Total                                           160 +      261 =      421
 
-0 min 0.063 sec, 94.585 MB, 0 warnings, 0 errors.
+0 min 0.000 sec, 94.585 MB, 0 warnings, 0 errors.
 
 Skeleton: ..\..\skl\parser.cpp.skl
 Output:   calc1_parser.cpp (1,299 lines)
