@@ -5,4 +5,4 @@ set(SKELS
   parser.cpp.skl
 )
 
-install(FILES ${SKELS} DESTINATION share/${PROJECT_NAME}/skels/original)
+install(FILES ${SKELS} DESTINATION share/${PROJECT_NAME}/skels/pbmann)
