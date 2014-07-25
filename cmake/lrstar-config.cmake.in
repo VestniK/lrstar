@@ -11,7 +11,7 @@ set(LRSTAR_SKELS_PATH @SKELS_PATH@)
 macro(lrstar_grammar outVar grammarName skelType skelPath)
   if ("${skelType}" STREQUAL "SKEL")
     set(__skel_full_path ${LRSTAR_SKELS_PATH}/${skelPath})
-  elseif("${skelType}" STREQUAL "SKEL")
+  elseif("${skelType}" STREQUAL "CUSTOM_SKEL")
     set(__skel_full_path ${skelPath})
   endif()
   add_custom_command(
