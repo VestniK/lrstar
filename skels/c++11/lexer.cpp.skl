@@ -77,10 +77,10 @@ const @strings.t; Lexer::string[@strings.d;] =
 void Lexer::start(const char *input)
 {
 @optn_col?;...
-    colnumb = 1;
+    column = 1;
 @@
 @optn_line?;...
-    linenumb = 1;
+    line = 1;
 @@
     token.end = input;
 }
@@ -93,24 +93,24 @@ int Lexer::next() // Medium lexer.
         currState = 0;
         token.start = token.end;
 @optn_line?;...
-        token.linenumb = linenumb;
+        token.line = line;
 @@
 @optn_col?;...
-        token.colnumb = colnumb;
+        token.column = column;
 @@
         while ((nextState = Tm[Tr[currState] + Tc[(uint8_t)*token.end]]) > 0) {
             currState = nextState;
 @optn_line?;...
             if (*token.end == '\n') {
-                ++linenumb;
+                ++line;
 @optn_col?;...
-                colnumb = 0;
+                column = 0;
 @@
             }
 @@
             ++token.end;
 @optn_col?;...
-            ++colnumb;
+            ++column;
 @@
         }
     } while (terminal[currState] < 0); // Ignore whitespace.
@@ -126,24 +126,24 @@ int Lexer::next() // Small lexer.
         state = 0;
         token.start = token.end;
 @optn_line?;...
-        token.linenumb = linenumb;
+        token.line = line;
 @@
 @optn_col?;...
-        token.colnumb = colnumb;
+        token.column = column;
 @@
         while (Bm[Br[state] + Bc[(uint8_t)*token.end]]) {
             state = Tm[Tr [state] + Tc[(uchar)*token.end]];
 @optn_line?;...
             if (*token.end == '\n') {
-                ++linenumb;
+                ++line;
 @optn_col?;...
-                colnumb = 0;
+                column = 0;
 @@
             }
 @@
             ++token.end;
 @optn_col?;...
-            ++colnumb;
+            ++column;
 @@
         }
     } while (terminal[state] < 0); // Ignore whitespace.

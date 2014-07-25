@@ -16,10 +16,10 @@ struct Token
     const char* start;
     const char* end;
 @optn_line?;...
-    int linenumb;
+    int line;
 @@
 @optn_col?;...
-    int colnumb;
+    int column;
 @@
 };
 
@@ -42,10 +42,10 @@ public:
 private:
     Token token;
 @optn_line?;...
-    int linenumb;
+    int line;
 @@
 @optn_col?;...
-    int colnumb;
+    int column;
 @@
 
     static const int tab;
