@@ -74,13 +74,20 @@ const @strings.t; Lexer::string[@strings.d;] =
 
 @@
 // DFASTAR Lexer.
-void Lexer::start(const char *input)
-{
+void Lexer::start(
+    const char *input
+@optn_line?;...
+    , int line
+@@
 @optn_col?;...
-    column = 1;
+    , int column
+@@
+) {
+@optn_col?;...
+    this->column = column;
 @@
 @optn_line?;...
-    line = 1;
+    this->line = line;
 @@
     token.end = input;
 }
@@ -151,4 +158,85 @@ int Lexer::next() // Small lexer.
 }
 
 @@
+TokenSequence::TokenSequence(const Token &begin, const Token &end)
+{
+    setBegin(begin);
+    setEnd(end);
+}
+
+void TokenSequence::setBegin(const Token &begin)
+{
+    beginPos = begin.start;
+@optn_line?;...
+    line = begin.line;
+@@
+@optn_col?;...
+    column = begin.column;
+@@
+}
+
+void TokenSequence::setEnd(const Token &end)
+{
+    endPos = end.end;
+}
+
+TokenSequence::iterator TokenSequence::begin() const
+{
+    return iterator(
+        beginPos
+@optn_line?;...
+        , line
+@@
+@optn_col?;...
+        , column
+@@
+    );
+}
+
+TokenSequence::iterator TokenSequence::end() const
+{
+    return iterator(endPos);
+}
+
+TokenSequence::iterator::iterator(
+    const char *begin
+    , int line
+    , int colunm
+):
+    end(nullptr)
+{
+    lexer.start(
+        begin
+@optn_line?;...
+        , line
+@@
+@optn_col?;...
+        , colunm
+@@
+    );
+    lexer.next();
+}
+
+TokenSequence::iterator::iterator(const char *end): end(end)
+{
+}
+
+bool TokenSequence::iterator::operator!=(const TokenSequence::iterator &other) const
+{
+    const char * const thisEnd = end ? end : lexer.currentToken().end;
+    const char * const otherEnd = other.end ? other.end : other.lexer.currentToken().end;
+    return thisEnd != otherEnd;
+}
+
+const Token &TokenSequence::iterator::operator*() const
+{
+    return lexer.currentToken();
+}
+
+TokenSequence::iterator &TokenSequence::iterator::operator++()
+{
+    lexer.next();
+    return *this;
+}
+
 } // namespace @grm_name;

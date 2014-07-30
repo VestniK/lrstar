@@ -28,7 +28,15 @@ class Lexer
 public:
     Lexer() {}
 
-    void start(const char *input);
+    void start(
+        const char *input
+@optn_line?;...
+        , int line = 1
+@@
+@optn_col?;...
+        , int column = 1
+@@
+    );
     int next();
     const Token &currentToken() const {return token;}
 
@@ -67,6 +75,51 @@ private:
     static const @tmat_col. 6t; Tc[]; // Terminal transition matrix column (displacement).
 
     static const @term_numb.6t; terminal[]; // Terminal-symbol number for symbol recognized.
+};
+
+// Lexer wrapper to iterate over tokens with iterators and foreach loop.
+class TokenSequence
+{
+public:
+    TokenSequence(const Token &begin, const Token &end);
+
+    class iterator {
+    public:
+        bool operator!= (const iterator &other) const;
+        const Token &operator* () const;
+        iterator &operator++ ();
+
+    private:
+        friend class TokenSequence;
+        iterator(
+            const char *begin
+@optn_line?;...
+            , int line
+@@
+@optn_col?;...
+            , int colunm
+@@
+        );
+        iterator(const char *end);
+
+        Lexer lexer;
+        const char *end;
+    };
+
+    void setBegin(const Token &begin);
+    void setEnd(const Token &end);
+
+    iterator begin() const;
+    iterator end() const;
+
+private:
+    const char *beginPos, *endPos;
+@optn_line?;...
+    int line;
+@@
+@optn_col?;...
+    int column;
+@@
 };
 
 } // namespace @grm_name;
