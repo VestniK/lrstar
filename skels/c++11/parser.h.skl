@@ -43,8 +43,7 @@ struct StackFrame
     int state;
     int symbol; // Symbol stacked, terminal (positive) or nonterminal (negative).
     int symbolIndex; // TODO: rename to represent that it's term not symbol and document possible values
-    const char *start;
-    const char *end;
+    TokenSequence tokens;
 @numb_node?;...
     std::shared_ptr<Node> node;
 @@

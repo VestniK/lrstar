@@ -116,8 +116,7 @@ void Parser::parse(const char *input)
 @numb_node?;...
                 stack[stackTop].node = nullptr;
 @@
-                stack[stackTop].start = lexer.currentToken().start;
-                stack[stackTop].end = lexer.currentToken().end;
+                stack[stackTop].tokens = TokenSequence(lexer.currentToken());
                 stateNum = Tm[Tr[stateNum] + Tc[termSymb]]; // Get next state from terminal transition matrix.
                 while (stateNum <= 0) // While shift-reduce actions.
                     reduce(-stateNum);
@@ -165,7 +164,7 @@ void Parser::reduce(int prodRule)
 @numb_node?;...
         stack[stackTop].node = nullptr;
 @@
-        stack[stackTop].end = stack[stackTop].start = lexer.currentToken().start;
+        stack[stackTop].tokens = TokenSequence();
     }
 @numb_node?;...
     switch (nodeNumber[prodRule]) {
@@ -181,9 +180,9 @@ void Parser::reduce(int prodRule)
 @@
 @@
     if (stackTop < oldTop) {
-        stack[stackTop].end = stack[oldTop].end;
+        stack[stackTop].tokens.join(stack[oldTop].tokens);
 @optn_debug?;...
-        printf("===> Reduction %d matched the following text:\n%.*s\n", prodRule, (int)(stack[stackTop].end - stack[stackTop].start), stack[stackTop].start);
+        printf("===> Reduction %d matched the following text:\n%s\n", prodRule, std::string(stack[stackTop].tokens).c_str());
 @@
     }
     // Reduce stack

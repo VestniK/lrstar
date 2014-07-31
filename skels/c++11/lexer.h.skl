@@ -7,7 +7,8 @@
 #ifndef @grm_name;_lexer_h
 #define @grm_name;_lexer_h
 
-#include <stdint.h>
+#include <cstdint>
+#include <string>
 
 namespace @grm_name; {
 
@@ -21,6 +22,8 @@ struct Token
 @optn_col?;...
     int column;
 @@
+
+    inline operator std::string () const {return std::string(start, end - start);}
 };
 
 class Lexer
@@ -112,6 +115,9 @@ public:
 
     void setFirst(const Token &first);
     void setLast(const Token &last);
+    void join(const TokenSequence &other);
+
+    inline operator std::string () const {return std::string(beginPos, endPos - beginPos);}
 
     iterator begin() const;
     iterator end() const;

@@ -208,6 +208,20 @@ void TokenSequence::setLast(const Token &last)
 @@
 }
 
+void TokenSequence::join(const TokenSequence &other)
+{
+    if (other.beginPos < beginPos) {
+@optn_line?;...
+        line = other.line;
+@@
+@optn_col?;...
+        column = other.column;
+@@
+        beginPos = other.beginPos;
+    }
+    endPos = std::max(endPos, other.endPos);
+}
+
 TokenSequence::iterator TokenSequence::begin() const
 {
     return iterator(
