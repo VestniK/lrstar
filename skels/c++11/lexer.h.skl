@@ -81,7 +81,11 @@ private:
 class TokenSequence
 {
 public:
-    TokenSequence(const Token &begin, const Token &end);
+    TokenSequence();
+    // Create sequence containing single element
+    TokenSequence(const Token &elem);
+    // Create sequence from token first to token last includiong both of them
+    TokenSequence(const Token &first, const Token &last);
 
     class iterator {
     public:
@@ -92,7 +96,7 @@ public:
     private:
         friend class TokenSequence;
         iterator(
-            const char *begin
+            const char *begin, const char *end
 @optn_line?;...
             , int line
 @@
@@ -100,14 +104,14 @@ public:
             , int colunm
 @@
         );
-        iterator(const char *end);
+        iterator();
 
         Lexer lexer;
         const char *end;
     };
 
-    void setBegin(const Token &begin);
-    void setEnd(const Token &end);
+    void setFirst(const Token &first);
+    void setLast(const Token &last);
 
     iterator begin() const;
     iterator end() const;

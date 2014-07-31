@@ -158,32 +158,60 @@ int Lexer::next() // Small lexer.
 }
 
 @@
-TokenSequence::TokenSequence(const Token &begin, const Token &end)
-{
-    setBegin(begin);
-    setEnd(end);
-}
-
-void TokenSequence::setBegin(const Token &begin)
-{
-    beginPos = begin.start;
+TokenSequence::TokenSequence():
+    beginPos(nullptr), endPos(nullptr)
 @optn_line?;...
-    line = begin.line;
+    , line(0)
 @@
 @optn_col?;...
-    column = begin.column;
+    , column(0)
 @@
+{
 }
 
-void TokenSequence::setEnd(const Token &end)
+TokenSequence::TokenSequence(const Token &elem)
 {
-    endPos = end.end;
+    setFirst(elem);
+    endPos = elem.end;
+}
+
+TokenSequence::TokenSequence(const Token &begin, const Token &end)
+{
+    setFirst(begin);
+    setLast(end);
+}
+
+void TokenSequence::setFirst(const Token &first)
+{
+    beginPos = first.start;
+@optn_line?;...
+    line = first.line;
+@@
+@optn_col?;...
+    column = first.column;
+@@
+    if (!endPos)
+        endPos = first.end;
+}
+
+void TokenSequence::setLast(const Token &last)
+{
+    endPos = last.end;
+    if (beginPos)
+        return;
+    beginPos = last.start;
+@optn_line?;...
+    line = last.line;
+@@
+@optn_col?;...
+    column = last.column;
+@@
 }
 
 TokenSequence::iterator TokenSequence::begin() const
 {
     return iterator(
-        beginPos
+        beginPos, endPos
 @optn_line?;...
         , line
 @@
@@ -195,37 +223,45 @@ TokenSequence::iterator TokenSequence::begin() const
 
 TokenSequence::iterator TokenSequence::end() const
 {
-    return iterator(endPos);
+    return iterator();
 }
 
 TokenSequence::iterator::iterator(
-    const char *begin
+    const char *begin, const char *end
+@optn_line?;...
     , int line
-    , int colunm
+@@
+@optn_col?;...
+    , int column
+@@
 ):
-    end(nullptr)
+    end(begin != end ? end : nullptr)
 {
+    if (!end)
+        return;
     lexer.start(
         begin
 @optn_line?;...
         , line
 @@
 @optn_col?;...
-        , colunm
+        , column
 @@
     );
     lexer.next();
 }
 
-TokenSequence::iterator::iterator(const char *end): end(end)
+TokenSequence::iterator::iterator(): end(nullptr)
 {
 }
 
 bool TokenSequence::iterator::operator!=(const TokenSequence::iterator &other) const
 {
-    const char * const thisEnd = end ? end : lexer.currentToken().end;
-    const char * const otherEnd = other.end ? other.end : other.lexer.currentToken().end;
-    return thisEnd != otherEnd;
+    if (end == nullptr)
+        return other.end != nullptr;
+    if (other.end == nullptr)
+        return end != nullptr;
+    return lexer.currentToken().end != other.lexer.currentToken().end;
 }
 
 const Token &TokenSequence::iterator::operator*() const
@@ -235,7 +271,10 @@ const Token &TokenSequence::iterator::operator*() const
 
 TokenSequence::iterator &TokenSequence::iterator::operator++()
 {
-    lexer.next();
+    if (end == nullptr || lexer.currentToken().end == end)
+        end = nullptr;
+    else
+        lexer.next();
     return *this;
 }
 
