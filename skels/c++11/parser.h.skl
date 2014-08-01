@@ -34,9 +34,11 @@ public:
     SyntaxError(const char *input, size_t size, int termNum, const Token &token);
     virtual const char *what() const noexcept override {return msg.c_str();}
     const Token token() const {return errorToken;}
+    const std::string &line() const {return markedLine;}
 
 private:
     std::string msg;
+    std::string markedLine;
     Token errorToken;
 
     static @term_symb.t; termNames[];

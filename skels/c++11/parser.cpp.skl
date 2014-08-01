@@ -21,7 +21,10 @@ SyntaxError::SyntaxError(const char *input, size_t size, int termNum, const Toke
     errorToken(token)
 {
     std::stringstream ss;
-    ss << "unexpected symbol " << termNames[termNum] << ':' << std::endl;
+    ss << "unexpected symbol " << termNames[termNum];
+    msg = ss.str();
+
+    ss.str(std::string());
     const char *lineStart = token.start;
     while (lineStart != input && *lineStart != '\r' && *lineStart != '\n')
         --lineStart;
@@ -39,7 +42,7 @@ SyntaxError::SyntaxError(const char *input, size_t size, int termNum, const Toke
         else
             ss << ' ';
     }
-    msg = ss.str();
+    markedLine = ss.str();
 }
 
 @term_symb.t; SyntaxError::termNames[] = {
