@@ -251,7 +251,7 @@ private:
     static const int acceptState;
 
     // Production rule length minus one(zero based).
-    static const @prod_leng.t; ProdLen[]; // TODO: name should start from lowercase
+    static const @prod_leng.t; prodLen[];
 
     // Boolean matrix parser tables
     static const @bmat_numb.t; Bm[]; // matrix data.

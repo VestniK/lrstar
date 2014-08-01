@@ -170,7 +170,7 @@ void Parser::parse(const char *input, size_t size)
         lexer.next();
         const int termSymb = lexer.currentToken().termNum;
 @numb_tact?;...
-        if (tokenActions && tokenActionNumber[termSymb] >= 0) { // TODO: move to separate func and save returned values as symbol table index???
+        if (tokenActions && tokenActionNumber[termSymb] >= 0) {
             switch(tokenActionNumber[termSymb]) {
                 @tact_func.1|case %d: tokenActions->%s(termSymb, lexer.currentToken())\; break\;||\n                |;
             }
@@ -216,16 +216,16 @@ void Parser::reduce(int prodRule)
 {
     // Perform reduce related actions
     const size_t oldTop = stackTop;
-    assert(static_cast<int>(stackTop) >= ProdLen[prodRule]);
-    stackTop -= ProdLen[prodRule]; // Reduce stack ptr by production length.
+    assert(static_cast<int>(stackTop) >= prodLen[prodRule]);
+    stackTop -= prodLen[prodRule]; // Reduce stack ptr by production length.
 @numb_pact?;...
     if (parseActions && parseActionNumber[prodRule] >= 0) {
         switch (parseActionNumber[prodRule]) {
-            @pact_func.1|case %d: parseActions->%s(&stack[stackTop], ProdLen[prodRule]+1)\; break\;||\n            |;
+            @pact_func.1|case %d: parseActions->%s(&stack[stackTop], prodLen[prodRule]+1)\; break\;||\n            |;
         }
     }
 @@
-    if (ProdLen[prodRule] < 0) { // Null production?
+    if (prodLen[prodRule] < 0) { // Null production?
         if (stackTop >= stack.size())
             stack.resize(stack.size() + stackIncrementStep);
         stack[stackTop].state = stateNum;
@@ -236,8 +236,8 @@ void Parser::reduce(int prodRule)
     }
 @numb_node?;...
     switch (nodeNumber[prodRule]) {
-        @node_name.1|case %d: stack[stackTop].node = std::make_shared<%s>(&stack[stackTop], ProdLen[prodRule]+1)\; break\;||\n        |;
-        default: stack[stackTop].node = Node::linkup(&stack[stackTop], ProdLen[prodRule]+1); break;
+        @node_name.1|case %d: stack[stackTop].node = std::make_shared<%s>(&stack[stackTop], prodLen[prodRule]+1)\; break\;||\n        |;
+        default: stack[stackTop].node = Node::linkup(&stack[stackTop], prodLen[prodRule]+1); break;
     }
 @numb_nact?;...
     if (nodeActions) {
@@ -260,7 +260,7 @@ void Parser::reduce(int prodRule)
 
 const int Parser::acceptState = @accp_sta.d;;
 
-const @prod_leng.t; Parser::ProdLen[] =
+const @prod_leng.t; Parser::prodLen[] =
 {
     @prod_leng.20|%d|, |,\n    |;
 };
