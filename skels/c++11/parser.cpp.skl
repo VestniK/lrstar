@@ -169,11 +169,10 @@ void Parser::parse(const char *input, size_t size)
     while (true) {
         lexer.next();
         const int termSymb = lexer.currentToken().termNum;
-        int symbIdx = -termSymb;
 @numb_tact?;...
         if (tokenActions && tokenActionNumber[termSymb] >= 0) { // TODO: move to separate func and save returned values as symbol table index???
             switch(tokenActionNumber[termSymb]) {
-                @tact_func.1|case %d: symbIdx = tokenActions->%s(termSymb, lexer.currentToken())\; break\;||\n                |;
+                @tact_func.1|case %d: tokenActions->%s(termSymb, lexer.currentToken())\; break\;||\n                |;
             }
         }
 @@
@@ -183,7 +182,6 @@ void Parser::parse(const char *input, size_t size)
                     stack.resize(stack.size() + stackIncrementStep);
                 stack[stackTop].state = stateNum;
                 stack[stackTop].symbol = termSymb;
-                stack[stackTop].symbolIndex = symbIdx;
 @numb_node?;...
                 stack[stackTop].node = nullptr;
 @@
@@ -231,7 +229,6 @@ void Parser::reduce(int prodRule)
         if (stackTop >= stack.size())
             stack.resize(stack.size() + stackIncrementStep);
         stack[stackTop].state = stateNum;
-        stack[stackTop].symbolIndex = 0;
 @numb_node?;...
         stack[stackTop].node = nullptr;
 @@
@@ -258,8 +255,6 @@ void Parser::reduce(int prodRule)
     }
     // Reduce stack
     stack[stackTop].symbol = -nonterminalNumber[prodRule];
-    if (ProdLen[prodRule] != 0) // Do not override symbol index in rules matches one term
-        stack[stackTop].symbolIndex = 0;
     stateNum = Nm[Nr[stack[stackTop].state] + Nc[prodRule]]; // Get next state from nonterminal transition.
 }
 

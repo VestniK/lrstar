@@ -40,7 +40,6 @@ struct StackFrame
 {
     int state;
     int symbol; // Symbol stacked, terminal (positive) or nonterminal (negative).
-    int symbolIndex; // TODO: rename to represent that it's term not symbol and document possible values
     TokenSequence tokens;
 @numb_node?;...
     std::shared_ptr<Node> node;
@@ -184,7 +183,7 @@ class TokenActions
 public:
     virtual ~TokenActions() {}
 
-    @tact_func.1|virtual int %s(int terminalNumb, const Token &token) = 0\;||\n        |;
+    @tact_func.1|virtual void %s(int terminalNumb, const Token &token) = 0\;||\n        |;
 };
 @@
 @numb_pact?;...
