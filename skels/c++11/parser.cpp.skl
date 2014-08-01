@@ -5,6 +5,7 @@
 // Skeleton:     @skl_file;
 // Output:       @out_file;
 #include <cassert>
+#include <cstring>
 #include <cstdio>
 #include <sstream>
 
@@ -110,6 +111,16 @@ Parser::Parser():
 
 Parser::~Parser()
 {
+}
+
+@numb_node?;...
+std::shared_ptr<Node> Parser::parse(const char *input)
+@@
+@numb_node!;...
+void Parser::parse(const char *input)
+@@
+{
+    return parse(input, std::strlen(input));
 }
 
 @numb_node?;...

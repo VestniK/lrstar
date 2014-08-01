@@ -198,9 +198,13 @@ public:
 @@
 @numb_node?;...
     std::shared_ptr<Node> parse(const char *input, size_t size);
+    // Overloaded treats strlen as input size
+    std::shared_ptr<Node> parse(const char *input);
 @@
 @numb_node!;...
     void parse(const char *input, size_t size);
+    // Overloaded treats strlen as input size
+    void parse(const char *input);
 @@
 
 // Internal methods
