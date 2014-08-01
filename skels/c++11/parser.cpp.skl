@@ -18,7 +18,7 @@
 
 namespace @grm_name; {
 
-SyntaxError::SyntaxError(const char *input, size_t size, int stateNum, const Token &token):
+SyntaxError::SyntaxError(const char *input, size_t size, StackFrame *stack, size_t stackSz, int stateNum, const Token &token):
     errorToken(token)
 {
     std::stringstream ss;
@@ -56,16 +56,32 @@ SyntaxError::SyntaxError(const char *input, size_t size, int stateNum, const Tok
     }
     expectedLine = ss.str();
 @@
+@optn_exp.gt.1;...
+
+    ss.str(std::string());
+    for (size_t pos = 0; pos < stackSz; ++pos) {
+        if (stack[stackSz - pos - 1].symbol < 0)
+            ss << "\t[" << pos << "] " << nontermNames[-stack[stackSz - pos - 1].symbol] << std::endl;
+        else
+            ss << "\t[" << pos << "] " << termNames[stack[stackSz - pos - 1].symbol] << std::endl;
+    }
+    stackDump = ss.str();
 @@
 }
 
 @optn_exp?;...
 const size_t SyntaxError::termsCount = @numb_term.d;;
-@@
 
+@@
 @term_symb.t; SyntaxError::termNames[] = {
     @term_symb.1|"%s"|, |,\n    |;
 };
+@optn_exp.gt.1;...
+
+@head_symb.t; SyntaxError::nontermNames[] = {
+    @head_symb.1|"%s"|, |,\n    |;
+};
+@@
 @numb_node?;...
 
 Node::Node(const StackFrame *start, size_t size):
@@ -193,7 +209,7 @@ void Parser::parse(const char *input, size_t size)
                 return;
 @@
             }
-            throw SyntaxError(input, size, stateNum, lexer.currentToken());
+            throw SyntaxError(input, size, stack.data() + 1, stackTop > 0 ? stackTop - 1 : 0, stateNum, lexer.currentToken());
         }
     }
 }

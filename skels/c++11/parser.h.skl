@@ -27,31 +27,6 @@ enum Terminal
     @def_cons.1|%s = %d||,\n    |;
 };
 @@
-
-class SyntaxError: public std::exception
-{
-public:
-    SyntaxError(const char *input, size_t size, int stateNum, const Token &token);
-    virtual const char *what() const noexcept override {return msg.c_str();}
-    const Token token() const {return errorToken;}
-    const std::string &line() const {return markedLine;}
-@optn_exp?;...
-    const std::string &expected() const {return expectedLine;}
-@@
-
-private:
-    std::string msg;
-    std::string markedLine;
-@optn_exp?;...
-    std::string expectedLine;
-@@
-    Token errorToken;
-
-    static @term_symb.t; termNames[];
-@optn_exp?;...
-    static const size_t termsCount;
-@@
-};
 @numb_node?;...
 
 // Base AST node class
@@ -69,6 +44,40 @@ struct StackFrame
     TokenSequence tokens;
 @numb_node?;...
     std::shared_ptr<Node> node;
+@@
+};
+
+class SyntaxError: public std::exception
+{
+public:
+    SyntaxError(const char *input, size_t size, StackFrame *stack, size_t stackSz, int stateNum, const Token &token);
+    virtual const char *what() const noexcept override {return msg.c_str();}
+    const Token token() const {return errorToken;}
+    const std::string &line() const {return markedLine;}
+@optn_exp?;...
+    const std::string &expected() const {return expectedLine;}
+@@
+@optn_exp.gt.1;...
+    const std::string &parserStack() const {return stackDump;}
+@@
+
+private:
+    std::string msg;
+    std::string markedLine;
+@optn_exp?;...
+    std::string expectedLine;
+@@
+@optn_exp.gt.1;...
+    std::string stackDump;
+@@
+    Token errorToken;
+
+    static @term_symb.t; termNames[];
+@optn_exp?;...
+    static const size_t termsCount;
+@@
+@optn_exp.gt.1;...
+    static @head_symb.t; nontermNames[];
 @@
 };
 @numb_node?;...
