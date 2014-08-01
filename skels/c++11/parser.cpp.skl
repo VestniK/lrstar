@@ -6,6 +6,7 @@
 // Output:       @out_file;
 #include <cassert>
 #include <cstdio>
+#include <sstream>
 
 #include "@grm_name;parser.h"
 @numb_node?;...
@@ -16,11 +17,33 @@
 
 namespace @grm_name; {
 
-// TODO: better error message
-class SyntaxError: public ParseError
+SyntaxError::SyntaxError(const char *input, size_t size, int termNum, const Token &token):
+    errorToken(token)
 {
-public:
-    const char *what() const throw() {return "Syntax error detected";}
+    std::stringstream ss;
+    ss << "unexpected symbol " << termNames[termNum] << ':' << std::endl;
+    const char *lineStart = token.start;
+    while (lineStart != input && *lineStart != '\r' && *lineStart != '\n')
+        --lineStart;
+    if (lineStart != token.start && (*lineStart == '\r' || *lineStart == '\n'))
+        ++lineStart;
+    const char *lineEnd = token.end;
+    while (lineEnd != input + size && *lineEnd != '\r' && *lineEnd != '\n')
+        ++lineEnd;
+    ss << std::string(lineStart, lineEnd - lineStart) << std::endl;
+    for (const char *pos = lineStart; pos != lineEnd; ++pos) {
+        if (pos == token.start)
+            ss << '^';
+        else if (isspace(*pos))
+            ss << *pos;
+        else
+            ss << ' ';
+    }
+    msg = ss.str();
+}
+
+@term_symb.t; SyntaxError::termNames[] = {
+    @term_symb.1|"%s"|, |,\n    |;
 };
 @numb_node?;...
 
@@ -87,10 +110,10 @@ Parser::~Parser()
 }
 
 @numb_node?;...
-std::shared_ptr<Node> Parser::parse(const char *input)
+std::shared_ptr<Node> Parser::parse(const char *input, size_t size)
 @@
 @numb_node!;...
-void Parser::parse(const char *input)
+void Parser::parse(const char *input, size_t size)
 @@
 {
     lexer.start(input);
@@ -138,7 +161,7 @@ void Parser::parse(const char *input)
                 return;
 @@
             }
-            throw SyntaxError();
+            throw SyntaxError(input, size, termSymb, lexer.currentToken());
         }
     }
 }
