@@ -31,17 +31,26 @@ enum Terminal
 class SyntaxError: public std::exception
 {
 public:
-    SyntaxError(const char *input, size_t size, int termNum, const Token &token);
+    SyntaxError(const char *input, size_t size, int termNum, int stateNum, const Token &token);
     virtual const char *what() const noexcept override {return msg.c_str();}
     const Token token() const {return errorToken;}
     const std::string &line() const {return markedLine;}
+@optn_exp?;...
+    const std::string &expected() const {return expectedLine;}
+@@
 
 private:
     std::string msg;
     std::string markedLine;
+@optn_exp?;...
+    std::string expectedLine;
+@@
     Token errorToken;
 
     static @term_symb.t; termNames[];
+@optn_exp?;...
+    static const size_t termsCount;
+@@
 };
 @numb_node?;...
 
@@ -230,6 +239,7 @@ private:
 
 // Internal grammar constants
 private:
+    friend class SyntaxError;
     static const int acceptState;
 
     // Production rule length minus one(zero based).
