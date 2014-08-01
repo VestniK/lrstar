@@ -93,7 +93,9 @@ public:
     class iterator {
     public:
         bool operator!= (const iterator &other) const;
+        bool operator== (const iterator &other) const {return !(*this != other);}
         const Token &operator* () const;
+        const Token *operator-> () const;
         iterator &operator++ ();
 
     private:
@@ -116,6 +118,8 @@ public:
     void setFirst(const Token &first);
     void setLast(const Token &last);
     void join(const TokenSequence &other);
+
+    bool empty() const;
 
     inline operator std::string () const {return std::string(beginPos, endPos - beginPos);}
 

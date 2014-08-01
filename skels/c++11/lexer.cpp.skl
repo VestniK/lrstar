@@ -222,6 +222,11 @@ void TokenSequence::join(const TokenSequence &other)
     endPos = std::max(endPos, other.endPos);
 }
 
+bool TokenSequence::empty() const
+{
+    return beginPos == nullptr || beginPos == endPos;
+}
+
 TokenSequence::iterator TokenSequence::begin() const
 {
     return iterator(
@@ -281,6 +286,11 @@ bool TokenSequence::iterator::operator!=(const TokenSequence::iterator &other) c
 const Token &TokenSequence::iterator::operator*() const
 {
     return lexer.currentToken();
+}
+
+const Token *TokenSequence::iterator::operator-> () const
+{
+    return &(lexer.currentToken());
 }
 
 TokenSequence::iterator &TokenSequence::iterator::operator++()
