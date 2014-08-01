@@ -18,11 +18,11 @@
 
 namespace @grm_name; {
 
-SyntaxError::SyntaxError(const char *input, size_t size, int termNum, int stateNum, const Token &token):
+SyntaxError::SyntaxError(const char *input, size_t size, int stateNum, const Token &token):
     errorToken(token)
 {
     std::stringstream ss;
-    ss << "unexpected symbol " << termNames[termNum];
+    ss << "unexpected symbol " << termNames[token.termNum];
     msg = ss.str();
 
     ss.str(std::string());
@@ -55,6 +55,7 @@ SyntaxError::SyntaxError(const char *input, size_t size, int termNum, int stateN
             ss << "\t" << termNames[termPos] << std::endl;
     }
     expectedLine = ss.str();
+@@
 @@
 }
 
@@ -150,7 +151,8 @@ void Parser::parse(const char *input, size_t size)
     stateNum = 0;
     stackTop = 0;
     while (true) {
-        int termSymb = lexer.next();
+        lexer.next();
+        const int termSymb = lexer.currentToken().termNum;
         int symbIdx = -termSymb;
 @numb_tact?;...
         if (tokenActions && tokenActionNumber[termSymb] >= 0) { // TODO: move to separate func and save returned values as symbol table index???
@@ -191,7 +193,7 @@ void Parser::parse(const char *input, size_t size)
                 return;
 @@
             }
-            throw SyntaxError(input, size, termSymb, stateNum, lexer.currentToken());
+            throw SyntaxError(input, size, stateNum, lexer.currentToken());
         }
     }
 }

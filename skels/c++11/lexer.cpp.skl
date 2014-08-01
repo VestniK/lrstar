@@ -93,7 +93,7 @@ void Lexer::start(
 }
 
 @optn_medium?;...
-int Lexer::next() // Medium lexer.
+void Lexer::next() // Medium lexer.
 {
     int currState, nextState;
     do {
@@ -121,12 +121,12 @@ int Lexer::next() // Medium lexer.
 @@
         }
     } while (terminal[currState] < 0); // Ignore whitespace.
-    return terminal[currState]; // Return terminal number.
+    token.termNum = terminal[currState]; // Return terminal number.
 }
 
 @@
 @optn_small?;...
-int Lexer::next() // Small lexer.
+void Lexer::next() // Small lexer.
 {
     int state;
     do {
@@ -154,7 +154,7 @@ int Lexer::next() // Small lexer.
 @@
         }
     } while (terminal[state] < 0); // Ignore whitespace.
-    return terminal[state]; // Return terminal number.
+    token.termNum = terminal[state]; // Return terminal number.
 }
 
 @@
