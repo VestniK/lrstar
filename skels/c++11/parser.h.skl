@@ -42,7 +42,7 @@ struct StackFrame
     int symbol; // Symbol stacked, terminal (positive) or nonterminal (negative).
     TokenSequence tokens;
 @numb_node?;...
-    std::vector< std::shared_ptr<Node> > nodes;
+    std::vector<Node *> nodes;
 @@
 };
 
@@ -117,6 +117,44 @@ private:
     std::function<void(T*)> func;
 };
 
+class Parser;
+
+class AST
+{
+public:
+    void add(Node *node);
+    void walk(Visitor *visitor, int depth = -1);
+
+    template<class T>
+    void walkTopDown(std::function<void(T*)> func, int depth = -1)
+    {
+        TopDownFuncVisitor<T> visitor(func);
+        walk(&visitor, depth);
+    }
+
+    template<class T>
+    void walkBottomUp(std::function<void(T*)> func, int depth = -1)
+    {
+        BottomUpFuncVisitor<T> visitor(func);
+        walk(&visitor, depth);
+    }
+
+    template<class T>
+    std::vector<T*> getChildren(int depth = 1)
+    {
+        std::vector<T*> res;
+        walkTopDown<T>([&res](T *node) {res.push_back(node);}, depth);
+        return res;
+    }
+
+private:
+    friend class Parser;
+    void setRoots(const std::vector<Node *> &roots);
+
+    std::vector<Node *> roots;
+    std::vector< std::unique_ptr<Node> > nodes;
+};
+
 // TODO think how to uppercase grammar name. Dicumented .u format specifier doesn't work.
 #define @grm_name;_NODE \
     protected:\
@@ -124,10 +162,10 @@ private:
         virtual void seeOff(@grm_name;::Visitor *visitor) override {visitor->leave(this);}\
     private:\
 
-class Node: public std::enable_shared_from_this<Node>
+class Node
 {
 public:
-    Node(const StackFrame *start, size_t size);
+    Node(AST &ast, const StackFrame *reduction, size_t size);
     virtual ~Node() {}
 
     void walk(Visitor *visitor, int depth = -1);
@@ -159,7 +197,7 @@ protected:
     virtual void seeOff(Visitor *visitor) = 0;
 
 protected:
-    std::vector< std::shared_ptr<Node> > children;
+    std::vector<Node *> children;
 };
 @numb_nact?;...
 
@@ -190,7 +228,7 @@ class ParseActions
 public:
     virtual ~ParseActions() {}
 
-    @pact_func.1|virtual void %s(const StackFrame *start, size_t size) = 0\;||\n    |;
+    @pact_func.1|virtual void %s(const StackFrame *reduction, size_t size) = 0\;||\n    |;
 };
 @@
 
@@ -211,9 +249,9 @@ public:
     void setNodeActions(NodeActions *actions) {nodeActions = actions;}
 @@
 @numb_node?;...
-    std::vector< std::shared_ptr<Node> > parse(const char *input, size_t size);
+    AST parse(const char *input, size_t size);
     // Overloaded treats strlen as input size
-    std::vector< std::shared_ptr<Node> > parse(const char *input);
+    AST parse(const char *input);
 @@
 @numb_node!;...
     void parse(const char *input, size_t size);
@@ -223,7 +261,12 @@ public:
 
 // Internal methods
 private:
+@numb_node?;...
+    void reduce(int prodRule, AST &ast);
+@@
+@numb_node!;...
     void reduce(int prodRule);
+@@
 
 // Class data
 private:
