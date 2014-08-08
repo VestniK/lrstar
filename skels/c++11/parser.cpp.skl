@@ -84,40 +84,20 @@ const size_t SyntaxError::termsCount = @numb_term.d;;
 @@
 @numb_node?;...
 
-Node::Node(const StackFrame *start, size_t size):
-    children(linkup(start, size)),
-    next(nullptr)
+Node::Node(const StackFrame *start, size_t size)
 {
+    for (size_t i = 0; i < size; ++i)
+        children.insert(children.end(), start[i].nodes.begin(), start[i].nodes.end());
 }
 
 void Node::walk(Visitor *visitor, int depth)
 {
     this->accept(visitor);
     if (depth != 0) {
-        for (Node *currChild = children.get(); currChild != nullptr; currChild = currChild->next.get())
-            currChild->walk(visitor, depth - 1);
+        for (auto child : children)
+            child->walk(visitor, depth - 1);
     }
     this->seeOff(visitor);
-}
-
-std::shared_ptr<Node> Node::linkup(const StackFrame *start, size_t size)
-{
-    std::shared_ptr<Node> first = nullptr;
-    std::shared_ptr<Node> last = nullptr;
-    for (const StackFrame *frame = start; frame < start + size; ++frame) {
-        if (!frame->node)
-            continue;
-        assert((first && last) || (!first && !last));
-        if (!first)
-            first = frame->node;
-        if (!last)
-            last = frame->node;
-        else
-            last->next = frame->node;
-        while (last->next)
-            last = last->next;
-    }
-    return first;
 }
 
 @node_name.1|void Visitor::visit(%s *node) {visit(static_cast<Node*>(node))\;}||\n    |;
@@ -147,7 +127,7 @@ Parser::~Parser()
 }
 
 @numb_node?;...
-std::shared_ptr<Node> Parser::parse(const char *input)
+std::vector< std::shared_ptr<Node> > Parser::parse(const char *input)
 @@
 @numb_node!;...
 void Parser::parse(const char *input)
@@ -157,7 +137,7 @@ void Parser::parse(const char *input)
 }
 
 @numb_node?;...
-std::shared_ptr<Node> Parser::parse(const char *input, size_t size)
+std::vector< std::shared_ptr<Node> > Parser::parse(const char *input, size_t size)
 @@
 @numb_node!;...
 void Parser::parse(const char *input, size_t size)
@@ -182,10 +162,10 @@ void Parser::parse(const char *input, size_t size)
                     stack.resize(stack.size() + stackIncrementStep);
                 stack[stackTop].state = stateNum;
                 stack[stackTop].symbol = termSymb;
-@numb_node?;...
-                stack[stackTop].node = nullptr;
-@@
                 stack[stackTop].tokens = TokenSequence(lexer.currentToken());
+@numb_node?;...
+                stack[stackTop].nodes.clear();
+@@
                 stateNum = Tm[Tr[stateNum] + Tc[termSymb]]; // Get next state from terminal transition matrix.
                 while (stateNum <= 0) // While shift-reduce actions.
                     reduce(-stateNum);
@@ -201,7 +181,7 @@ void Parser::parse(const char *input, size_t size)
             if (stateNum == acceptState) {
                 reduce(0); // last reduction when accept state reached.
 @numb_node?;...
-                return stack[stackTop].node;
+                return stack[stackTop].nodes;
 @@
 @numb_node!;...
                 return;
@@ -229,20 +209,23 @@ void Parser::reduce(int prodRule)
         if (stackTop >= stack.size())
             stack.resize(stack.size() + stackIncrementStep);
         stack[stackTop].state = stateNum;
-@numb_node?;...
-        stack[stackTop].node = nullptr;
-@@
         stack[stackTop].tokens = TokenSequence();
+@numb_node?;...
+        stack[stackTop].nodes.clear();
+@@
     }
 @numb_node?;...
     switch (nodeNumber[prodRule]) {
-        @node_name.1|case %d: stack[stackTop].node = std::make_shared<%s>(&stack[stackTop], prodLen[prodRule]+1)\; break\;||\n        |;
-        default: stack[stackTop].node = Node::linkup(&stack[stackTop], prodLen[prodRule]+1); break;
+        @node_name.1|case %d: stack[stackTop].nodes.assign(1, std::make_shared<%s>(&stack[stackTop], prodLen[prodRule]+1))\; break\;||\n        |;
+        default:
+            for (int i = 1; i < prodLen[prodRule]+1; ++i)
+                stack[stackTop].nodes.insert(stack[stackTop].nodes.end(), stack[stackTop + i].nodes.begin(), stack[stackTop + i].nodes.end());
+            break;
     }
 @numb_nact?;...
     if (nodeActions) {
         switch (nodeActionNumber[prodRule]) {
-            @nact_func.1|case %d: nodeActions->on%s(std::dynamic_pointer_cast<%s>(stack[stackTop].node))\; break\;||\n            |;
+            @nact_func.1|case %d: nodeActions->on%s(stack[stackTop].nodes.front().get())\; break\;||\n            |;
         }
     }
 @@

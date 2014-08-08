@@ -42,7 +42,7 @@ struct StackFrame
     int symbol; // Symbol stacked, terminal (positive) or nonterminal (negative).
     TokenSequence tokens;
 @numb_node?;...
-    std::shared_ptr<Node> node;
+    std::vector< std::shared_ptr<Node> > nodes;
 @@
 };
 
@@ -154,15 +154,12 @@ public:
         return res;
     }
 
-    static std::shared_ptr<Node> linkup(const StackFrame *start, size_t size);
-
 protected:
     virtual void accept(Visitor *visitor) = 0;
     virtual void seeOff(Visitor *visitor) = 0;
 
 protected:
-    std::shared_ptr<Node> children;
-    std::shared_ptr<Node> next;
+    std::vector< std::shared_ptr<Node> > children;
 };
 @numb_nact?;...
 
@@ -171,7 +168,7 @@ class NodeActions
 public:
     virtual ~NodeActions() {}
 
-    @nact_func.1|virtual void on%s(std::shared_ptr<%s> node) = 0\;||\n    |;
+    @nact_func.1|virtual void on%s(%s *node) = 0\;||\n    |;
 };
 @@
 @@
@@ -214,9 +211,9 @@ public:
     void setNodeActions(NodeActions *actions) {nodeActions = actions;}
 @@
 @numb_node?;...
-    std::shared_ptr<Node> parse(const char *input, size_t size);
+    std::vector< std::shared_ptr<Node> > parse(const char *input, size_t size);
     // Overloaded treats strlen as input size
-    std::shared_ptr<Node> parse(const char *input);
+    std::vector< std::shared_ptr<Node> > parse(const char *input);
 @@
 @numb_node!;...
     void parse(const char *input, size_t size);
