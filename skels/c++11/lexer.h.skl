@@ -25,6 +25,10 @@ struct Token
 @@
 
     inline operator std::string () const {return std::string(start, end - start);}
+    // Token points to a data but not own them. If one want to store token for longer time than lexer input
+    // lifetime then it's necessary to copy token content and reference copied data. Important example is
+    // holding token inside an exception.
+    void detach(std::string &dst);
 };
 
 class Lexer
@@ -121,8 +125,11 @@ public:
     void join(const TokenSequence &other);
 
     bool empty() const;
-
     inline operator std::string () const {return std::string(beginPos, endPos - beginPos);}
+    // TokenSequence points to a data but not own them. If one want to store it for a longer time than lexer
+    // input lifetime then it's necessary to copy data referenced by sequence and reference copied data.
+    // Important example is holding token sequence inside an exception.
+    void detach(std::string &dst);
 
     iterator begin() const;
     iterator end() const;

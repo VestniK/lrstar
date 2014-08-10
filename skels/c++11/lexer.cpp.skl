@@ -73,6 +73,13 @@ const @strings.t; Lexer::string[@strings.d;] =
 };
 
 @@
+void Token::detach(std::string &dst)
+{
+    dst = *this;
+    end = dst.data() + (end - start);
+    start = dst.data();
+}
+
 // DFASTAR Lexer.
 void Lexer::start(
     const char *input
@@ -231,6 +238,13 @@ void TokenSequence::join(const TokenSequence &other)
 bool TokenSequence::empty() const
 {
     return beginPos == nullptr || beginPos == endPos;
+}
+
+void TokenSequence::detach(std::string &dst)
+{
+    dst = *this;
+    endPos = dst.data() + (endPos - beginPos);
+    beginPos = dst.data();
 }
 
 TokenSequence::iterator TokenSequence::begin() const

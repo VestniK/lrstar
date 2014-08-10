@@ -44,6 +44,8 @@ SyntaxError::SyntaxError(const char *input, size_t size, StackFrame *stack, size
             ss << ' ';
     }
     markedLine = ss.str();
+    errorToken.end = markedLine.data() + (token.end - lineStart);
+    errorToken.start = markedLine.data() + (token.start - lineStart);
 @optn_exp?;...
 
     ss.str(std::string());
