@@ -188,7 +188,8 @@ public:
     std::vector<T*> getChildren(int depth = 1)
     {
         std::vector<T*> res;
-        walkTopDown<T>([&res](T *node) {res.push_back(node);}, depth);
+        Node *self = this;
+        walkTopDown<T>([&res, self](T *node) {if (static_cast<Node*>(node) != self) res.push_back(node);}, depth);
         return res;
     }
 
