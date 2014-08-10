@@ -84,9 +84,9 @@ const size_t SyntaxError::termsCount = @numb_term.d;;
 @@
 @numb_node?;...
 
-Node::Node(AST &ast, const StackFrame *start, size_t size)
+Node::Node(AST *ast, const StackFrame *start, size_t size)
 {
-    ast.add(this);
+    ast->add(this);
     for (size_t i = 0; i < size; ++i)
         children.insert(children.end(), start[i].nodes.begin(), start[i].nodes.end());
 }
@@ -144,7 +144,7 @@ Parser::~Parser()
 }
 
 @numb_node?;...
-AST Parser::parse(const char *input)
+AST *Parser::parse(const char *input)
 @@
 @numb_node!;...
 void Parser::parse(const char *input)
@@ -154,14 +154,14 @@ void Parser::parse(const char *input)
 }
 
 @numb_node?;...
-AST Parser::parse(const char *input, size_t size)
+AST *Parser::parse(const char *input, size_t size)
 @@
 @numb_node!;...
 void Parser::parse(const char *input, size_t size)
 @@
 {
 @numb_node?;...
-    AST ast;
+    AST *ast = new AST;
 @@
     lexer.start(input);
     stateNum = 0;
@@ -216,7 +216,7 @@ void Parser::parse(const char *input, size_t size)
             if (stateNum == acceptState) {
 @numb_node?;...
                 reduce(0, ast); // last reduction when accept state reached.
-                ast.setRoots(stack[stackTop].nodes);
+                ast->setRoots(stack[stackTop].nodes);
                 return ast;
 @@
 @numb_node!;...
@@ -230,7 +230,7 @@ void Parser::parse(const char *input, size_t size)
 }
 
 @numb_node?;...
-void Parser::reduce(int prodRule, AST &ast)
+void Parser::reduce(int prodRule, AST *ast)
 @@
 @numb_node!;...
 void Parser::reduce(int prodRule)

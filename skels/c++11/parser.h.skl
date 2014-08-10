@@ -165,7 +165,7 @@ private:
 class Node
 {
 public:
-    Node(AST &ast, const StackFrame *reduction, size_t size);
+    Node(AST *ast, const StackFrame *reduction, size_t size);
     virtual ~Node() {}
 
     void walk(Visitor *visitor, int depth = -1);
@@ -249,9 +249,9 @@ public:
     void setNodeActions(NodeActions *actions) {nodeActions = actions;}
 @@
 @numb_node?;...
-    AST parse(const char *input, size_t size);
+    AST *parse(const char *input, size_t size);
     // Overloaded treats strlen as input size
-    AST parse(const char *input);
+    AST *parse(const char *input);
 @@
 @numb_node!;...
     void parse(const char *input, size_t size);
@@ -262,7 +262,7 @@ public:
 // Internal methods
 private:
 @numb_node?;...
-    void reduce(int prodRule, AST &ast);
+    void reduce(int prodRule, AST *ast);
 @@
 @numb_node!;...
     void reduce(int prodRule);
