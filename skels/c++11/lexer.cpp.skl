@@ -210,6 +210,12 @@ void TokenSequence::setLast(const Token &last)
 
 void TokenSequence::join(const TokenSequence &other)
 {
+    if (!beginPos) {
+        *this = other;
+        return;
+    }
+    if (!other.beginPos)
+        return;
     if (other.beginPos < beginPos) {
 @optn_line?;...
         line = other.line;

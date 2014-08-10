@@ -87,8 +87,10 @@ const size_t SyntaxError::termsCount = @numb_term.d;;
 Node::Node(AST *ast, const StackFrame *start, size_t size)
 {
     ast->add(this);
-    for (size_t i = 0; i < size; ++i)
+    for (size_t i = 0; i < size; ++i) {
         children.insert(children.end(), start[i].nodes.begin(), start[i].nodes.end());
+        srcTokens.join(start[i].tokens);
+    }
 }
 
 void Node::walk(Visitor *visitor, int depth)
@@ -273,7 +275,8 @@ void Parser::reduce(int prodRule)
 @@
 @@
     if (stackTop < oldTop) {
-        stack[stackTop].tokens.join(stack[oldTop].tokens);
+        for (size_t pos = stackTop + 1; pos <= oldTop; ++pos)
+            stack[stackTop].tokens.join(stack[pos].tokens);
 @optn_debug?;...
         printf("===> Reduction %d matched the following text:\n%s\n", prodRule, std::string(stack[stackTop].tokens).c_str());
 @@

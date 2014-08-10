@@ -192,12 +192,17 @@ public:
         return res;
     }
 
+    const TokenSequence &tokens() const {return srcTokens;}
+
 protected:
     virtual void accept(Visitor *visitor) = 0;
     virtual void seeOff(Visitor *visitor) = 0;
 
 protected:
     std::vector<Node *> children;
+
+private:
+    TokenSequence srcTokens;
 };
 @numb_nact?;...
 
