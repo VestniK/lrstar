@@ -97,15 +97,14 @@ Node::Node(AST *ast, const StackFrame *start, size_t size)
 
 void Node::walk(Visitor *visitor, int depth)
 {
-    this->accept(visitor);
-    if (depth != 0) {
+    if (this->accept(visitor) && depth != 0) {
         for (auto child : children)
             child->walk(visitor, depth - 1);
     }
     this->seeOff(visitor);
 }
 
-@node_name.1|void Visitor::visit(%s *node) {visit(static_cast<Node*>(node))\;}||\n    |;
+@node_name.1|bool Visitor::visit(%s *node) {return visit(static_cast<Node*>(node))\;}||\n    |;
 @node_name.1|void Visitor::leave(%s *node) {leave(static_cast<Node*>(node))\;}||\n    |;
 
 void AST::add(Node *node)

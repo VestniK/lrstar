@@ -86,9 +86,10 @@ class Visitor
 public:
     virtual ~Visitor() {}
 
-    virtual void visit(Node *) {}
+    // return true to travers children or false to skip them
+    virtual bool visit(Node *) {return true;}
     virtual void leave(Node *) {}
-    @node_name.1|virtual void visit(%s *)\;||\n    |;
+    @node_name.1|virtual bool visit(%s *)\;||\n    |;
     @node_name.1|virtual void leave(%s *)\;||\n    |;
 
 protected:
@@ -99,11 +100,11 @@ template<class T>
 class TopDownFuncVisitor: public Visitor
 {
 public:
-    TopDownFuncVisitor(std::function<void(T*)> func): func(func) {}
+    TopDownFuncVisitor(std::function<bool(T*)> func): func(func) {}
 
-    virtual void visit(T *node) override {func(node);}
+    virtual bool visit(T *node) override {return func(node);}
 private:
-    std::function<void(T*)> func;
+    std::function<bool(T*)> func;
 };
 
 template<class T>
@@ -126,7 +127,7 @@ public:
     void walk(Visitor *visitor, int depth = -1);
 
     template<class T>
-    void walkTopDown(std::function<void(T*)> func, int depth = -1)
+    void walkTopDown(std::function<bool(T*)> func, int depth = -1)
     {
         TopDownFuncVisitor<T> visitor(func);
         walk(&visitor, depth);
@@ -143,7 +144,7 @@ public:
     std::vector<T*> getChildren(int depth = 1)
     {
         std::vector<T*> res;
-        walkTopDown<T>([&res](T *node) {res.push_back(node);}, depth);
+        walkTopDown<T>([&res](T *node) {res.push_back(node); return true;}, depth);
         return res;
     }
 
@@ -158,7 +159,7 @@ private:
 // TODO think how to uppercase grammar name. Dicumented .u format specifier doesn't work.
 #define @grm_name;_NODE \
     protected:\
-        virtual void accept(@grm_name;::Visitor *visitor) override {visitor->visit(this);}\
+        virtual bool accept(@grm_name;::Visitor *visitor) override {return visitor->visit(this);}\
         virtual void seeOff(@grm_name;::Visitor *visitor) override {visitor->leave(this);}\
     private:\
 
@@ -171,7 +172,7 @@ public:
     void walk(Visitor *visitor, int depth = -1);
 
     template<class T>
-    void walkTopDown(std::function<void(T*)> func, int depth = -1)
+    void walkTopDown(std::function<bool(T*)> func, int depth = -1)
     {
         TopDownFuncVisitor<T> visitor(func);
         walk(&visitor, depth);
@@ -189,14 +190,14 @@ public:
     {
         std::vector<T*> res;
         Node *self = this;
-        walkTopDown<T>([&res, self](T *node) {if (static_cast<Node*>(node) != self) res.push_back(node);}, depth);
+        walkTopDown<T>([&res, self](T *node) {if (static_cast<Node*>(node) != self) res.push_back(node); return true;}, depth);
         return res;
     }
 
     const TokenSequence &tokens() const {return srcTokens;}
 
 protected:
-    virtual void accept(Visitor *visitor) = 0;
+    virtual bool accept(Visitor *visitor) = 0;
     virtual void seeOff(Visitor *visitor) = 0;
 
 protected:
