@@ -22,8 +22,11 @@ struct Token
 @@
 @optn_col?;...
     int column;
-@@
 
+    // Returns string from the beggining of line till the end of this token
+    // sequence
+    std::string lineStr() const;
+@@
     inline operator std::string () const {return std::string(start, end - start);}
     // Token points to a data but not own them. If one want to store token for longer time than lexer input
     // lifetime then it's necessary to copy token content and reference copied data. Important example is
@@ -125,6 +128,15 @@ public:
     void join(const TokenSequence &other);
 
     bool empty() const;
+@optn_line?;...
+    int linenum() const {return line;}
+@@
+@optn_col?;...
+    int colnum() const {return column;}
+    // Returns string from the beggining of the first token line till the end of the last token in this
+    // sequence
+    std::string lineStr() const;
+@@
     inline operator std::string () const {return std::string(beginPos, endPos - beginPos);}
     // TokenSequence points to a data but not own them. If one want to store it for a longer time than lexer
     // input lifetime then it's necessary to copy data referenced by sequence and reference copied data.

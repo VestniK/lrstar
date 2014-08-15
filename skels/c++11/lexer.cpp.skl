@@ -73,11 +73,27 @@ const @strings.t; Lexer::string[@strings.d;] =
 };
 
 @@
+@optn_col?;...
+std::string Token::lineStr() const
+{
+    const char *lineStart = start - (column -1);
+    std::string res(lineStart, end - lineStart);
+    return res;
+}
+
+@@
 void Token::detach(std::string &dst)
 {
+@optn_col?;...
+    dst = lineStr();
+    end = dst.data() + (end - start) + (column - 1);
+    start = dst.data() + (column - 1);
+@@
+@optn_col!;...
     dst = *this;
     end = dst.data() + (end - start);
     start = dst.data();
+@@
 }
 
 // DFASTAR Lexer.
@@ -240,11 +256,28 @@ bool TokenSequence::empty() const
     return beginPos == nullptr || beginPos == endPos;
 }
 
+@optn_col?;...
+std::string TokenSequence::lineStr() const
+{
+    std::string res;
+    const char *lineStart = beginPos - (column - 1);
+    res.assign(lineStart, endPos - lineStart);
+    return res;
+}
+@@
+
 void TokenSequence::detach(std::string &dst)
 {
+@optn_col?;...
+    dst = lineStr();
+    endPos = dst.data() + (endPos - beginPos) + (column - 1);
+    beginPos = dst.data() + (column - 1);
+@@
+@optn_col!;...
     dst = *this;
     endPos = dst.data() + (endPos - beginPos);
     beginPos = dst.data();
+@@
 }
 
 TokenSequence::iterator TokenSequence::begin() const
