@@ -270,7 +270,7 @@ void Parser::reduce(int prodRule)
 @numb_nact?;...
     if (nodeActions) {
         switch (nodeActionNumber[prodRule]) {
-            @nact_func.1|case %d: nodeActions->on%s(stack[stackTop].nodes.front())\; break\;||\n            |;
+            @nact_func.1|case %d: nodeActions->on%s(dynamic_cast<%s*>(stack[stackTop].nodes.front()))\; break\;||\n            |;
         }
     }
 @@
