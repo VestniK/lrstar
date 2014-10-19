@@ -86,9 +86,8 @@ const size_t SyntaxError::termsCount = @numb_term.d;;
 @@
 @numb_node?;...
 
-Node::Node(AST *ast, const StackFrame *start, size_t size)
+Node::Node(const StackFrame *start, size_t size)
 {
-    ast->add(this);
     for (size_t i = 0; i < size; ++i) {
         children.insert(children.end(), start[i].nodes.begin(), start[i].nodes.end());
         srcTokens.join(start[i].tokens);
@@ -104,22 +103,12 @@ void Node::walk(Visitor *visitor, int depth)
     this->seeOff(visitor);
 }
 
-@node_name.1|bool Visitor::visit(%s *node) {return visit(static_cast<Node*>(node))\;}||\n    |;
-@node_name.1|void Visitor::leave(%s *node) {leave(static_cast<Node*>(node))\;}||\n    |;
-
-void AST::add(Node *node)
-{
-    nodes.push_back(std::unique_ptr<Node>(node));
-}
-
-void AST::setRoots(const std::vector<Node *> &roots)
-{
-    this->roots = roots;
-}
+@node_name.1|bool Visitor::visit(%s *node) {return visit(static_cast<Node*>(node))\;}||\n|;
+@node_name.1|void Visitor::leave(%s *node) {leave(static_cast<Node*>(node))\;}||\n|;
 
 void AST::walk(Visitor *visitor, int depth)
 {
-    for (auto &root : roots)
+    for (auto &root : roots())
         root->walk(visitor, depth);
 }
 @@
@@ -146,26 +135,13 @@ Parser::~Parser()
 {
 }
 
-@numb_node?;...
-AST *Parser::parse(const char *input)
-@@
-@numb_node!;...
 void Parser::parse(const char *input)
-@@
 {
-    return parse(input, std::strlen(input));
+    parse(input, std::strlen(input));
 }
 
-@numb_node?;...
-AST *Parser::parse(const char *input, size_t size)
-@@
-@numb_node!;...
 void Parser::parse(const char *input, size_t size)
-@@
 {
-@numb_node?;...
-    AST *ast = new AST;
-@@
     lexer.start(input);
     stateNum = 0;
     stackTop = 0;
@@ -191,53 +167,29 @@ void Parser::parse(const char *input, size_t size)
 @@
                 stateNum = Tm[Tr[stateNum] + Tc[termSymb]]; // Get next state from terminal transition matrix.
                 while (stateNum <= 0) // While shift-reduce actions.
-@numb_node?;...
-                    reduce(-stateNum, ast);
-@@
-@numb_node!;...
                     reduce(-stateNum);
-@@
                 break;
             }
             int prodRule = Rr[stateNum] > 0 ? Rr[stateNum] : Rm[Rc[termSymb] - Rr[stateNum]];
             if (prodRule > 0) {
-@numb_node?;...
-                reduce(prodRule, ast);
-@@
-@numb_node!;...
                 reduce(prodRule);
-@@
                 while (stateNum <= 0) // While shift-reduce actions.
-@numb_node?;...
-                    reduce(-stateNum, ast);
-@@
-@numb_node!;...
                     reduce(-stateNum);
-@@
                 continue;
             }
             if (stateNum == acceptState) {
+                reduce(0); // last reduction when accept state reached.
 @numb_node?;...
-                reduce(0, ast); // last reduction when accept state reached.
-                ast->setRoots(stack[stackTop].nodes);
-                return ast;
+                roots().insert(roots().begin(), stack[stackTop].nodes.begin(), stack[stackTop].nodes.end());
 @@
-@numb_node!;...
-                reduce(0);
                 return;
-@@
             }
             throw SyntaxError(input, size, stack.data() + 1, stackTop > 0 ? stackTop - 1 : 0, stateNum, lexer.currentToken());
         }
     }
 }
 
-@numb_node?;...
-void Parser::reduce(int prodRule, AST *ast)
-@@
-@numb_node!;...
 void Parser::reduce(int prodRule)
-@@
 {
     // Perform reduce related actions
     const size_t oldTop = stackTop;
@@ -261,7 +213,7 @@ void Parser::reduce(int prodRule)
     }
 @numb_node?;...
     switch (nodeNumber[prodRule]) {
-        @node_name.1|case %d: stack[stackTop].nodes.assign(1, new %s(ast, &stack[stackTop], prodLen[prodRule]+1))\; break\;||\n        |;
+        @node_name.1|case %d: addNode(new %s(&stack[stackTop], prodLen[prodRule]+1))\; break\;||\n        |;
         default:
             for (int i = 1; i < prodLen[prodRule]+1; ++i)
                 stack[stackTop].nodes.insert(stack[stackTop].nodes.end(), stack[stackTop + i].nodes.begin(), stack[stackTop + i].nodes.end());
@@ -287,6 +239,14 @@ void Parser::reduce(int prodRule)
     stateNum = Nm[Nr[stack[stackTop].state] + Nc[prodRule]]; // Get next state from nonterminal transition.
 }
 
+@numb_node?;...
+void Parser::addNode(Node *node)
+{
+    nodes.push_back(std::unique_ptr<Node>(node));
+    stack[stackTop].nodes.assign(1, node);
+}
+
+@@
 const int Parser::acceptState = @accp_sta.d;;
 
 const @prod_leng.t; Parser::prodLen[] =

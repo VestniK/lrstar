@@ -118,42 +118,37 @@ private:
     std::function<void(T*)> func;
 };
 
-class Parser;
+template<class NodeSubclass, typename Walkable>
+void walkTopDown(Walkable &walkable, std::function<bool(NodeSubclass*)> func, int depth = -1)
+{
+    TopDownFuncVisitor<NodeSubclass> visitor(func);
+    walkable.walk(&visitor, depth);
+}
+
+template<class NodeSubclass, typename Walkable>
+void walkBottomUp(Walkable &walkable, std::function<void(NodeSubclass*)> func, int depth = -1)
+{
+    BottomUpFuncVisitor<NodeSubclass> visitor(func);
+    walkable.walk(&visitor, depth);
+}
 
 class AST
 {
 public:
-    void add(Node *node);
+    virtual ~AST() {}
+
     void walk(Visitor *visitor, int depth = -1);
-
-    template<class T>
-    void walkTopDown(std::function<bool(T*)> func, int depth = -1)
-    {
-        TopDownFuncVisitor<T> visitor(func);
-        walk(&visitor, depth);
-    }
-
-    template<class T>
-    void walkBottomUp(std::function<void(T*)> func, int depth = -1)
-    {
-        BottomUpFuncVisitor<T> visitor(func);
-        walk(&visitor, depth);
-    }
 
     template<class T>
     std::vector<T*> getChildren(int depth = 1)
     {
         std::vector<T*> res;
-        walkTopDown<T>([&res](T *node) {res.push_back(node); return true;}, depth);
+        walkTopDown<T>(*this, [&res](T *node) {res.push_back(node); return true;}, depth);
         return res;
     }
 
 private:
-    friend class Parser;
-    void setRoots(const std::vector<Node *> &roots);
-
-    std::vector<Node *> roots;
-    std::vector< std::unique_ptr<Node> > nodes;
+    virtual std::vector<Node *> &roots() = 0;
 };
 
 // TODO think how to uppercase grammar name. Dicumented .u format specifier doesn't work.
@@ -166,31 +161,17 @@ private:
 class Node
 {
 public:
-    Node(AST *ast, const StackFrame *reduction, size_t size);
+    Node(const StackFrame *reduction, size_t size);
     virtual ~Node() {}
 
     void walk(Visitor *visitor, int depth = -1);
-
-    template<class T>
-    void walkTopDown(std::function<bool(T*)> func, int depth = -1)
-    {
-        TopDownFuncVisitor<T> visitor(func);
-        walk(&visitor, depth);
-    }
-
-    template<class T>
-    void walkBottomUp(std::function<void(T*)> func, int depth = -1)
-    {
-        BottomUpFuncVisitor<T> visitor(func);
-        walk(&visitor, depth);
-    }
 
     template<class T>
     std::vector<T*> getChildren(int depth = 1)
     {
         std::vector<T*> res;
         Node *self = this;
-        walkTopDown<T>([&res, self](T *node) {if (static_cast<Node*>(node) != self) res.push_back(node); return true;}, depth);
+        walkTopDown<T>(*this, [&res, self](T *node) {if (static_cast<Node*>(node) != self) res.push_back(node); return true;}, depth);
         return res;
     }
 
@@ -239,7 +220,12 @@ public:
 };
 @@
 
+@numb_node?;...
+class Parser: private AST
+@@
+@numb_node!;...
 class Parser
+@@
 {
 public:
     // Parser methods
@@ -255,24 +241,21 @@ public:
 @numb_nact?;...
     void setNodeActions(NodeActions *actions) {nodeActions = actions;}
 @@
-@numb_node?;...
-    AST *parse(const char *input, size_t size);
-    // Overloaded treats strlen as input size
-    AST *parse(const char *input);
-@@
-@numb_node!;...
     void parse(const char *input, size_t size);
     // Overloaded treats strlen as input size
     void parse(const char *input);
+
+@numb_node?;...
+    AST *ast() {return this;}
 @@
 
 // Internal methods
 private:
-@numb_node?;...
-    void reduce(int prodRule, AST *ast);
-@@
-@numb_node!;...
     void reduce(int prodRule);
+
+@numb_node?;...
+    void addNode(Node *node);
+    virtual std::vector<Node *> &roots() {return mRoots;}
 @@
 
 // Class data
@@ -289,6 +272,10 @@ private:
 @@
     std::vector<StackFrame> stack;
     size_t stackTop;
+@numb_node?;...
+    std::vector<Node *> mRoots;
+    std::vector< std::unique_ptr<Node> > nodes;
+@@
     static const size_t stackIncrementStep;
     int stateNum;
 
