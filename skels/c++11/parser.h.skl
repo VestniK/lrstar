@@ -49,8 +49,9 @@ struct StackFrame
 class SyntaxError: public std::exception
 {
 public:
-    SyntaxError(const char *input, size_t size, StackFrame *stack, size_t stackSz, int stateNum, const Token &token);
+    SyntaxError(const std::string &src, const char *input, size_t size, StackFrame *stack, size_t stackSz, int stateNum, const Token &token);
     virtual const char *what() const noexcept override {return msg.c_str();}
+    const std::string &sourcePath() const {return src;}
     const Token token() const {return errorToken;}
     const std::string &line() const {return markedLine;}
 @optn_exp?;...
@@ -70,6 +71,7 @@ private:
     std::string stackDump;
 @@
     Token errorToken;
+    std::string src;
 
     static @term_symb.t; termNames[];
 @optn_exp?;...
@@ -176,6 +178,8 @@ public:
     }
 
     const TokenSequence &tokens() const {return srcTokens;}
+    const std::string &sourcePath() const {return src;}
+    void setSourcePath(const std::string &val) {src = val;}
 
 protected:
     virtual bool accept(Visitor *visitor) = 0;
@@ -186,6 +190,7 @@ protected:
 
 private:
     TokenSequence srcTokens;
+    std::string src;
 };
 @numb_nact?;...
 
@@ -232,6 +237,8 @@ public:
     Parser();
     ~Parser();
 
+    void setSourcePath(const std::string &val) {src = val;}
+
 @numb_tact?;...
     void setTokenActions(TokenActions *actions) {tokenActions = actions;}
 @@
@@ -261,6 +268,7 @@ private:
 // Class data
 private:
     Lexer lexer;
+    std::string src;
 @numb_tact?;...
     TokenActions *tokenActions;
 @@

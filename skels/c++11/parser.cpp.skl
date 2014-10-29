@@ -18,8 +18,8 @@
 
 namespace @grm_name; {
 
-SyntaxError::SyntaxError(const char *input, size_t size, StackFrame *stack, size_t stackSz, int stateNum, const Token &token):
-    errorToken(token)
+SyntaxError::SyntaxError(const std::string &srcPath, const char *input, size_t size, StackFrame *stack, size_t stackSz, int stateNum, const Token &token):
+    errorToken(token), src(srcPath)
 {
     std::stringstream ss;
     ss << "unexpected symbol " << termNames[token.termNum];
@@ -184,7 +184,7 @@ void Parser::parse(const char *input, size_t size)
 @@
                 return;
             }
-            throw SyntaxError(input, size, stack.data() + 1, stackTop > 0 ? stackTop - 1 : 0, stateNum, lexer.currentToken());
+            throw SyntaxError(src, input, size, stack.data() + 1, stackTop > 0 ? stackTop - 1 : 0, stateNum, lexer.currentToken());
         }
     }
 }
@@ -242,6 +242,7 @@ void Parser::reduce(int prodRule)
 @numb_node?;...
 void Parser::addNode(Node *node)
 {
+    node->setSourcePath(src);
     nodes.push_back(std::unique_ptr<Node>(node));
     stack[stackTop].nodes.assign(1, node);
 }
