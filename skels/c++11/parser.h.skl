@@ -153,13 +153,6 @@ private:
     virtual std::vector<Node *> &roots() = 0;
 };
 
-// TODO think how to uppercase grammar name. Dicumented .u format specifier doesn't work.
-#define @grm_name;_NODE \
-    protected:\
-        virtual bool accept(@grm_name;::Visitor *visitor) override {return visitor->visit(this);}\
-        virtual void seeOff(@grm_name;::Visitor *visitor) override {visitor->leave(this);}\
-    private:\
-
 class Node
 {
 public:
@@ -191,6 +184,15 @@ protected:
 private:
     TokenSequence srcTokens;
     std::string src;
+};
+
+template<typename Impl>
+class VisitableNode: public Node {
+protected:
+    VisitableNode(const StackFrame *reduction, size_t size): Node(reduction, size) {}
+
+    virtual bool accept(Visitor *visitor) override {return visitor->visit(static_cast<Impl*>(this));}
+    virtual void seeOff(Visitor *visitor) override {visitor->leave(static_cast<Impl*>(this));}
 };
 @numb_nact?;...
 
