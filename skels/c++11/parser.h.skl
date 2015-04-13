@@ -110,32 +110,40 @@ template<typename Func, class NodeSubclass>
 class FuncVisitor<Func, NodeSubclass, TopDown>: public Visitor
 {
 public:
-    FuncVisitor(Func func): func(func) {}
+    FuncVisitor(Func &&func): func(std::forward<Func>(func)) {}
 
-    virtual bool visit(NodeSubclass *node) override {return func(node);}
+    virtual bool visit(NodeSubclass *node) override {return std::forward<Func>(func)(node);}
 private:
-    Func func;
+    Func &&func;
 };
 
 template<typename Func, class NodeSubclass>
 class FuncVisitor<Func, NodeSubclass, BottomUp>: public Visitor
 {
 public:
-    FuncVisitor(Func func): func(func) {}
+    FuncVisitor(Func &&func): func(std::forward<Func>(func)) {}
 
-    virtual void leave(NodeSubclass *node) override {func(node);}
+    virtual void leave(NodeSubclass *node) override {std::forward<Func>(func)(node);}
 private:
-    Func func;
+    Func &&func;
 };
 
 } // namespace internals
 
 template<class NodeSubclass, WalkDirection dir, typename Walkable, typename Func>
 inline
-void walk(Walkable &walkable, Func func, int depth = -1)
+void walk(Walkable &walkable, Func &&func, int depth = -1)
 {
-    internals::FuncVisitor<Func, NodeSubclass, dir> visitor(func);
+    internals::FuncVisitor<Func, NodeSubclass, dir> visitor(std::forward<Func>(func));
     walkable.walk(&visitor, depth);
+}
+
+template<class NodeSubclass, WalkDirection dir, typename Walkable, typename Func>
+inline
+void walk(Walkable *walkable, Func &&func, int depth = -1)
+{
+    internals::FuncVisitor<Func, NodeSubclass, dir> visitor(std::forward<Func>(func));
+    walkable->walk(&visitor, depth);
 }
 
 class AST
