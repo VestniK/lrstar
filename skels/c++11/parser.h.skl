@@ -10,9 +10,6 @@
 #include <cstdint>
 #include <cstdlib>
 #include <exception>
-@numb_node?;...
-#include <functional>
-@@
 #include <memory>
 #include <vector>
 
@@ -98,39 +95,46 @@ protected:
     Visitor() {}
 };
 
-template<class T>
-class TopDownFuncVisitor: public Visitor
-{
-public:
-    TopDownFuncVisitor(std::function<bool(T*)> func): func(func) {}
-
-    virtual bool visit(T *node) override {return func(node);}
-private:
-    std::function<bool(T*)> func;
+enum WalkDirection {
+    /// Visit node then traverse children
+    TopDown,
+    /// Traverse children then visit node
+    BottomUp
 };
 
-template<class T>
-class BottomUpFuncVisitor: public Visitor
+namespace internals {
+
+template<typename Func, class NodeSubclass, WalkDirection dir> class FuncVisitor;
+
+template<typename Func, class NodeSubclass>
+class FuncVisitor<Func, NodeSubclass, TopDown>: public Visitor
 {
 public:
-    BottomUpFuncVisitor(std::function<void(T*)> func): func(func) {}
+    FuncVisitor(Func func): func(func) {}
 
-    virtual void leave(T *node) override {func(node);}
+    virtual bool visit(NodeSubclass *node) override {return func(node);}
 private:
-    std::function<void(T*)> func;
+    Func func;
 };
 
-template<class NodeSubclass, typename Walkable>
-void walkTopDown(Walkable &walkable, std::function<bool(NodeSubclass*)> func, int depth = -1)
+template<typename Func, class NodeSubclass>
+class FuncVisitor<Func, NodeSubclass, BottomUp>: public Visitor
 {
-    TopDownFuncVisitor<NodeSubclass> visitor(func);
-    walkable.walk(&visitor, depth);
-}
+public:
+    FuncVisitor(Func func): func(func) {}
 
-template<class NodeSubclass, typename Walkable>
-void walkBottomUp(Walkable &walkable, std::function<void(NodeSubclass*)> func, int depth = -1)
+    virtual void leave(NodeSubclass *node) override {func(node);}
+private:
+    Func func;
+};
+
+} // namespace internals
+
+template<class NodeSubclass, WalkDirection dir, typename Walkable, typename Func>
+inline
+void walk(Walkable &walkable, Func func, int depth = -1)
 {
-    BottomUpFuncVisitor<NodeSubclass> visitor(func);
+    internals::FuncVisitor<Func, NodeSubclass, dir> visitor(func);
     walkable.walk(&visitor, depth);
 }
 
@@ -145,8 +149,8 @@ public:
     std::vector<T*> getChildren(int depth = 1)
     {
         std::vector<T*> res;
-        walkTopDown<T>(*this, [&res](T *node) {res.push_back(node); return true;}, depth);
-        return res;
+        @grm_name;::walk<T, TopDown>(*this, [&res](T *node) {res.push_back(node); return true;}, depth);
+        return std::move(res);
     }
 
 private:
@@ -165,9 +169,12 @@ public:
     std::vector<T*> getChildren(int depth = 1)
     {
         std::vector<T*> res;
-        Node *self = this;
-        walkTopDown<T>(*this, [&res, self](T *node) {if (static_cast<Node*>(node) != self) res.push_back(node); return true;}, depth);
-        return res;
+        @grm_name;::walk<T, TopDown>(*this, [&res, this](T *node) {
+            if (static_cast<Node*>(node) != this)
+                res.push_back(node);
+            return true;
+        }, depth);
+        return std::move(res);
     }
 
     const TokenSequence &tokens() const {return srcTokens;}
@@ -264,7 +271,7 @@ private:
 
 @numb_node?;...
     void addNode(Node *node);
-    virtual std::vector<Node *> &roots() {return mRoots;}
+    virtual std::vector<Node *> &roots() override {return mRoots;}
 @@
 
 // Class data
