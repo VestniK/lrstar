@@ -11,6 +11,8 @@
 #include <cstdlib>
 #include <exception>
 #include <memory>
+#include <typeindex>
+#include <typeinfo>
 #include <vector>
 
 #include "@grm_name;lexer.h"
@@ -102,6 +104,8 @@ enum WalkDirection {
     BottomUp
 };
 
+constexpr int infinitDepth = -1;
+
 namespace internals {
 
 template<typename Func, class NodeSubclass, WalkDirection dir> class FuncVisitor;
@@ -132,7 +136,7 @@ private:
 
 template<class NodeSubclass, WalkDirection dir, typename Walkable, typename Func>
 inline
-void walk(Walkable &walkable, Func &&func, int depth = -1)
+void walk(Walkable &walkable, Func &&func, int depth = infinitDepth)
 {
     internals::FuncVisitor<Func, NodeSubclass, dir> visitor(std::forward<Func>(func));
     walkable.walk(&visitor, depth);
@@ -140,7 +144,7 @@ void walk(Walkable &walkable, Func &&func, int depth = -1)
 
 template<class NodeSubclass, WalkDirection dir, typename Walkable, typename Func>
 inline
-void walk(Walkable *walkable, Func &&func, int depth = -1)
+void walk(Walkable *walkable, Func &&func, int depth = infinitDepth)
 {
     internals::FuncVisitor<Func, NodeSubclass, dir> visitor(std::forward<Func>(func));
     walkable->walk(&visitor, depth);
@@ -151,7 +155,7 @@ class AST
 public:
     virtual ~AST() {}
 
-    void walk(Visitor *visitor, int depth = -1);
+    void walk(Visitor *visitor, int depth = infinitDepth);
 
     template<class T>
     std::vector<T*> getChildren(int depth = 1)
@@ -171,7 +175,7 @@ public:
     Node(const StackFrame *reduction, size_t size);
     virtual ~Node() {}
 
-    void walk(Visitor *visitor, int depth = -1);
+    void walk(Visitor *visitor, int depth = infinitDepth);
 
     template<class T>
     std::vector<T*> getChildren(int depth = 1)
@@ -189,7 +193,18 @@ public:
     const std::string &sourcePath() const {return src;}
     void setSourcePath(const std::string &val) {src = val;}
 
+    template<typename Res, typename Func, typename... Args>
+    inline
+    Res dispatch(Func &&func, Args... args) {
+        auto type = getVisitableType();
+        if (false) {}
+        @node_name.1|else if (type == std::type_index(typeid(%s))) return std::forward<Func>(func)(static_cast<%s*>(this), std::forward(args)...)\;||\n        |;
+        return std::forward<Func>(func)(this, std::forward(args)...);
+    }
+
 protected:
+    /// Returns type index of the nearest VisitableNode base class of a real node
+    virtual std::type_index getVisitableType() = 0;
     virtual bool accept(Visitor *visitor) = 0;
     virtual void seeOff(Visitor *visitor) = 0;
 
@@ -206,6 +221,7 @@ class VisitableNode: public Node {
 protected:
     VisitableNode(const StackFrame *reduction, size_t size): Node(reduction, size) {}
 
+    virtual std::type_index getVisitableType() override {return std::type_index(typeid(Impl));}
     virtual bool accept(Visitor *visitor) override {return visitor->visit(static_cast<Impl*>(this));}
     virtual void seeOff(Visitor *visitor) override {visitor->leave(static_cast<Impl*>(this));}
 };
