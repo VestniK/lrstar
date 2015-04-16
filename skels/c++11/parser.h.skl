@@ -198,8 +198,8 @@ public:
     Res dispatch(Func &&func, Args... args) {
         auto type = getVisitableType();
         if (false) {}
-        @node_name.1|else if (type == std::type_index(typeid(%s))) return std::forward<Func>(func)(static_cast<%s*>(this), std::forward(args)...)\;||\n        |;
-        return std::forward<Func>(func)(this, std::forward(args)...);
+        @node_name.1|else if (type == std::type_index(typeid(%s))) return std::forward<Func>(func)(static_cast<%s*>(this), std::forward<Args>(args)...)\;||\n        |;
+        return std::forward<Func>(func)(this, std::forward<Args>(args)...);
     }
 
 protected:
