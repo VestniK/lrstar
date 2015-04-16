@@ -216,10 +216,10 @@ private:
     std::string src;
 };
 
-template<typename Impl>
-class VisitableNode: public Node {
+template<typename Base, typename Impl>
+class Visitable: public Base {
 protected:
-    VisitableNode(const StackFrame *reduction, size_t size): Node(reduction, size) {}
+    Visitable(const StackFrame *reduction, size_t size): Base(reduction, size) {}
 
     virtual std::type_index getVisitableType() override {return std::type_index(typeid(Impl));}
     virtual bool accept(Visitor *visitor) override {return visitor->visit(static_cast<Impl*>(this));}
