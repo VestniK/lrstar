@@ -9,8 +9,9 @@
 
 #include <cstdint>
 #include <cstdlib>
-#include <exception>
+#include <stdexcept>
 #include <memory>
+#include <type_traits>
 #include <typeindex>
 #include <typeinfo>
 #include <vector>
@@ -193,18 +194,10 @@ public:
     const std::string &sourcePath() const {return src;}
     void setSourcePath(const std::string &val) {src = val;}
 
-    template<typename Res, typename Func, typename... Args>
-    inline
-    Res dispatch(Func &&func, Args... args) {
-        auto type = getVisitableType();
-        if (false) {}
-        @node_name.1|else if (type == std::type_index(typeid(%s))) return std::forward<Func>(func)(static_cast<%s*>(this), std::forward<Args>(args)...)\;||\n        |;
-        return std::forward<Func>(func)(this, std::forward<Args>(args)...);
-    }
-
-protected:
     /// Returns type index of the nearest VisitableNode base class of a real node
     virtual std::type_index getVisitableType() = 0;
+
+protected:
     virtual bool accept(Visitor *visitor) = 0;
     virtual void seeOff(Visitor *visitor) = 0;
 
@@ -216,12 +209,61 @@ private:
     std::string src;
 };
 
+template<typename Func, typename... Args>
+inline
+auto dispatch(Func &&func, Node *node, Args&&... args) {
+    auto type = node->getVisitableType();
+    if (false) {}
+    @node_name.1|else if (type == std::type_index(typeid(%s))) return std::forward<Func>(func)(static_cast<%s*>(node), std::forward<Args>(args)...)\;||\n        |;
+    return std::forward<Func>(func)(node, std::forward<Args>(args)...);
+}
+
+namespace internals {
+
+// simplified C++17 std::invoke to handle f(node, args...) and node->f(args...) cases properly
+template<bool memberFunc, typename NodeSubclass, typename Func, typename... Args> struct invoker;
+
+template<typename NodeSubclass, typename Func, typename... Args>
+struct invoker<false, NodeSubclass, Func, Args...> {
+    inline static auto invoke(Func &&func, NodeSubclass *node, Args&&... args) {
+        return std::forward<Func>(func)(node, std::forward<Args>(args)...);
+    }
+};
+
+template<typename NodeSubclass, typename Func, typename... Args>
+struct invoker<true, NodeSubclass, Func, Args...> {
+    inline static auto invoke(Func func, NodeSubclass *node, Args&&... args) {
+        return (node->*func)(std::forward<Args>(args)...);
+    }
+};
+
+} // namespace internals
+
+template<typename NodeSubclass, typename Func, typename... Args>
+inline
+auto invoke(Func &&func, Node *node, Args&&... args) {
+    typedef typename std::result_of<Func&&(NodeSubclass*, Args&&...)>::type Ret;
+    struct {
+        inline Ret operator() (Node *, Args&&...) {
+            throw std::invalid_argument("Attempt to invoke function on incorrect node type");
+        }
+        inline Ret operator() (NodeSubclass *node, Args&&...args) {
+            return internals::invoker<
+                std::is_member_function_pointer<Func>::value,
+                NodeSubclass, Func, Args...
+            >::invoke(std::forward<Func>(func), node, std::forward<Args>(args)...);
+        }
+        Func &&func;
+    } dispatchable = {std::forward<Func>(func)};
+    return dispatch(dispatchable, node, std::forward<Args>(args)...);
+}
+
 template<typename Base, typename Impl>
 class Visitable: public Base {
+    virtual std::type_index getVisitableType() override {return std::type_index(typeid(Impl));}
 protected:
     Visitable(const StackFrame *reduction, size_t size): Base(reduction, size) {}
 
-    virtual std::type_index getVisitableType() override {return std::type_index(typeid(Impl));}
     virtual bool accept(Visitor *visitor) override {return visitor->visit(static_cast<Impl*>(this));}
     virtual void seeOff(Visitor *visitor) override {visitor->leave(static_cast<Impl*>(this));}
 };
