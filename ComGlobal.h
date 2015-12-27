@@ -383,9 +383,8 @@
 //																																	//
 //		Global Variables 
 
-		extern char*  program;
-      extern char*  version;
-      extern char*  copywrt;
+extern const char* program;
+extern const char* version;
 
 		extern uchar  charcode[256]; 
 		extern uchar  numeric[256]; 

@@ -1,14 +1,10 @@
-
-		#ifdef LRSTAR
-      char* program = "LRSTAR";
-		#endif
-
-		#ifdef DFASTAR
-      char* program = "DFASTAR";
-		#endif
-
-      char* version = "6.6.003";
-      char* copywrt = "Copyright 2014 Paul B Mann";
+#if defined(LRSTAR)
+const char* program = "LRSTAR";
+#elif defined(DFASTAR)
+const char* program = "DFASTAR";
+#endif
+const char* version = "6.6.003";
+const char* copywrt = "Copyright 2014 Paul B Mann";
 
 		#ifdef  _DEBUG
   		#include "conio.h"
