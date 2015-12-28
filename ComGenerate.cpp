@@ -1,68 +1,67 @@
+#include "ComGlobal.h"
+#include "ComGenerate.h"
 
-		#include "ComGlobal.h"
-		#include "ComGenerate.h"
-		#ifdef LRSTAR
-		#include "PGGenerate.h"
-		#endif
-		#ifdef DFASTAR
-		#include "LGGenerate.h"
-		#endif
-				
-		char   	 Generate::str_char  [32];
-		char   	 Generate::str_uchar [32];
-		char   	 Generate::str_short [32];
-		char   	 Generate::str_ushort[32];
-		char   	 Generate::str_int   [32];
-		char   	 Generate::str_uint  [32];
-		char   	 Generate::str_charp [32];
-		int    	 Generate::num_char;
-		int    	 Generate::num_uchar;
-		int    	 Generate::num_short;
-		int    	 Generate::num_ushort;
-		int    	 Generate::num_int;
-		int    	 Generate::num_uint;
-		int    	 Generate::num_charp;
-		STAKTYPE  Generate::STAK[MAXTOP];
-		int   	 Generate::staktop;
-		int   	 Generate::maxtop;
-		char* 	 Generate::group_start;
-		char* 	 Generate::filep;
-		int   	 Generate::skip_code;
-		int   	 Generate::g_size;
-		char  	 Generate::in_group;
-		char  	 Generate::format[50];
-		int   	 Generate::width;
-		int   	 Generate::bytes_out;
-		int   	 Generate::first_err;
-		int   	 Generate::last_sep_l;
-		int   	 Generate::linenumb;
-		int   	 Generate::fd;
-		char  	 Generate::skl_fid [MAX_PATH];
-		char  	 Generate::out_fid [MAX_PATH];
-		int   	 Generate::count;
-		int   	 Generate::mult;
-		int   	 Generate::plus;
-		char  	 Generate::middle[2000];
-		char  	 Generate::sep[2000];
-		char  	 Generate::end[2000];
-		char  	 Generate::arg4[30];
-		char  	 Generate::arg5[30];
-		char  	 Generate::arg6[30];
-		int   	 Generate::middle_l;
-		int   	 Generate::sep_l;
-		int   	 Generate::end_l;
-		int   	 Generate::n_out;
-		char* 	 Generate::skel;
-		char* 	 Generate::skelbeg;
-		char* 	 Generate::skelend;
-		char* 	 Generate::buffer;
-		char* 	 Generate::buffptr;
-		char* 	 Generate::buffend;
-		int   	 Generate::operation_flag;
-		int   	 Generate::n_origlines;
-		int   	 Generate::n_addedlines;
-		int   	 Generate::max_outbuff;
-								 
+#if defined(LRSTAR)
+#   include "PGGenerate.h"
+#elif defined(DFASTAR)
+#   include "LGGenerate.h"
+#endif
+
+char   	 Generate::str_char  [32];
+char   	 Generate::str_uchar [32];
+char   	 Generate::str_short [32];
+char   	 Generate::str_ushort[32];
+char   	 Generate::str_int   [32];
+char   	 Generate::str_uint  [32];
+char   	 Generate::str_charp [32];
+int    	 Generate::num_char;
+int    	 Generate::num_uchar;
+int    	 Generate::num_short;
+int    	 Generate::num_ushort;
+int    	 Generate::num_int;
+int    	 Generate::num_uint;
+int    	 Generate::num_charp;
+STAKTYPE  Generate::STAK[MAXTOP];
+int   	 Generate::staktop;
+int   	 Generate::maxtop;
+char* 	 Generate::group_start;
+char* 	 Generate::filep;
+int   	 Generate::skip_code;
+int   	 Generate::g_size;
+char  	 Generate::in_group;
+char  	 Generate::format[50];
+int   	 Generate::width;
+int   	 Generate::bytes_out;
+int   	 Generate::first_err;
+int   	 Generate::last_sep_l;
+int   	 Generate::linenumb;
+int   	 Generate::fd;
+char  	 Generate::skl_fid [MAX_PATH];
+char  	 Generate::out_fid [MAX_PATH];
+int   	 Generate::count;
+int   	 Generate::mult;
+int   	 Generate::plus;
+char  	 Generate::middle[2000];
+char  	 Generate::sep[2000];
+char  	 Generate::end[2000];
+char  	 Generate::arg4[30];
+char  	 Generate::arg5[30];
+char  	 Generate::arg6[30];
+int   	 Generate::middle_l;
+int   	 Generate::sep_l;
+int   	 Generate::end_l;
+int   	 Generate::n_out;
+char* 	 Generate::skel;
+char* 	 Generate::skelbeg;
+char* 	 Generate::skelend;
+char* 	 Generate::buffer;
+char* 	 Generate::buffptr;
+char* 	 Generate::buffend;
+int   	 Generate::operation_flag;
+int   	 Generate::n_origlines;
+int   	 Generate::n_addedlines;
+int   	 Generate::max_outbuff;
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //																																 //
 

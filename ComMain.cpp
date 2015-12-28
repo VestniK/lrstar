@@ -114,16 +114,16 @@ const char* copywrt = "Copyright 2014 Paul B Mann";
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
 
-int   main (int na, char *arg[])
+int main(int argc, char** argv)
 {
 		printf ("\n%s %s %s.\n", program, version, copywrt);
-		if (na == 1) // No arguments after program name?
+		if (argc == 1) // No arguments after program name?
 		{
 			Options();
 			quit (0);
 		}
 
-		if (get_fid (arg[1], gdn, gfn, gft)) 
+		if (get_fid (argv[1], gdn, gfn, gft))
 		{
 			int i;
 			char dn[256], fn[256], ft[256];
@@ -181,28 +181,28 @@ int   main (int na, char *arg[])
 			prt_log     ("\nInput     %s ", grmfid);
 
 			InitOptions ();
-	      PRT_OPTNS (na, arg);
-			if (SET_OPTNS (na, arg) == 0) 
+	      PRT_OPTNS (argc, argv);
+			if (SET_OPTNS (argc, argv) == 0)
 			{
 				Terminate (0);
 			}
 
-			for (i = 2; i < na; )
+			for (i = 2; i < argc; )
 			{
 				#ifdef WINDOWS
-				if (arg[i][0] == '/') break;  // Options start.
+				if (argv[i][0] == '/') break;  // Options start.
 				#endif
 				#ifdef UNIX
-				if (arg[i][0] == '-') break;  // Options start.
+				if (argv[i][0] == '-') break;  // Options start.
 				#endif
-				if (GetSkeletonFilename (arg[i], i, na) == 0) Terminate (0);
+				if (GetSkeletonFilename (argv[i], i, argc) == 0) Terminate (0);
                                 ++i;
-				if (GetOutputFilename   (arg[i], i, na) == 0) Terminate (0);
+				if (GetOutputFilename   (argv[i], i, argc) == 0) Terminate (0);
                                 ++i;
 			}
 
 #if defined WINDOWS
-			if (get_fid (arg[0], dn, fn, ft)    == 0) Terminate (0);
+			if (get_fid (argv[0], dn, fn, ft)    == 0) Terminate (0);
 #elif defined UNIX
 			strcpy(dn, getenv("HOME"));
                         strcat(dn, "/");
@@ -211,30 +211,30 @@ int   main (int na, char *arg[])
 
 			#ifdef LRSTAR
 			int verbose = optn[PG_VERBOSE];
-			if (PG::Main (na, arg))
+			if (PG::Main (argc, argv))
 			#endif
 
 			#ifdef DFASTAR
 			int verbose = optn[LG_VERBOSE];
-    		if (LG::Main (na, arg))
+    		if (LG::Main (argc, argv))
 			#endif
 
 			{
     			int i = 2; 
 				int n = 0;
 				int r = 1; 
-				while (r > 0 && i < na)
+				while (r > 0 && i < argc)
 				{
 					#ifdef WINDOWS
-					if (arg[i][0] == '/') break;  // Options start.
+					if (argv[i][0] == '/') break;  // Options start.
 					#endif
 					#ifdef UNIX
-					if (arg[i][0] == '-') break;  // Options start.
+					if (argv[i][0] == '-') break;  // Options start.
 					#endif
-					if (r = GetSkeletonFilename (arg[i], i, na))
+					if (r = GetSkeletonFilename (argv[i], i, argc))
 					{
 						i++;
-						if (r = GetOutputFilename (arg[i], i, na))
+						if (r = GetOutputFilename (argv[i], i, argc))
 						{
 							i++; n++;
 							Generate::GenerateCode (sklfid, outfid, verbose); 
