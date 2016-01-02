@@ -546,7 +546,7 @@ extern const char* version;
 
 		extern void   number (int x, char* num);
 
-		extern int    open_log (char*);
+    extern int open_log(const char*);
 		extern int    open_grm (char*);
 		extern int    open_con (char*);
 		extern int    open_sta (char*);
@@ -557,7 +557,7 @@ extern const char* version;
 		extern void   prt_message (char* msgtype, char* msg, char* start, char* end, int linenumb);
 		extern void   prt_line_with_pointer (char* tokenstart, char* tokenend, int tokenlinenumb);
       extern void   prt_lst     (char*format,...);
-      extern void   prt_log     (char*format,...);
+    extern void prt_log(const char* format, ...);
     extern void prt_logonly(const char*format,...);
       extern int    prt_grm     (char*format,...);
       extern void   prt_con     (char*format,...);

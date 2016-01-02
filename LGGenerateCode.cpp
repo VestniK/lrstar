@@ -44,7 +44,7 @@
 //                                                                           //
 //    open_code                                                              //
       
-int   Generate::open_code (char* out_fid)
+int   Generate::open_code (const char* out_fid)
 {
       codefp = fopen (out_fid, "w");
       if (codefp == NULL)
@@ -68,16 +68,13 @@ void  Generate::close_code ()
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
 //    prt_code                                                               //
-      
-void  Generate::prt_code (char *format,...)
-{
-      va_list argptr;
-		if (codefp != NULL)
-		{
-	      va_start (argptr, format);
-		   vfprintf (codefp, format, argptr);
-			va_end (argptr);
-		}
+void Generate::prt_code(const char* format, ...) {
+    va_list argptr;
+    if (codefp != NULL) {
+        va_start(argptr, format);
+        vfprintf(codefp, format, argptr);
+        va_end(argptr);
+    }
 }
 
 void 	Generate::KEYWORD_OPTIMIZATION()

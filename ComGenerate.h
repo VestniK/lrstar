@@ -6,19 +6,18 @@
 
 		#ifdef DFASTAR
 		#include "LGComputeLA.h"
-		class Generate : public LGComputeLA
-		#endif
-
-		{
-			public:
+class Generate : public LGComputeLA
+#endif
+{
+public:
 			static int   	GenerateCode (char* sklfid, char* outfid, int verbose);
 			static int   	VALUE (int x);
 			static void  	EMIT (int x);
 			static void  	EMITSTR (int x);
 			static void  	EMITTYPE (int x);
 			static int 	 	OUTPUT_CODE ();
-			static int   	open_code (char* out_fid);
-			static void  	prt_code (char *format,...);
+    static int open_code (const char* out_fid);
+    static void prt_code(const char *format, ...);
 			static void  	close_code ();
 			static void  	KEYWORD_OPTIMIZATION();
 			static void    DO_SWITCH (int s);

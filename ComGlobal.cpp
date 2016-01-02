@@ -1,3 +1,4 @@
+#include <string>
 
 		#include "ComGlobal.h"
 		#ifdef LRSTAR
@@ -1447,21 +1448,15 @@ void  prt_sta (char *format,...)
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
-      
-int   open_log (char* fid)
-{
-		int i = strlen (fid);
-      strcat (fid, ".log.txt");
-   // chmod  (fid, S_IWRITE);
-  		logfp = fopen (fid, "w");
-		if (logfp == NULL)
-		{
-			printf ("\nLog file %s cannot be created.\n", fid);
-			fid[i] = 0;
-			return (0);
-		}  
-		fid[i] = 0;
-		return (1);
+int open_log(const char* fid) {
+    std::string file;
+    file += ".log.txt";
+    logfp = fopen(file.c_str(), "w");
+    if (logfp == NULL) {
+        printf ("\nLog file %s cannot be created.\n", fid);
+        return 0;
+    }
+    return 1;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1476,7 +1471,7 @@ int   close_log ()
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
       
-void  prt_log (char *format,...) // Print both on screen and to log file (if not quiet option).
+void prt_log(const char *format, ...) // Print both on screen and to log file (if not quiet option).
 {
       va_list argptr;
       va_start (argptr, format);
