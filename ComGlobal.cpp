@@ -285,8 +285,9 @@ int   SET_OPTN_MA (char* opt, char* fid, int linenumb)
 
 int   set_optn (OPTION* option, char* opt, char* fid, int linenumb)
 {
-      char *o, *a;
-      int  i, value;
+    char *o;
+    const char* a;
+    int  i, value;
 
 top:  value = 1;
       if (*opt == '"') opt++;
@@ -1491,16 +1492,14 @@ void  prt_log (char *format,...) // Print both on screen and to log file (if not
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
-      
-void  prt_logonly (char *format,...) // Print only to the log file (not on screen).
+void prt_logonly(const char* format, ...) // Print only to the log file (not on screen).
 {
-      va_list argptr;
-		if (logfp != NULL)
-		{
-			va_start (argptr, format);
-			vfprintf (logfp, format, argptr); // Print in log file.
-			va_end (argptr);
-		}
+    va_list argptr;
+    if (logfp != NULL) {
+        va_start(argptr, format);
+        vfprintf(logfp, format, argptr); // Print in log file.
+        va_end(argptr);
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1558,20 +1557,24 @@ void  prt_lst (char *format,...)
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
       
-void  prt_num (char* desc, int n, char* name, int max)
+void  prt_num (const char* desc, int n, const char* name, int max)
 {
-      char bar [11] = "**********";
-		char num [14] = "             ";
-		char num2[14] = "             ";
-		double pc;
-		if (max == 0) pc = 0;
-      else pc = 100.0*n/max;
-      bar[(int)pc/10] = 0;
-	  	number (n, num);
-	  	number (max, num2);
-      if (n > 0) prt_logonly ("%-28s %10s  \"%-6s = %10s\"  %3.0f %% %s\n", desc, num, name, num2, pc, bar);
-      else       prt_logonly ("%-28s %10s  \"%-6s = %10s\"  %3.0f %% %s\n", desc, num, name, num2, pc, bar);
-      bar[(int)pc/10] = '*';
+    char bar [11] = "**********";
+    char num [14] = "             ";
+    char num2[14] = "             ";
+    double pc;
+    if (max == 0)
+        pc = 0;
+    else
+        pc = 100.0*n/max;
+    bar[(int)pc/10] = 0;
+    number (n, num);
+    number (max, num2);
+    if (n > 0)
+        prt_logonly("%-28s %10s  \"%-6s = %10s\"  %3.0f %% %s\n", desc, num, name, num2, pc, bar);
+    else
+        prt_logonly("%-28s %10s  \"%-6s = %10s\"  %3.0f %% %s\n", desc, num, name, num2, pc, bar);
+    bar[(int)pc/10] = '*';
 }
 
 ///////////////////////////////////////////////////////////////////////////////

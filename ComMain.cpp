@@ -16,40 +16,40 @@ const char* copywrt = "Copyright 2014 Paul B Mann";
 
 		#ifdef LRSTAR
 		#include "PGGlobal.h"
-      OPTION PGOption[]= // Parser Generator Options
-		{
-			"a",			"Analyze the grammar only",									PG_ANALYZEONLY,      0,
-			"ast",		"Parser will build an AST",									PG_ASTCONST,			1,
-		//	"bm",		   "Boolean matrix (0=none,1=bytes,2=bits)",					PG_BOOLMATRIX,			2,
-			"c",			"Conflict report",												PG_CONFLICTS,			0,
-		  	"clr",		"Canonical LR(1) parser",										PG_CLR_PARSER,			0,
-			"ct",			"Conflict traceback information",							PG_CONFLICTTRACE,	   0,
-			"d",			"Debug option for generated parser",						PG_DEBUG,			   0,
-		// "dr",			"Default reductions",											PG_DEFAULTRED,		   1,
-			"e",			"Error count limit for grammar errors",					PG_ERRORCOUNT,	      500,
-			"eof",		"End-of-file character stops parsing",						PG_EOFINCLUDED,		1,
-			"exp",		"Expecting list for syntax errors (1,2)",					PG_EXPECTING,			0,
-			"g",			"Grammar listing (1,2)",										PG_GRAMMAR,				0,
-		//	"h",			"HTML grammar listing",											PG_HTML,					0,
-			"k",			"Keyword checking in grammar", 								PG_KEYWORDCHECK,		0,
-		  	"lalr",		"LALR(1) parser",													PG_LALR_PARSER,		0,
-		  	"lr",		   "Minimal LR(1) parser",											PG_LR_PARSER,			1,
-			"m",			"Minimize parser-table size",									PG_MINIMIZE,			0,
-			"na",			"Number of arguments for node actions",					PG_NODEARGS,			0,
-			"nd",			"Nondeterministic LR(k) parsing (1,2)",					PG_NONDETER,			0,
-			"o",			"Optimize parser speed",										PG_OPTIMIZE,			0,
-			"q",			"Quiet mode, minimal screen display",						PG_QUIET,				0,
-			"rr",			"Reduce-reduce conflicts only",								PG_REDUCEONLY,			0,
-			"s",			"State machine listing (1,2)",								PG_STATELIST,			0,
-		//	"sra",		"Shift-Reduce Actions in parser",							PG_SHIFTREDUCE,		1,
-			"tab",		"Tab setting in grammar (2,3,4)",							PG_TAB,					3,
-			"v",			"Verbose mode, output more information",					PG_VERBOSE,				1,
-			"w",			"Warnings listing",												PG_WARNINGS,			0,
-			"x",			"Defined by user (x=?)",										PG_OPTION_X,			0,
-			"y",			"Defined by user (y=?)",										PG_OPTION_Y,			0,
-			"z",			"Defined by user (z=?)",										PG_OPTION_Z,			0,
-			"",			"",																	0,				         0
-		};
+OPTION PGOption[]= // Parser Generator Options
+{
+    {"a", "Analyze the grammar only", PG_ANALYZEONLY, 0},
+    { "ast", "Parser will build an AST", PG_ASTCONST, 1},
+//     {"bm", "Boolean matrix (0=none,1=bytes,2=bits)", PG_BOOLMATRIX, 2},
+    {"c", "Conflict report", PG_CONFLICTS, 0},
+    {"clr", "Canonical LR(1) parser", PG_CLR_PARSER, 0},
+    {"ct", "Conflict traceback information", PG_CONFLICTTRACE, 0},
+    {"d", "Debug option for generated parser", PG_DEBUG, 0},
+//     {"dr", "Default reductions", PG_DEFAULTRED, 1},
+    {"e", "Error count limit for grammar errors", PG_ERRORCOUNT, 500},
+    {"eof", "End-of-file character stops parsing", PG_EOFINCLUDED, 1},
+    {"exp", "Expecting list for syntax errors (1,2)", PG_EXPECTING, 0},
+    {"g", "Grammar listing (1,2)", PG_GRAMMAR, 0},
+//     {"h", "HTML grammar listing", PG_HTML, 0},
+    {"k", "Keyword checking in grammar", PG_KEYWORDCHECK, 0},
+    {"lalr", "LALR(1) parser", PG_LALR_PARSER, 0},
+    {"lr", "Minimal LR(1) parser", PG_LR_PARSER, 1},
+    {"m", "Minimize parser-table size", PG_MINIMIZE, 0},
+    {"na", "Number of arguments for node actions", PG_NODEARGS, 0},
+    {"nd", "Nondeterministic LR(k) parsing (1,2)", PG_NONDETER, 0},
+    {"o", "Optimize parser speed", PG_OPTIMIZE, 0},
+    {"q", "Quiet mode, minimal screen display", PG_QUIET, 0},
+    {"rr", "Reduce-reduce conflicts only", PG_REDUCEONLY, 0},
+    {"s", "State machine listing (1,2)", PG_STATELIST, 0},
+//     {"sra", "Shift-Reduce Actions in parser", PG_SHIFTREDUCE, 1},
+    {"tab", "Tab setting in grammar (2,3,4)", PG_TAB, 3},
+    {"v", "Verbose mode, output more information", PG_VERBOSE, 1},
+    {"w", "Warnings listing", PG_WARNINGS, 0},
+    {"x", "Defined by user (x=?)", PG_OPTION_X, 0},
+    {"y", "Defined by user (y=?)", PG_OPTION_Y, 0},
+    {"z", "Defined by user (z=?)", PG_OPTION_Z, 0},
+    {"", "", 0, 0}
+};
 		#endif
 
 		#ifdef DFASTAR

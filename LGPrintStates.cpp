@@ -28,8 +28,8 @@
 
 void  LGPrintStates::PrintStates (int type)
 {
-		char *type_of_sm, *optstr;
-      int c, t, s, n, A, action, R, i, first_n, count, last_n, a, b, opt;
+    const char *type_of_sm, *optstr;
+    int c, t, s, n, A, action, R, i, first_n, count, last_n, a, b, opt;
 
 		switch (type)
 		{

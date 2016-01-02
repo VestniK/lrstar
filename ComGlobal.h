@@ -199,14 +199,13 @@
 //																																	//
 //		Typedefs
 
-		typedef struct OPTION
+		struct OPTION
 		{
-			char* name;
-			char* desc;
+			const char* name;
+			const char* desc;
 			int   numb;
 			int   defvalue;
-		}
-		OPTION;
+		};
 
       typedef struct	ITEM
       {
@@ -559,7 +558,7 @@ extern const char* version;
 		extern void   prt_line_with_pointer (char* tokenstart, char* tokenend, int tokenlinenumb);
       extern void   prt_lst     (char*format,...);
       extern void   prt_log     (char*format,...);
-      extern void   prt_logonly (char*format,...);
+    extern void prt_logonly(const char*format,...);
       extern int    prt_grm     (char*format,...);
       extern void   prt_con     (char*format,...);
       extern void   prt_sta     (char*format,...);
@@ -567,7 +566,7 @@ extern const char* version;
       extern void   prt_path    (int itm, int state);
       extern void   prt_pointer (int numb, char*line, char*object);
       extern void   prt_prod    (int p, int dot);
-		extern void   prt_num     (char* desc, int n, char* name, int max);
+    extern void prt_num(const char* desc, int n, const char* name, int max);
 		extern int	  prt_sym     (int s, char *sp, char** term_name, char** head_name);
 
 
