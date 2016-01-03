@@ -1,6 +1,5 @@
 
-#ifndef COMGLOBAL_H
-#define COMGLOBAL_H
+#pragma once
 
 		#ifndef WINDOWS
   		#define UNIX
@@ -612,5 +611,3 @@ extern const char* version;
 		extern void   TRAVERSE (int x);
 //                                                                           //
 ///////////////////////////////////////////////////////////////////////////////
-
-#endif

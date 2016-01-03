@@ -23,7 +23,6 @@ set(SRC
   LGMain.cpp
   LGOptimizeStates.cpp
   LGParser.cpp
-  LGPrintCode.cpp
   LGPrintGrammar.cpp
   LGPrintStates.cpp
   PGActions.cpp
