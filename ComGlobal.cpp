@@ -645,37 +645,6 @@ int   get_fid (char *arg, char *dir, char *fn, char *ft)
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
 
-char*	get_file (char *dir, char *fn, char *ft, int *nb, int flags)
-{
-      char  fid [MAX_PATH], *filep;
-      int   fl, n, fd;
-
-      strcpy (fid, dir);
-      strcat (fid, fn);
-      strcat (fid, ft);
-      if ((fd = open (fid, flags)) < 0)
-      {
-         *nb = 0;
-         return (NULL);
-      }
-      fl = _filelength (fd);
-      ALLOC (filep, fl+3);
-		*filep = '\n';											// Put newline at beginning.
-      n = read (fd, filep+1, fl);
-      close (fd);
-      if (n < 0) goto Err;
-		if (*(filep+n) != '\n') *(filep+n++) = '\n';	// Put newline there.
-      *nb = n;													// Don't include EOF.
-      return (filep);
-
-Err: 	n_errors++;
-		prt_log ("Read error on file %s.\n\n", fid);
-      return (NULL);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-
 #ifdef _DEBUG
 char* alloc (char *s, char*& x, int size, int n)
 {

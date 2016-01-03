@@ -114,7 +114,6 @@ public:
 			static int   	 staktop;
 			static int   	 maxtop;
 			static char* 	 group_start;
-			static char* 	 filep;
 			static int   	 skip_code;
 			static int   	 g_size;
 			static char  	 in_group;

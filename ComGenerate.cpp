@@ -1,3 +1,8 @@
+#include <algorithm>
+#include <vector>
+#include <fstream>
+#include <iterator>
+
 #include "ComGlobal.h"
 #include "ComGenerate.h"
 
@@ -25,7 +30,6 @@ STAKTYPE  Generate::STAK[MAXTOP];
 int   	 Generate::staktop;
 int   	 Generate::maxtop;
 char* 	 Generate::group_start;
-char* 	 Generate::filep;
 int   	 Generate::skip_code;
 int   	 Generate::g_size;
 char  	 Generate::in_group;
@@ -358,22 +362,30 @@ int   Generate::GenerateCode (char* sklfid, char* outfid, int verbose)
 		strcpy (skl_fid, sklfid);
 		strcpy (out_fid, outfid);
 
-   // Load skeleton file ...
-		filep = get_file (skl_fid, "", "", &nb, 0);
-		if (filep == NULL) return 0;
+    // Load skeleton file ...
+    std::vector<char> skeldata;
+    std::ifstream skel_stm(skl_fid);
+    if (!skel_stm)
+        return 0;
+    skel_stm.seekg(0, std::ios_base::end);
+    skeldata.reserve(skel_stm.tellg());
+    skel_stm.seekg(0, std::ios_base::beg);
+    std::copy(std::istream_iterator<char>(skel_stm), std::istream_iterator<char>(), std::back_inserter(skeldata));
+    if (nb == 0) {
+        if (++n_errors == 1)
+            prt_log ("\n");
+        prt_log ("Skeleton: %s  is empty!\n", skl_fid);
+        return 0;
+    }
 
-		skel = filep+1; // skip over '\n' at beginning.
-      if (nb == 0)
-      {
-         if (++n_errors == 1) prt_log ("\n");
-			prt_log ("Skeleton: %s  is empty!\n", skl_fid);
-         return (0);
-      }
+    if (verbose > 1)
+        prt_log("Skeleton: %s\n", skl_fid);
+    else
+        prt_logonly("Skeleton: %s\n", skl_fid);
 
-      if (verbose > 1) prt_log     ("Skeleton: %s\n", skl_fid);
-		else             prt_logonly ("Skeleton: %s\n", skl_fid);
-
-      skelend = skel + nb;
+    // TODO: elliminate those globals
+    skel = skeldata.data();
+    skelend = skel + skeldata.size();
 
       if (chmod (out_fid, S_IWRITE) == 0) // File can be written ?
       {
@@ -401,10 +413,9 @@ int   Generate::GenerateCode (char* sklfid, char* outfid, int verbose)
 				return (0);
 			}
 		}
-		INIT_VARS ();
-      EMIT_ALL (verbose);
-		FREE (filep, nb);
-		return (1);
+    INIT_VARS ();
+    EMIT_ALL (verbose);
+    return 1;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

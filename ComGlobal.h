@@ -525,7 +525,6 @@ extern const char* version;
       extern void   frea (char*& x, int size, int n);
 
       extern int    get_fid (char*arg, char*dir, char*fn, char*ft);
-      extern char*  get_file (char*dir, char*fn, char*ft, int *nb, int flags);
 		extern int 	  GetSkeletonFilename (char* arg, int i, int na);
 		extern int 	  GetOutputFilename (char* arg, int i, int na);
 		extern int    GetMaxValues  (const char* dn, const char* fn);
