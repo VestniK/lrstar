@@ -40,7 +40,7 @@ protected:
 			static char  	GET_OPER (char* p, int x);
 			static void	 	GET_STRINGS (char *p);
 			static void  	READ_VARS (char* p);
-			static int   	GET_STR (char* string);
+			static bool GET_STR (char* string);
 			static int   	GET_NUM (int& num);
 			static void  	DEF_TYPEA (int n); 
 			static void  	DEF_TYPEC (int n); 

@@ -1598,15 +1598,6 @@ int   inputi (char* end_symbol)
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
 
-void  inputt (void)
-{
-//    FREE (input_start-1, filesize+10);	// Free input buffer space.
-//	  	FREE (line_ptr, n_lines+5);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-
 void  prt_error (char* msg, char* start, char* end, int linenum)
 {
 		n_errors++;
@@ -2202,76 +2193,7 @@ void  C_CAMEFROM (int   n_states,
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
 
-void  T_CAMEFROM () // Terminate camefrom.
-{
-   // FREE (camefrom, sum);
-   // FREE (f_camefrom, n_states+1);
-}
-
 void  Terminate (int n)
 {
-		#ifdef _DEBUG
-	//	printf ("Terminating\n");
-		#endif
-      inputt ();
-	//	close_log ();
 		quit (n);
 }
-
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-
-void  SORTSYMB (int *s, char *start[], int n)
-{
-      char **p, *p2;
-      int   *L, L2, s2, i, j, leng, c;
-
-      ALLOC (p, n);
-      ALLOC (L, n);
-
-   // Define 's' array, sequence of items.
-      for (i = 0; i < n; i++)
-      {
-         p[i] = start [i];
-         L[i] = strlen (p[i]);
-         if (p[i][0] == '\'' || p[i][0] == '\"') // Quote (')?
-         {
-            p[i] += 1;
-            L[i] -= 2;
-         }
-         s[i] = i;
-      }
-
-   // Do bubble sort, 's' array will contain the sorted sequence.
-      for (i = 1; i < n; i++)
-      {
-         p2 = p[i];
-         L2 = L[i];
-         s2 = s[i];
-         j  = i - 1;
-         do 
-         {
-            leng = L[j];
-            if (L2 < L[j]) leng = L2;
-            c = strncmp (p2, p[j], leng);
-            if (c < 0 || (c == 0 && L2 < L[j]))
-            {
-               p[j+1] = p[j];
-               p[j]   = p2;
-               L[j+1] = L[j];
-               L[j]   = L2;
-               s[j+1] = s[j];
-               s[j]   = s2;
-            }
-            else break;
-         }
-         while (--j >= 0);
-      }
-
-      FREE (L, n);
-      FREE (p, n);
-}
-
-//                                                                           //
-///////////////////////////////////////////////////////////////////////////////
-

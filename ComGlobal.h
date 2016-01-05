@@ -532,7 +532,6 @@ extern const char* version;
 
 		extern int	  itsakeyword (char* terminal);
       extern int    inputi (char*);
-      extern void   inputt ();
 		extern void   InternalError (int n);
 
 		extern void   MemCrash (char* msg);

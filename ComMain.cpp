@@ -353,13 +353,9 @@ void  InitOptions ()
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
 
-void  quit (int rc)
+void quit(int rc)
 {
-		#ifdef _DEBUG
-	  	printf ("Press any key to continue ...\n");
-	  	while (!_kbhit());
-		#endif
-		exit (rc);
+    exit(rc);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

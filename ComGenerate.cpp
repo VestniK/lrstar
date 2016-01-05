@@ -1204,7 +1204,7 @@ void  Generate::READ_VARS (char* p)
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
 
-int   Generate::GET_STR (char* string)
+bool Generate::GET_STR(char* string)
 {
 		int i;
 		char *p, *q;
@@ -1214,7 +1214,7 @@ int   Generate::GET_STR (char* string)
 			skel = p+1;
 			while (*skel++ != '\n');
 			linenumb++;
-			return (0);
+			return false;
 		}
 		if (*p == '\n')
 		{
@@ -1223,7 +1223,7 @@ int   Generate::GET_STR (char* string)
 			Terminate (1);
 		/*	skel = p+1;
 			linenumb++; */
-			return (0);
+			return false;
 		}
 		p++;
 		for (q = p; *q != '"' && *q != '\n'; q++);
@@ -1240,7 +1240,7 @@ int   Generate::GET_STR (char* string)
 		}
 		string[i] = 0;
 		skel = q+1;
-		return (1);
+		return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

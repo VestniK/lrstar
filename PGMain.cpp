@@ -321,8 +321,6 @@ int   PG::Terminate (int rc)
       double dsec;
 		int i, min, sec, thou;
 
-      inputt ();
-
       if (optn[PG_VERBOSE] > 1)
       {
          optncount[MAX_SYM]   = Symtab::n_symbols;
