@@ -11,12 +11,11 @@ class Generate : public LGComputeLA
 {
 public:
     static bool GenerateCode(const char* sklfid, const char* outfid, int verbose);
-protected:
+private:
 			static int   	VALUE (int x);
 			static void  	EMIT (int x);
 			static void  	EMITSTR (int x);
 			static void  	EMITTYPE (int x);
-			static int 	 	OUTPUT_CODE ();
     static int open_code (const char* out_fid);
     static void prt_code(const char *format, ...);
 			static void  	close_code ();
@@ -42,12 +41,8 @@ protected:
 			static void  	READ_VARS (char* p);
 			static bool GET_STR (char* string);
 			static int   	GET_NUM (int& num);
-			static void  	DEF_TYPEA (int n); 
-			static void  	DEF_TYPEC (int n); 
-			static void  	DEF_TYPE (int *x, int n); 
-			static void  	DEF_TYPES (int *x, int n); 
-			static void  	DEF_T (int *x, int n, int min, int max); 
-			static void  	SkipRestOfLineOrBlock (char *s); 
+			static void  	DEF_T (int *x, int n, int min, int max);
+			static void  	SkipRestOfLineOrBlock (char *s);
 			static void	 	SkipBlock ();
 			static char* 	skip_rest_of_string (char* skel);
 			static char* 	skip_rest_of_code (char* sk);
@@ -64,27 +59,15 @@ protected:
 			static int   	OUTPUT (char* buffer, int leng);
 			static void  	DUMP_SKEL (char* start, char* end, char* newstart);
 			static void  	O_TERM_CONS (int* x, int n);
-			static void  	O_ARRAY (int *x, int n);
-			static void  	O_ARRAY_CHAR (char *x, int n);
-			static void  	O_TERM (char**s, int n);
-			static void  	O_HEAD (char**s, int n);
 			static void  	O_DATA (int i, int* data, char* text, char* str);
 			static void  	O_NA1 (char**s, int* npp, int n, int *seq);
-			static void  	O_NUMTXT (int *x, char**s, int n);
-			static void  	O_NUMTXT2(int *x, char**s, int n);
 			static void  	O_DEFCON (int *x, char**s, int n);
 			static void  	O_ONLY (char**s, int n, char ch);
 			static void  	O_ONLY2 (char**s, int n, char ch);
 			static void  	O_KEYWRD (char**s, int n);
 			static void  	O_SORTED (char**s, int n, int *seq);
 			static void  	O_SORTED2(int *s, int n, int *seq);
-			static void  	O_TXT (char**s, int n);
-			static void  	O_TXTN (char**s, int m, int n);
-			static void  	O_TXTSTR (char**s, int n);
-			static void  	PRT_ERR (char *p, int line);
 			static char* 	prt_line (int numb, char *line);
-			static void  	PUT_FILE (char* string, int leng);
-			static int   	SPRINT (char* format, int indx, int *data, int *text);
 			static char* 	GETFILESPEC ();
 			static void  	ISEOL (char*str);
 
@@ -96,7 +79,34 @@ protected:
 			static void  	O_NP1 (char**s, int n, int *chk);
 			static void  	O_NA1 (char**s, int n, int *seq, int *chk);
 			static void  	prt_pointer (int numb, char *line, char *object);
+protected:
+			static int 	 	OUTPUT_CODE ();
+			static void  	DEF_TYPE (int *x, int n);
+			static void  	DEF_TYPEA (int n);
+			static void  	DEF_TYPEC (int n);
+			static void  	DEF_TYPES (int *x, int n);
+			static void  	O_ARRAY (int *x, int n);
+			static void  	O_ARRAY_CHAR (char *x, int n);
+			static void  	O_NUMTXT (int *x, char**s, int n);
+			static void  	O_NUMTXT2(int *x, char**s, int n);
+			static void  	O_TERM (char**s, int n);
+			static void  	O_HEAD (char**s, int n);
+			static void  	O_TXT (char**s, int n);
+			static void  	O_TXTN (char**s, int m, int n);
+			static void  	O_TXTSTR (char**s, int n);
+			static void  	PRT_ERR (char *p, int line);
+			static void  	PUT_FILE (char* string, int leng);
+			static int   	SPRINT (char* format, int indx, int *data, int *text);
 
+protected:
+			static char  	 format[50];
+			static char  	 skl_fid [MAX_PATH];
+			static char  	 out_fid [MAX_PATH];
+			static int   	 linenumb;
+			static char* 	 skel;
+			static int   	 n_addedlines;
+
+private:
 			static char   	 str_char  [32];
 			static char   	 str_uchar [32];
 			static char   	 str_short [32];
@@ -118,15 +128,11 @@ protected:
 			static int   	 skip_code;
 			static int   	 g_size;
 			static char  	 in_group;
-			static char  	 format[50];
 			static int   	 width;
 			static int   	 bytes_out;
 			static int   	 first_err;
 			static int   	 last_sep_l;
-			static int   	 linenumb;
 			static int   	 fd;
-			static char  	 skl_fid [MAX_PATH];
-			static char  	 out_fid [MAX_PATH];
 			static int   	 count;
 			static int   	 mult;
 			static int   	 plus;
@@ -140,7 +146,6 @@ protected:
 			static int   	 sep_l;
 			static int   	 end_l;
 			static int   	 n_out;
-			static char* 	 skel;
 			static char* 	 skelbeg;
 			static char* 	 skelend;
 			static char* 	 buffer;
@@ -148,6 +153,5 @@ protected:
 			static char* 	 buffend;
 			static int   	 operation_flag;
 			static int   	 n_origlines;
-			static int   	 n_addedlines;
 			static int   	 max_outbuff;
 };
