@@ -5,6 +5,7 @@ if (WIN32)
   add_definitions(WINDOWS)
 else()
   add_definitions(-Wno-write-strings) # TODO: fix thise warnings instead of disabling
+  add_definitions(-std=c++14)
 endif()
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 

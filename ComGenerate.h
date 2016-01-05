@@ -10,7 +10,8 @@ class Generate : public LGComputeLA
 #endif
 {
 public:
-			static int   	GenerateCode (char* sklfid, char* outfid, int verbose);
+    static bool GenerateCode(const char* sklfid, const char* outfid, int verbose);
+protected:
 			static int   	VALUE (int x);
 			static void  	EMIT (int x);
 			static void  	EMITSTR (int x);
@@ -149,7 +150,4 @@ public:
 			static int   	 n_origlines;
 			static int   	 n_addedlines;
 			static int   	 max_outbuff;
-		};
-
-//																																 //
-///////////////////////////////////////////////////////////////////////////////////////////////////
+};

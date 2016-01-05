@@ -321,21 +321,17 @@ int   	 Generate::max_outbuff;
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
 
-int   Generate::GenerateCode (char* sklfid, char* outfid, int verbose)
+bool Generate::GenerateCode(const char* sklfid, const char* outfid, int verbose)
 {
-      int nb;
-		static int first = 1;
-
- 	//	printf ("-> GenerateCode\n");
-		if (first)
-		{
-			first = 0;
+    static bool first = true;
+    if (first) {
+			first = false;
 			#ifdef LRSTAR
   			for (int k = 0;; k++)	
 			{
 				code_table[k] = &(PGCodeTable[k]);
 				if (PGCodeTable[k].keyword[0] == '~') break;
-			}   
+			}
 			PGGenerate::Initialize();
 			#endif
 			#ifdef DFASTAR
@@ -343,7 +339,7 @@ int   Generate::GenerateCode (char* sklfid, char* outfid, int verbose)
 			{
 				code_table[k] = &(LGCodeTable[k]);
 				if (LGCodeTable[k].keyword[0] == '~') break;
-			}   
+			}
 			LGGenerate::Initialize();
 			#endif
 		}
@@ -364,18 +360,19 @@ int   Generate::GenerateCode (char* sklfid, char* outfid, int verbose)
 
     // Load skeleton file ...
     std::vector<char> skeldata;
-    std::ifstream skel_stm(skl_fid);
+    std::ifstream skel_stm(skl_fid, std::ios_base::binary);
     if (!skel_stm)
-        return 0;
+        return false;
+    skel_stm.unsetf(std::ios_base::skipws);
     skel_stm.seekg(0, std::ios_base::end);
-    skeldata.reserve(skel_stm.tellg());
+    skeldata.reserve(static_cast<size_t>(skel_stm.tellg()));
     skel_stm.seekg(0, std::ios_base::beg);
     std::copy(std::istream_iterator<char>(skel_stm), std::istream_iterator<char>(), std::back_inserter(skeldata));
-    if (nb == 0) {
+    if (skeldata.empty()) {
         if (++n_errors == 1)
             prt_log ("\n");
         prt_log ("Skeleton: %s  is empty!\n", skl_fid);
-        return 0;
+        return false;
     }
 
     if (verbose > 1)
@@ -393,14 +390,15 @@ int   Generate::GenerateCode (char* sklfid, char* outfid, int verbose)
          {
 	         if (++n_errors == 1) prt_log ("\n");
 				prt_log ("Output:   %s  cannot be rewritten!\n", out_fid);
-            return (0);
+            return false;
          }
       }
 
 		#ifdef DFASTAR
 		if (optn[LG_DIRECTCODE])
 		{
-			if (!open_code (out_fid)) return 0;
+			if (!open_code (out_fid))
+				return false;
 		}
 		else
 		#endif
@@ -410,12 +408,12 @@ int   Generate::GenerateCode (char* sklfid, char* outfid, int verbose)
 			{
 				if (++n_errors == 1) prt_log ("\n");
 				prt_log ("Output:   %s  cannot be created!\n", out_fid);
-				return (0);
+				return false;
 			}
 		}
     INIT_VARS ();
     EMIT_ALL (verbose);
-    return 1;
+    return true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
