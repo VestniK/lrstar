@@ -1,7 +1,8 @@
 #include <algorithm>
-#include <vector>
 #include <fstream>
 #include <iterator>
+#include <string>
+#include <vector>
 
 #include "ComGlobal.h"
 #include "ComGenerate.h"
@@ -12,13 +13,6 @@
 #   include "LGGenerate.h"
 #endif
 
-char   	 Generate::str_char  [32];
-char   	 Generate::str_uchar [32];
-char   	 Generate::str_short [32];
-char   	 Generate::str_ushort[32];
-char   	 Generate::str_int   [32];
-char   	 Generate::str_uint  [32];
-char   	 Generate::str_charp [32];
 int    	 Generate::num_char;
 int    	 Generate::num_uchar;
 int    	 Generate::num_short;
@@ -332,7 +326,6 @@ bool Generate::GenerateCode(const char* sklfid, const char* outfid, int verbose)
 				code_table[k] = &(PGCodeTable[k]);
 				if (PGCodeTable[k].keyword[0] == '~') break;
 			}
-			PGGenerate::Initialize();
 			#endif
 			#ifdef DFASTAR
   			for (int k = 0;; k++)	
@@ -340,9 +333,9 @@ bool Generate::GenerateCode(const char* sklfid, const char* outfid, int verbose)
 				code_table[k] = &(LGCodeTable[k]);
 				if (LGCodeTable[k].keyword[0] == '~') break;
 			}
-			LGGenerate::Initialize();
 			#endif
-		}
+        initialize();
+    }
 
       first_err    = 1;
 		n_origlines  = 0;
@@ -420,80 +413,56 @@ bool Generate::GenerateCode(const char* sklfid, const char* outfid, int verbose)
 //                                                                           //
 
 #ifdef LRSTAR
-void  PGGenerate::Initialize ()
+void PGGenerate::initialize()
 {
-		static int firsttime = 1;
-		if (firsttime)
-		{
-			firsttime = 0;
-			if (N_args == 0) 
-			{
-				N_args = 1;
-				Arg_numb[0] = 0;
-			}
-			if (N_strings == 0) 
-			{
-				N_strings = 1; 
-				char* nullstr;
-				nullstr = (char*)malloc(4);
-				strcpy (nullstr, "\"\"");
-				Str_start[0] = nullstr;
-			}
-		// AST construction turned off ?
-			if (optn[PG_ASTCONST] == 0) 
-			{
-				N_nodes = 0;
-				N_nacts = 0;
-				for (int i = 0; i < N_prods; i++) Node_numb[i] = -1;
-			}
-		// No token actions ?
-			if (N_tacts == 0) 
-			{
-				N_targs = 1;
-				F_targ[0] = 0;
-			}
-			else
-			{
-				N_targs = N_terms;
-			}
-		// No parse actions and no nodes ?
-			if (N_pacts == 0 && N_nodes == 0) 
-			{
-				N_pargs = 1;
-				F_parg[0] = 0;
-			}
-			else
-			{
-				N_pargs = N_prods;
-			}
-		// No node actions ?
-			if (N_nacts == 0) 
-			{
-				N_nargs = 1;
-				F_narg[0] = 0;
-			}
-			else
-			{
-				N_nargs = N_prods;
-			}
-		}
-}
-#endif
-
-#ifdef DFASTAR
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-
-void  LGGenerate::Initialize ()
-{
-		/* nothing */
+    static bool firsttime = true;
+    if (firsttime)
+        firsttime = false;
+    else
+        return;
+    if (N_args == 0) {
+        N_args = 1;
+        Arg_numb[0] = 0;
+    }
+    if (N_strings == 0) {
+        N_strings = 1;
+        char* nullstr;
+        nullstr = (char*)malloc(4);
+        strcpy (nullstr, "\"\"");
+        Str_start[0] = nullstr;
+    }
+    // AST construction turned off ?
+    if (optn[PG_ASTCONST] == 0) {
+        N_nodes = 0;
+        N_nacts = 0;
+        for (int i = 0; i < N_prods; i++)
+            Node_numb[i] = -1;
+    }
+    // No token actions ?
+    if (N_tacts == 0) {
+        N_targs = 1;
+        F_targ[0] = 0;
+    } else
+        N_targs = N_terms;
+    // No parse actions and no nodes ?
+    if (N_pacts == 0 && N_nodes == 0) {
+        N_pargs = 1;
+        F_parg[0] = 0;
+    } else
+        N_pargs = N_prods;
+    // No node actions ?
+    if (N_nacts == 0) {
+        N_nargs = 1;
+        F_narg[0] = 0;
+    } else
+    N_nargs = N_prods;
 }
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
 
-void	Generate::INIT_VARS ()
+void Generate::INIT_VARS()
 {
 		strcpy (str_char,      "char"          );
 		strcpy (str_uchar,     "unsigned char" );
@@ -548,7 +517,7 @@ void  Generate::EMIT_ALL (int verbose)
       chmod (out_fid, S_IREAD); // Make output file read-only.
 }
 
-void  Generate::SCAN ()
+void Generate::SCAN ()
 {
       while (skel < skelend)
       {
@@ -737,28 +706,28 @@ void	Generate::UNSTAKCOND() // Unstack conditional status.
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
 
-char*	Generate::READ_CODE (char* sk) // sk -> @
+char* Generate::READ_CODE(char* sk) // sk -> @
 {
       char *p, c;
-		int x, result = 1, oper = 1, value, vx;
+		int x, result = 1, oper = 1, val, vx;
 		skel = sk;
 
       p = GETCODENUM (++skel, x); // If skeleton code name is bad, this terminates.
 		switch (c = GET_OPER (p, x))
 		{
 			case '?':
-Quest:		value = VALUE(x);
-				if (value != 0) value = 1;
-				if (oper == 0) result |= value;
-				else           result &= value;
+Quest:		val = value(x);
+				if (val != 0) val = 1;
+				if (oper == 0) result |= val;
+				else           result &= val;
 				goto Check;
 
 			case '!':
-Excl:			value = VALUE(x);
-				if (value == 0) value = 1;
-				else            value = 0;
-				if (oper == 0) result |= value;
-				else           result &= value;
+Excl:			val = value(x);
+				if (val == 0) val = 1;
+				else            val = 0;
+				if (oper == 0) result |= val;
+				else           result &= val;
 
 Check:		if (*++skel == ';')
 				{
@@ -792,17 +761,17 @@ Name:			p = GETCODENUM (++skel, x); // If skeleton code name is bad, this termin
 				goto Err3;
 
 			case '.':
-Eq:			vx = VALUE(x);
+Eq:			vx = value(x);
    			if (strncmp (skel, ".eq.", 4) == 0)
 				{
 					skel += 4;
 					char* num = skel;
 					while (numeric[*skel]) skel++;
 					if (skel == num) goto Err4; // No numeric characters?
-					if (vx == atoi(num)) value = 1;
-					else                 value = 0;
-					if (oper == 0) result |= value;
-					else           result &= value;
+					if (vx == atoi(num)) val = 1;
+					else                 val = 0;
+					if (oper == 0) result |= val;
+					else           result &= val;
 					if (*skel == '.') goto Or;
 					if (*skel == ';') goto Ret;
 					goto Err2;
@@ -813,10 +782,10 @@ Eq:			vx = VALUE(x);
 					char* num = skel;
 					while (numeric[*skel]) skel++;
 					if (skel == num) goto Err4; // No numeric characters?
-					if (vx != atoi(num)) value = 1;
-					else                 value = 0;
-					if (oper == 0) result |= value;
-					else           result &= value;
+					if (vx != atoi(num)) val = 1;
+					else                 val = 0;
+					if (oper == 0) result |= val;
+					else           result &= val;
 					if (*skel == '.') goto Or;
 					if (*skel == ';') goto Ret;
 					goto Err2;
@@ -827,10 +796,10 @@ Eq:			vx = VALUE(x);
 					char* num = skel;
 					while (numeric[*skel]) skel++;
 					if (skel == num) goto Err4; // No numeric characters?
-					if (vx >  atoi(num)) value = 1;
-					else                 value = 0;
-					if (oper == 0) result |= value;
-					else           result &= value;
+					if (vx >  atoi(num)) val = 1;
+					else                 val = 0;
+					if (oper == 0) result |= val;
+					else           result &= val;
 					if (*skel == '.') goto Or;
 					if (*skel == ';') goto Ret;
 					goto Err2;
@@ -841,10 +810,10 @@ Eq:			vx = VALUE(x);
 					char* num = skel;
 					while (numeric[*skel]) skel++;
 					if (skel == num) goto Err4; // No numeric characters?
-					if (vx >= atoi(num)) value = 1;
-					else                 value = 0;
-					if (oper == 0) result |= value;
-					else           result &= value;
+					if (vx >= atoi(num)) val = 1;
+					else                 val = 0;
+					if (oper == 0) result |= val;
+					else           result &= val;
 					if (*skel == '.') goto Or;
 					if (*skel == ';') goto Ret;
 					goto Err2;
@@ -855,10 +824,10 @@ Eq:			vx = VALUE(x);
 					char* num = skel;
 					while (numeric[*skel]) skel++;
 					if (skel == num) goto Err4; // No numeric characters?
-					if (vx <  atoi(num)) value = 1;
-					else                 value = 0;
-					if (oper == 0) result |= value;
-					else           result &= value;
+					if (vx <  atoi(num)) val = 1;
+					else                 val = 0;
+					if (oper == 0) result |= val;
+					else           result &= val;
 					if (*skel == '.') goto Or;
 					if (*skel == ';') goto Ret;
 					goto Err2;
@@ -869,10 +838,10 @@ Eq:			vx = VALUE(x);
 					char* num = skel;
 					while (numeric[*skel]) skel++;
 					if (skel == num) goto Err4; // No numeric characters?
-					if (vx <= atoi(num)) value = 1;
-					else                 value = 0;
-					if (oper == 0) result |= value;
-					else           result &= value;
+					if (vx <= atoi(num)) val = 1;
+					else                 val = 0;
+					if (oper == 0) result |= val;
+					else           result &= val;
 					if (*skel == '.') goto Or;
 					if (*skel == ';') goto Ret;
 					goto Err2;
@@ -881,17 +850,17 @@ Eq:			vx = VALUE(x);
 
 			case 'd':
 				skel++;
-				EMIT_NUM (VALUE (x));
+				EMIT_NUM (value(x));
 				return (skel+1);
 
 			case 's':
 				skel++;
-				EMITSTR (x);
+				emitStr(x);
 				return (skel+1);
 
 			case 't':
 				skel++;
-				EMITTYPE (x);
+				emitType(x);
 				if (*format == 0) strcpy (format, "%t");
 				SPRINT (format, 0, (int*)string, (int*)string);
 				return (skel+1);
@@ -899,17 +868,14 @@ Eq:			vx = VALUE(x);
 			case '|': // operator was a <number>
 				skel++;
 				GET_STRINGS (skel);
-				EMIT (x);
+				emit(x);
 				return (skel);
 
 			case ';':
 				skel++;
 				if (code_table[x]->operators[0] == 's')
-				{
-					EMITSTR (x);
-				}
-				else
-				{
+					emitStr(x);
+				else {
 					skel--;
 					PRT_ERR (skel, linenumb);
 					prt_log ("%s(%04d) : Default string type not valid for skeleton name \"%s\"\n\n",
@@ -939,58 +905,6 @@ Err5: PRT_ERR (skel, linenumb);
 		prt_log ("%s(%04d) : Expecting '.eq.', '.ne.', '.ge.', or '.lt.'\n\n", skl_fid, linenumb);
 		Terminate (n_errors);
 		return (0);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-
-int   Generate::VALUE (int x)
-{
-		#ifdef LRSTAR
-			return (PGGenerate::VALUE (x));
-		#endif
-		#ifdef DFASTAR
-			return (LGGenerate::VALUE (x));
-		#endif
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-
-void  Generate::EMIT (int x)
-{
-		#ifdef LRSTAR
-			PGGenerate::EMIT (x);
-		#endif
-		#ifdef DFASTAR
-			LGGenerate::EMIT (x);
-		#endif
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-
-void  Generate::EMITSTR (int x)
-{
-		#ifdef LRSTAR
-			PGGenerate::EMITSTR (x);
-		#endif
-		#ifdef DFASTAR
-			LGGenerate::EMITSTR (x);
-		#endif
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-
-void  Generate::EMITTYPE (int x)
-{
-		#ifdef LRSTAR
-			PGGenerate::EMITTYPE (x);
-		#endif
-		#ifdef DFASTAR
-			LGGenerate::EMITTYPE (x);
-		#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1268,18 +1182,18 @@ void  Generate::DEF_TYPEA (int n) // address type (char*).
 		strcpy (string, str_charp);
 }
 
-void  Generate::DEF_TYPEC (int n) // unsigned char.
+void Generate::DEF_TYPEC (int n) // unsigned char.
 {
 		g_size += num_uchar*n;
 		strcpy (string, str_uchar);
 }
 
-void  Generate::DEF_TYPE (int *x, int n) // signed or unsigned type.
+void Generate::DEF_TYPE (int *x, int n) // signed or unsigned type.
 {
 		DEF_T (x, n, 0, 0);
 }
 
-void  Generate::DEF_TYPES (int *x, int n) // signed only
+void Generate::DEF_TYPES (int *x, int n) // signed only
 {
 		DEF_T (x, n, -1, 0);
 }
@@ -1604,25 +1518,24 @@ int   Generate::GET_STRING (char *string, int size)
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
 
-int   Generate::GETN (char* p)
+int Generate::GETN(const char* p)
 {
-      int n;
-      p = READNUM (p, &n);
-      if (p == skel)
-      {
-         PRT_ERR (p, linenumb);
-         prt_log ("%s(%04d) : Non numeric value.\n\n", skl_fid, linenumb);
-			Terminate (1);
-         return (0);
-      }
-      skel = p;
-      return (n);
+    int n;
+    p = READNUM (p, &n);
+    if (p == skel) {
+        PRT_ERR(p, linenumb);
+        prt_log("%s(%04d) : Non numeric value.\n\n", skl_fid, linenumb);
+        Terminate(1);
+        return 0;
+    }
+    skel = const_cast<char*>(p); // TODO
+    return n;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
 
-char* Generate::READNUM (char *p, int *num)
+const char* Generate::READNUM(const char *p, int *num)
 {
       int n = 0;
       if (isdigit (*p))
@@ -1638,7 +1551,7 @@ char* Generate::READNUM (char *p, int *num)
          }
       }
       *num = n;
-      return (p);
+      return p;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2306,14 +2219,14 @@ int   Generate::OUTPUT (char* buffer, int leng) // If leng <= 32767.
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
 
-void  Generate::PRT_ERR (char *p, int line_num)
+void Generate::PRT_ERR(const char *p, int line_num)
 {
-		if (++n_errors == 1) prt_log ("\n");
-		char* s = p;
-      while (*--s != '\n'); // Back up to beginning of line.
-      s++;
-      prt_line (line_num, s);
-      prt_pointer (line_num, s, p);
+    if (++n_errors == 1) prt_log ("\n");
+    const char* s = p;
+    while (*--s != '\n'); // Back up to beginning of line.
+    s++;
+    prt_line(line_num, s);
+    prt_pointer(line_num, s, p);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2350,13 +2263,13 @@ void  Generate::DUMP_SKEL (char* start, char* end, char* newstart)
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
 
-int   Generate::SPRINT (char* format, int indx, int* data, int* text)
+int Generate::SPRINT(const char* format, int indx, int* data, int* text)
 {
-      int   n, leng;
-		char  *p, *o, s[16];
+    int   n, leng;
+    char *o, s[16];
 
       o = buffptr;
-      for (p = format; *p != 0;)
+      for (const char* p = format; *p != 0;)
       {
          if (*p == '%')
          {
@@ -2506,44 +2419,36 @@ String:        leng = strlen ((char*)text);
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
 
-char* Generate::prt_line (int numb, char *line)
+const char* Generate::prt_line(int numb, const char* line)
 {
-      char *p, *x;
-      if (*line != 26)
-      {
-			p = line;
-			while (*p != '\n' && *p != 26) p++;
-			if (*p == 26) goto Ret;
-         *p = 0;
-		   for (x = line; x < p; x++)
-			{
-				if (*x == '\t') *x = ' ';
-			}
-         prt_log ("%s(%04d) : %s\n", skl_fid, numb, line);
-         *p = '\n';
-         return (p+1);
-      }
-Ret:  return (line+1); /* Bump past EOF to avoid hang up. */
+    std::string to_print;
+    to_print.reserve(256);
+    const char* p = line;
+    for (; *p != 26 && *p != '\n'; ++p) {
+        if (*p == '\t')
+            to_print.push_back(' ');
+        else
+            to_print.push_back(*p);
+    }
+    if (p != line)
+        prt_log("%s(%04d) : %s\n", skl_fid, numb, to_print.c_str());
+    return p + 1;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
 
-void  Generate::prt_pointer (int numb, char *line, char *object) /* Print pointer (-------------^) */
+void Generate::prt_pointer(int numb, const char *line, const char *object) /* Print pointer (-------------^) */
 {
-      int col = 8;
-      char string [256];
-		col = object - line;
-      memset (string, '-', col);
-      string [col] = 0;
-      prt_log ("%s(%04d) : %s^\n", skl_fid, numb, string);
+    int col = object - line;
+    char string[256];
+    memset(string, '-', col);
+    string[col] = 0;
+    prt_log("%s(%04d) : %s^\n", skl_fid, numb, string);
 }
 
 #ifdef LRSTAR
-///////////////////////////////////////////////////////////////////////////////////////////////////
-//																																 //
-
-void  PGGenerate::EMIT (int i)
+void PGGenerate::emit(int i)
 {
       switch (code_table[i]->number)
       {
@@ -2624,7 +2529,7 @@ void  PGGenerate::EMIT (int i)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //																																 //
 
-void  LGGenerate::EMIT (int i)
+void  LGGenerate::emit(int i)
 {
       switch (code_table[i]->number)
       {
@@ -2651,7 +2556,7 @@ void  LGGenerate::EMIT (int i)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //																																 //
 
-void  PGGenerate::EMITTYPE (int i)
+void  PGGenerate::emitType(int i)
 {
       switch (code_table[i]->number)
       {
@@ -2738,7 +2643,7 @@ void  PGGenerate::EMITTYPE (int i)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //																																 //
 
-void  LGGenerate::EMITTYPE (int i)
+void  LGGenerate::emitType(int i)
 {
       switch (code_table[i]->number)
       {
@@ -2768,10 +2673,7 @@ void  LGGenerate::EMITTYPE (int i)
 #endif
 
 #ifdef LRSTAR
-///////////////////////////////////////////////////////////////////////////////////////////////////
-//																																 //
-
-int   PGGenerate::VALUE (int i)
+int PGGenerate::value(int i)
 {
       int n;
       switch (code_table[i]->number)
@@ -2893,10 +2795,7 @@ int   PGGenerate::VALUE (int i)
 #endif
 
 #ifdef DFASTAR
-///////////////////////////////////////////////////////////////////////////////////////////////////
-//																																 //
-
-int   LGGenerate::VALUE (int i)
+int LGGenerate::value(int i)
 {
       int n;
       switch (code_table[i]->number)
@@ -2942,10 +2841,7 @@ int   LGGenerate::VALUE (int i)
 #endif
 
 #ifdef LRSTAR
-///////////////////////////////////////////////////////////////////////////////////////////////////
-//																																 //
-
-void  PGGenerate::EMITSTR (int i)
+void PGGenerate::emitStr(int i)
 {
       static char charstring[256];
       charstring[0] = 0;
@@ -3002,7 +2898,7 @@ void  PGGenerate::EMITSTR (int i)
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //																																 //
 
-void  LGGenerate::EMITSTR (int i)
+void LGGenerate::emitStr(int i)
 {
       static char charstring[256];
       charstring[0] = 0;
@@ -3071,6 +2967,3 @@ void  LGGenerate::EMITSTR (int i)
       SPRINT (format, 0, (int*)charstring, (int*)charstring);
 }
 #endif
-
-//																																 //
-///////////////////////////////////////////////////////////////////////////////////////////////////

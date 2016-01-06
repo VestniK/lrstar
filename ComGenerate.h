@@ -10,12 +10,16 @@ class Generate : public LGComputeLA
 #endif
 {
 public:
-    static bool GenerateCode(const char* sklfid, const char* outfid, int verbose);
+    bool GenerateCode(const char* sklfid, const char* outfid, int verbose);
+
+protected:
+    virtual void initialize() = 0; // TODO: use constructor Luke
+    virtual int value(int x) = 0;
+    virtual void emit(int x) = 0;
+    virtual void emitStr(int x) = 0;
+    virtual void emitType(int x) = 0;
+
 private:
-			static int   	VALUE (int x);
-			static void  	EMIT (int x);
-			static void  	EMITSTR (int x);
-			static void  	EMITTYPE (int x);
     static int open_code (const char* out_fid);
     static void prt_code(const char *format, ...);
 			static void  	close_code ();
@@ -29,19 +33,19 @@ private:
 			static void  	p_prod (int p, int dot, char *before, char* after);
 			static int	 	p_sym (int s, char *sp);
 
-			static void	 	INIT_VARS ();
-			static void  	EMIT_ALL (int verbose);
-			static void  	SCAN ();
+    void INIT_VARS();
+    void EMIT_ALL(int verbose);
+    void SCAN();
 			static void	 	STAKCOND();		
 			static void	 	UNSTAKCOND();	
-			static char* 	READ_CODE (char* sk); 
+    char* READ_CODE (char* sk);
 			static char* 	GETCODENUM (char *keyword, int& x);
 			static char  	GET_OPER (char* p, int x);
 			static void	 	GET_STRINGS (char *p);
-			static void  	READ_VARS (char* p);
+    void READ_VARS(char* p);
 			static bool GET_STR (char* string);
 			static int   	GET_NUM (int& num);
-			static void  	DEF_T (int *x, int n, int min, int max);
+    void DEF_T (int *x, int n, int min, int max);
 			static void  	SkipRestOfLineOrBlock (char *s);
 			static void	 	SkipBlock ();
 			static char* 	skip_rest_of_string (char* skel);
@@ -50,8 +54,8 @@ private:
 			static char* 	skip_rest_of_comment (char* skel);
 			static void  	ERASE ();
 			static int   	GET_STRING (char *string, int size);
-			static int   	GETN (char* p);
-			static char* 	READNUM (char *p, int *num);
+    static int GETN(const char* p);
+    static const char* READNUM (const char* p, int* num);
 			static void  	EMIT_NUM (int num);
 
 			static int   	FIRSTNB (char *p);
@@ -67,7 +71,7 @@ private:
 			static void  	O_KEYWRD (char**s, int n);
 			static void  	O_SORTED (char**s, int n, int *seq);
 			static void  	O_SORTED2(int *s, int n, int *seq);
-			static char* 	prt_line (int numb, char *line);
+    static const char* prt_line (int numb, const char* line);
 			static char* 	GETFILESPEC ();
 			static void  	ISEOL (char*str);
 
@@ -78,13 +82,13 @@ private:
 			static void  	O_BITNO (char *x, int n);
 			static void  	O_NP1 (char**s, int n, int *chk);
 			static void  	O_NA1 (char**s, int n, int *seq, int *chk);
-			static void  	prt_pointer (int numb, char *line, char *object);
+    static void prt_pointer(int numb, const char* line, const char* object);
 protected:
 			static int 	 	OUTPUT_CODE ();
-			static void  	DEF_TYPE (int *x, int n);
-			static void  	DEF_TYPEA (int n);
-			static void  	DEF_TYPEC (int n);
-			static void  	DEF_TYPES (int *x, int n);
+    void DEF_TYPE(int* x, int n);
+    void DEF_TYPEA(int n);
+    void DEF_TYPEC(int n);
+    void DEF_TYPES(int* x, int n);
 			static void  	O_ARRAY (int *x, int n);
 			static void  	O_ARRAY_CHAR (char *x, int n);
 			static void  	O_NUMTXT (int *x, char**s, int n);
@@ -94,26 +98,26 @@ protected:
 			static void  	O_TXT (char**s, int n);
 			static void  	O_TXTN (char**s, int m, int n);
 			static void  	O_TXTSTR (char**s, int n);
-			static void  	PRT_ERR (char *p, int line);
+    static void PRT_ERR(const char *p, int line);
 			static void  	PUT_FILE (char* string, int leng);
-			static int   	SPRINT (char* format, int indx, int *data, int *text);
+    static int SPRINT(const char* format, int indx, int *data, int *text);
 
 protected:
-			static char  	 format[50];
 			static char  	 skl_fid [MAX_PATH];
 			static char  	 out_fid [MAX_PATH];
 			static int   	 linenumb;
 			static char* 	 skel;
 			static int   	 n_addedlines;
+			static char  	 format[50];
 
 private:
-			static char   	 str_char  [32];
-			static char   	 str_uchar [32];
-			static char   	 str_short [32];
-			static char   	 str_ushort[32];
-			static char   	 str_int   [32];
-			static char   	 str_uint  [32];
-			static char   	 str_charp [32];
+    char str_char[32];
+    char str_uchar[32];
+    char str_short[32];
+    char str_ushort[32];
+    char str_int[32];
+    char str_uint[32];
+    char str_charp[32];
 			static int    	 num_char;
 			static int    	 num_uchar;
 			static int    	 num_short;

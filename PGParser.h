@@ -1,4 +1,3 @@
-
 #ifdef LRSTAR
 
 #pragma once

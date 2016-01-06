@@ -6,13 +6,14 @@ const char* program = "DFASTAR";
 const char* version = "6.6.003";
 const char* copywrt = "Copyright 2014 Paul B Mann";
 
-		#ifdef  _DEBUG
-  		#include "conio.h"
-		#endif																						 
-
-      #define   MAIN
-		#include "ComGlobal.h"
-		#include "ComGenerate.h"
+#define   MAIN
+#include "ComGlobal.h"
+#include "ComGenerate.h"
+#ifdef LRSTAR
+#   include "PGGenerate.h"
+#else
+#   include "LGGenerate.h"
+#endif
 
 		#ifdef LRSTAR
 		#include "PGGlobal.h"
@@ -222,7 +223,12 @@ int main(int argc, char** argv)
 			{
     			int i = 2; 
 				int n = 0;
-				int r = 1; 
+				int r = 1;
+#if defined(LRSTAR)
+                PGGenerate generator;
+#else
+                LGGenerate generator;
+#endif
 				while (r > 0 && i < argc)
 				{
 					#ifdef WINDOWS
@@ -237,7 +243,7 @@ int main(int argc, char** argv)
 						if (r = GetOutputFilename (argv[i], i, argc))
 						{
 							i++; n++;
-							Generate::GenerateCode (sklfid, outfid, verbose); 
+							generator.GenerateCode(sklfid, outfid, verbose);
 						}
 					}
 				}
