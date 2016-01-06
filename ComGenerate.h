@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 		#ifdef LRSTAR
 		class Generate 
 		#endif
@@ -43,7 +45,6 @@ private:
 			static char  	GET_OPER (char* p, int x);
 			static void	 	GET_STRINGS (char *p);
     void READ_VARS(char* p);
-			static bool GET_STR (char* string);
 			static int   	GET_NUM (int& num);
     void DEF_T (int *x, int n, int min, int max);
 			static void  	SkipRestOfLineOrBlock (char *s);
@@ -111,13 +112,13 @@ protected:
 			static char  	 format[50];
 
 private:
-    char str_char[32];
-    char str_uchar[32];
-    char str_short[32];
-    char str_ushort[32];
-    char str_int[32];
-    char str_uint[32];
-    char str_charp[32];
+    std::string str_char = "char";
+    std::string str_uchar = "unsigned char";
+    std::string str_short = "short";
+    std::string str_ushort = "unsigned short";
+    std::string str_int = "int";
+    std::string str_uint = "unsigned int";
+    std::string str_charp = "const char*";
 			static int    	 num_char;
 			static int    	 num_uchar;
 			static int    	 num_short;

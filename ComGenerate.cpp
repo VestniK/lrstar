@@ -1,7 +1,6 @@
 #include <algorithm>
 #include <fstream>
 #include <iterator>
-#include <string>
 #include <vector>
 
 #include "ComGlobal.h"
@@ -464,24 +463,25 @@ void PGGenerate::initialize()
 
 void Generate::INIT_VARS()
 {
-		strcpy (str_char,      "char"          );
-		strcpy (str_uchar,     "unsigned char" );
-		strcpy (str_short,     "short"         );
-		strcpy (str_ushort,    "unsigned short");
-		strcpy (str_int,       "int"           );
-		strcpy (str_uint,      "unsigned int"  );
-		strcpy (str_charp,     "char*" );
+    str_char = "char";
+    str_uchar = "unsigned char";
+    str_short = "short";
+    str_ushort = "unsigned short";
+    str_int = "int";
+    str_uint = "unsigned int";
+    str_charp = "const char*";
 
-		num_char   = 1;
-		num_uchar  = 1;
-		num_short  = 2;
-		num_ushort = 2;
-		num_int    = 4;
-		num_uint   = 4;
-		num_charp  = 4;
+    // looks like sizeof(type) on x86_32 probably have to be elliminated
+    num_char = 1;
+    num_uchar = 1;
+    num_short = 2;
+    num_ushort = 2;
+    num_int = 4;
+    num_uint = 4;
+    num_charp = 4;
 }
 
-void  Generate::EMIT_ALL (int verbose)
+void Generate::EMIT_ALL (int verbose)
 {
 		g_size      = 0;
 		in_group    = 0;
@@ -496,7 +496,7 @@ void  Generate::EMIT_ALL (int verbose)
 
 		SCAN ();
 
-      DUMP_SKEL (skelbeg, skel, NULL);
+      DUMP_SKEL(skelbeg, skel, NULL);
       FREE (buffer, max_outbuff);
 		char num[12] = "           ";
 	  	number (n_origlines+n_addedlines, num);
@@ -681,26 +681,14 @@ void	Generate::UNSTAKCOND() // Unstack conditional status.
 			if (staktop == 0)
 			{
 				in_group = 0; // Out of block now.
-			//	printf ("in_group = %d\n", in_group);
 			}
 		}
 		else
 		{
 			in_group = 0;
-		//	printf ("in_group = %d\n", in_group);
 			skip_code = 0;
 			group_start = NULL;
 		}
-	/*	#ifdef _DEBUG
-		char c;
-		if (group_start != NULL) { c = *(group_start+15); *(group_start+15) = 0; }
-		printf ("After UNSTAK %s, line %d\n", group_start, linenumb);
-	  	printf ("STAK[%d].skipcode   = %d\n", staktop, skip_code);
-	  	printf ("STAK[%d].groupstart = %p\n", staktop, group_start);
-		printf ("in_group = %d\n\n", in_group);
-		if (group_start != NULL) *(group_start+15) = c;
-		#endif  
-	*/
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1087,74 +1075,57 @@ void	Generate::GET_STRINGS (char *p)
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
 
-void  Generate::READ_VARS (char* p)
+void Generate::READ_VARS(char* p)
 {
-		skel = p;
-		if (GET_STR(str_char))								// 1
-		{
-			if (GET_STR(str_uchar))							// 2
-			{
-				if (GET_STR(str_short))						// 3
-				{
-					if (GET_STR(str_ushort))				// 4
-					{
-						if (GET_STR(str_int))				// 5
-						{
-							if (GET_STR(str_uint))			// 6
-							{
-								if (GET_STR(str_charp))		// 7
-								{
-									while (*skel++ != '\n');
-									linenumb++;
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-
-bool Generate::GET_STR(char* string)
-{
-		int i;
-		char *p, *q;
-		for (p = skel; *p != '"' && *p != '\n' && *p != ')'; p++);
-		if (*p == ')' )
-		{
-			skel = p+1;
-			while (*skel++ != '\n');
-			linenumb++;
-			return false;
-		}
-		if (*p == '\n')
-		{
-         PRT_ERR (skel, linenumb);
-         prt_log ("%s(%04d) : End of line reached while looking for ')'\n\n", skl_fid, linenumb);
-			Terminate (1);
-		/*	skel = p+1;
-			linenumb++; */
-			return false;
-		}
-		p++;
-		for (q = p; *q != '"' && *q != '\n'; q++);
-		if (*q == '\n')
-		{
-         PRT_ERR (p-1, linenumb);
-         prt_log ("%s(%04d) : String starting here has no ending '\"' on this line.\n\n", skl_fid, linenumb);
-			Terminate (1);
-		}
-		i = 0;
-		while (*p != '"')
-		{
-			string[i++] = *p++;
-		}
-		string[i] = 0;
-		skel = q+1;
-		return true;
+    std::string* destStrings[] = {&str_char, &str_uchar, &str_short, &str_ushort, &str_int, &str_uint, &str_charp};
+    for (auto& str: destStrings)
+        str->clear();
+    enum class State {init, str, fin} state = State::init;
+    auto nextDest = std::begin(destStrings);
+    char* currStrBegin = nullptr;
+    for (skel = p; *skel != '\n'; ++skel)
+    {
+        switch (state) {
+        case State::init:
+            switch (*skel) {
+            case '"':
+                state = State::str;
+                currStrBegin = skel + 1;
+                if (nextDest == std::end(destStrings)) {
+                    PRT_ERR(skel, linenumb);
+                    prt_log("%s(%04d): Too many types specified\n\n", skl_fid, linenumb);
+                    Terminate(1);
+                }
+            break;
+            case ')': state = State::fin; break;
+            default: break;
+            }
+        break;
+        case State::str:
+            if (*skel == '"') {
+                state = State::init;
+                (*nextDest)->reserve(std::distance(currStrBegin, skel));
+                std::copy(currStrBegin, skel, std::back_inserter(**nextDest));
+                ++nextDest;
+                currStrBegin = nullptr;
+            }
+        break;
+        case State::fin:
+        break;
+        }
+    }
+    if (state == State::str) {
+        PRT_ERR (skel, linenumb);
+        prt_log ("%s(%04d) : String starting here has no ending '\"' on this line.\n\n", skl_fid, linenumb);
+        Terminate (1);
+    }
+    if (state == State::init) {
+        PRT_ERR (skel, linenumb);
+        prt_log ("%s(%04d) : End of line reached while looking for ')'\n\n", skl_fid, linenumb);
+        Terminate (1);
+    }
+    ++skel;
+    ++linenumb;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1178,14 +1149,14 @@ int   Generate::GET_NUM (int& num)
 
 void  Generate::DEF_TYPEA (int n) // address type (char*).
 {
-		g_size += num_charp*n;
-		strcpy (string, str_charp);
+    g_size += num_charp*n;
+    strcpy(string, str_charp.c_str());
 }
 
 void Generate::DEF_TYPEC (int n) // unsigned char.
 {
-		g_size += num_uchar*n;
-		strcpy (string, str_uchar);
+    g_size += num_uchar*n;
+    strcpy(string, str_uchar.c_str());
 }
 
 void Generate::DEF_TYPE (int *x, int n) // signed or unsigned type.
@@ -1200,35 +1171,51 @@ void Generate::DEF_TYPES (int *x, int n) // signed only
 
 void  Generate::DEF_T (int *x, int n, int min, int max) // signed or unsigned type.
 {
-		int i;
-		if (x == NULL)
-		{
-			strcpy (string, "undefined");
-			return;
-		}
-		for (i = 0; i < n; i++)
-		{
-			if (x[i] > max) max = x[i];
-			else if (x[i] < min) min = x[i];
-		}
-		if (min == 0)
-		{
-			if      (max <     256) { strcpy (string, str_uchar ); g_size += num_uchar  * n; }
-			else if (max <   65536) { strcpy (string, str_ushort); g_size += num_ushort * n; }
-			else                    { strcpy (string, str_int   ); g_size += num_int    * n; }
-		}
-		else if (-min < max) // -(-127) < 128
-		{
-			if      (max <     128) { strcpy (string, str_char  ); g_size += num_char   * n; }
-			else if (max <   32768) { strcpy (string, str_short ); g_size += num_short  * n; }
-			else                    { strcpy (string, str_int   ); g_size += num_int    * n; }
-		}
-		else
-		{
-			if      (min >=   -128) { strcpy (string, str_char  ); g_size += num_char   * n; }
-			else if (min >= -32768) { strcpy (string, str_short ); g_size += num_short  * n; }
-			else                    { strcpy (string, str_int   ); g_size += num_int    * n; }
-		}
+    int i;
+    if (x == NULL) {
+        strcpy (string, "undefined");
+        return;
+    }
+    for (i = 0; i < n; i++) {
+        if (x[i] > max) max = x[i];
+        else if (x[i] < min) min = x[i];
+    }
+    if (min == 0) {
+        if (max < 256) {
+            strcpy(string, str_uchar.c_str());
+            g_size += num_uchar*n;
+        } else if (max < 65536) {
+            strcpy(string, str_ushort.c_str());
+            g_size += num_ushort*n;
+        } else {
+            strcpy(string, str_uint.c_str());
+            g_size += num_uint*n;
+        }
+    } else if (-min < max) { // -(-127) < 128
+        if (max < 128) {
+            strcpy(string, str_char.c_str());
+            g_size += num_char*n;
+        } else if (max < 32768) {
+            strcpy(string, str_short.c_str());
+            g_size += num_short*n;
+        } else {
+            strcpy(string, str_int.c_str());
+            g_size += num_int*n;
+        }
+    } else {
+        if (min >= -128) {
+            strcpy(string, str_char.c_str());
+            g_size += num_char*n;
+        }
+        else if (min >= -32768) {
+            strcpy(string, str_short.c_str());
+            g_size += num_short*n;
+        }
+        else {
+            strcpy(string, str_int.c_str());
+            g_size += num_int*n;
+        }
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2246,7 +2233,7 @@ void  Generate::DUMP_BUFFER ()
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
 
-void  Generate::DUMP_SKEL (char* start, char* end, char* newstart)
+void Generate::DUMP_SKEL(char* start, char* end, char* newstart)
 {
       int nb;
 		DUMP_BUFFER();
