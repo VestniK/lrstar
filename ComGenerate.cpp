@@ -22,7 +22,7 @@ int    	 Generate::num_charp;
 STAKTYPE  Generate::STAK[MAXTOP];
 int   	 Generate::staktop;
 int   	 Generate::maxtop;
-char* 	 Generate::group_start;
+const char* Generate::group_start;
 int   	 Generate::skip_code;
 int   	 Generate::g_size;
 char  	 Generate::in_group;
@@ -48,9 +48,9 @@ int   	 Generate::middle_l;
 int   	 Generate::sep_l;
 int   	 Generate::end_l;
 int   	 Generate::n_out;
-char* 	 Generate::skel;
-char* 	 Generate::skelbeg;
-char* 	 Generate::skelend;
+const char* Generate::skel;
+const char* Generate::skelbeg;
+const char* Generate::skelend;
 char* 	 Generate::buffer;
 char* 	 Generate::buffptr;
 char* 	 Generate::buffend;
@@ -496,7 +496,7 @@ void Generate::EMIT_ALL (int verbose)
 
 		SCAN ();
 
-      DUMP_SKEL(skelbeg, skel, NULL);
+      DUMP_SKEL(skelbeg, skel, nullptr);
       FREE (buffer, max_outbuff);
 		char num[12] = "           ";
 	  	number (n_origlines+n_addedlines, num);
@@ -523,7 +523,7 @@ void Generate::SCAN ()
       {
          if (*skel == '"') // String ?
 			{
-				char *p;
+				const char *p;
 Scan:			p = skel++;
 				while (*skel != '"' && *skel != '\n' && *skel != '\\' && *skel != '@') skel++;
 				if (*skel == '"') // End of string?
@@ -569,21 +569,21 @@ Scan:			p = skel++;
 				}
 			  	if (*(skel+1) == '(') // \@ escape.
 				{
-					char*p = skel;
+					const char* p = skel;
 					READ_VARS (skel+1);
 					DUMP_SKEL (skelbeg, p, skel);
 					goto Cont;
 				}
             if (*(skel+1) == '/' && *(skel+2) == '/') // @// line comment.
             {
-					char*p = skel+3;
+               const char* p = skel+3;
                DUMP_SKEL (skelbeg, skel, skel);
-               skelbeg = skel = skip_rest_of_line (p);
+               skelbeg = skel = skip_rest_of_line(p);
                goto Cont;
             }
             if (*(skel+1) == '/' && *(skel+2) == '*') // @/* block comment.
             {
-					char*p = skel;
+               const char* p = skel;
                DUMP_SKEL (skelbeg, skel, skel);
                skelbeg = skel = skip_rest_of_comment (p);
                goto Cont;
@@ -643,7 +643,6 @@ Cont:    continue;
 void	Generate::STAKCOND() // Stack current conditional status.
 {
 		in_group = 1;
-	//	printf ("in_group = %d\n", in_group);
 		if (staktop == maxtop)
 		{
 			PRT_ERR (skel, linenumb);
@@ -652,23 +651,12 @@ void	Generate::STAKCOND() // Stack current conditional status.
 		}
 		STAK[staktop].skipcode = skip_code;
 		STAK[staktop].groupstart = group_start;
-		char* p = skel;
+		const char* p = skel;
 		while (*p != '\n') p--; // Find beginning of line.
 		p++;							// p = beginning of line.
 		while (*p != '@') p++;
 		group_start = p;
 		staktop++;
-
-		#ifdef _DEBUG
-		char c;
-		c = *(group_start+15);
-		*(group_start+15) = 0;
-		printf ("After STAK %s, line %d\n", group_start, linenumb);
-	  	printf ("STAK[%d].skipcode   = %d\n", staktop, skip_code);
-	  	printf ("STAK[%d].groupstart = %p\n", staktop, group_start);
-		printf ("in_group = %d\n\n", in_group);
-		*(group_start+15) = c;
-		#endif  
 }
 
 void	Generate::UNSTAKCOND() // Unstack conditional status.
@@ -694,9 +682,10 @@ void	Generate::UNSTAKCOND() // Unstack conditional status.
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
 
-char* Generate::READ_CODE(char* sk) // sk -> @
+const char* Generate::READ_CODE(const char* sk) // sk -> @
 {
-      char *p, c;
+      const char* p;
+      char c;
 		int x, result = 1, oper = 1, val, vx;
 		skel = sk;
 
@@ -753,7 +742,7 @@ Eq:			vx = value(x);
    			if (strncmp (skel, ".eq.", 4) == 0)
 				{
 					skel += 4;
-					char* num = skel;
+					const char* num = skel;
 					while (numeric[*skel]) skel++;
 					if (skel == num) goto Err4; // No numeric characters?
 					if (vx == atoi(num)) val = 1;
@@ -767,7 +756,7 @@ Eq:			vx = value(x);
    			else if (strncmp (skel, ".ne.", 4) == 0)
 				{
 					skel += 4;
-					char* num = skel;
+					const char* num = skel;
 					while (numeric[*skel]) skel++;
 					if (skel == num) goto Err4; // No numeric characters?
 					if (vx != atoi(num)) val = 1;
@@ -781,7 +770,7 @@ Eq:			vx = value(x);
    			else if (strncmp (skel, ".gt.", 4) == 0)
 				{
 					skel += 4;
-					char* num = skel;
+					const char* num = skel;
 					while (numeric[*skel]) skel++;
 					if (skel == num) goto Err4; // No numeric characters?
 					if (vx >  atoi(num)) val = 1;
@@ -795,7 +784,7 @@ Eq:			vx = value(x);
    			else if (strncmp (skel, ".ge.", 4) == 0)
 				{
 					skel += 4;
-					char* num = skel;
+					const char* num = skel;
 					while (numeric[*skel]) skel++;
 					if (skel == num) goto Err4; // No numeric characters?
 					if (vx >= atoi(num)) val = 1;
@@ -809,7 +798,7 @@ Eq:			vx = value(x);
    			else if (strncmp (skel, ".lt.", 4) == 0)
 				{
 					skel += 4;
-					char* num = skel;
+					const char* num = skel;
 					while (numeric[*skel]) skel++;
 					if (skel == num) goto Err4; // No numeric characters?
 					if (vx <  atoi(num)) val = 1;
@@ -823,7 +812,7 @@ Eq:			vx = value(x);
    			else if (strncmp (skel, ".le.", 4) == 0)
 				{
 					skel += 4;
-					char* num = skel;
+					const char* num = skel;
 					while (numeric[*skel]) skel++;
 					if (skel == num) goto Err4; // No numeric characters?
 					if (vx <= atoi(num)) val = 1;
@@ -898,40 +887,34 @@ Err5: PRT_ERR (skel, linenumb);
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
 
-char* Generate::GETCODENUM (char *keyword, int& x)
+const char* Generate::GETCODENUM(const char* keyword, int& x)
 {
-      int  i, a;
-		char *p, c;
-		for (p = keyword; alpha[*p] != 0 && p < keyword+32; ++p);
+    static constexpr size_t max_keyword=  32;
+    const char *p;
+		for (p = keyword; alpha[*p] != 0 && p < keyword + max_keyword; ++p);
 		if (p == keyword) // Check for no skeleton code name @;.
 		{
 			PRT_ERR (keyword, linenumb);
 			prt_log ("%s(%04d) : No skeleton code name was specified.\n\n", skl_fid, linenumb);
 			Terminate (n_errors);
 		}
-		c = *p;
-		*p = 0;
-  		#ifdef _DEBUG  
-      printf ("%s\n", keyword);
-  		#endif  
-		for (i = 0;; i++)
+		for (int i = 0;; i++)
 		{
 			if (code_table[i]->keyword[0] < keyword[0]) continue;			// Sorted table!
-			a = strcmp (code_table[i]->keyword, keyword);
+			const int a = memcmp(code_table[i]->keyword, keyword, std::distance(keyword, p));
 			if (a < 0) continue;
 			if (a > 0) goto Err;
 			x  = i;	// Set code number.
-			*p = c;
-		//	printf ("%5d %s\n", linenumb, code_table[i].keyword);
 			return (p);
 		}
 
-Err:	*p = c;
-		PRT_ERR (keyword, linenumb);
-		*p = 0;
-		prt_log ("%s(%04d) : \"%s\" was not found among skeleton code names.\n\n", skl_fid, linenumb, keyword);
+Err:
+    char tmp[max_keyword + 1];
+    *(std::copy(keyword, p, std::begin(tmp))) = 0;
+    PRT_ERR (tmp, linenumb);
+		prt_log ("%s(%04d) : \"%s\" was not found among skeleton code names.\n\n", skl_fid, linenumb, tmp);
       prt_log ("Expecting one of the following:\n\n");
-		for (i = 0;; i++)
+		for (int i = 0;; i++)
 		{
 			if (code_table[i]->keyword[0] == '~') break;
 		  	prt_log ("   %-12s - %s\n", code_table[i]->keyword, code_table[i]->description);
@@ -944,7 +927,7 @@ Err:	*p = c;
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
 
-char  Generate::GET_OPER (char* p, int x)
+char Generate::GET_OPER(const char* p, int x)
 {
 		int n  = 0;
 		skel   = p;
@@ -963,14 +946,15 @@ char  Generate::GET_OPER (char* p, int x)
 	    		return *skel; // Return operator character.
 			case ';':
 				return *skel; // Return operator character.
-			default:
-				*(skel+1) = 0;
-				PRT_ERR (skel, linenumb);
+			default: {
+                const char buf[] = {*skel, 0};
+				PRT_ERR (buf, linenumb);
 				if (*skel == '\n') skel = "\\n";
 				else if (*skel == '\t') skel = "\\t";
 				else if (*skel ==  26 ) skel = "\\z";
-				prt_log ("%s(%04d) : Error at '%s', expecting '.', '?', '!', or ';'\n\n", skl_fid, linenumb, skel);
+				prt_log ("%s(%04d) : Error at '%s', expecting '.', '?', '!', or ';'\n\n", skl_fid, linenumb, buf);
 				Terminate (n_errors);
+            }
 		}
 Top:  switch (*skel)
       {
@@ -1036,20 +1020,22 @@ Top:  switch (*skel)
 				return *skel; // Return operator character.
 
          case '?':
-         case '!':
-		      *(skel+1) = 0;
-				PRT_ERR (skel-1, linenumb);
+         case '!': {
+              const char buf[] = {*(skel - 1), *skel, 0};
+				PRT_ERR (buf, linenumb);
 				prt_log ("%s(%04d) : Error at '%s', expecting '?' or '!'\n\n",
-				skl_fid, linenumb, skel-1);
+				skl_fid, linenumb, buf);
 				Terminate (n_errors);
+         }
 
-			default:
-		      *(skel+1) = 0;
-				PRT_ERR (skel, linenumb);
+			default: {
+              const char buf[] = {*skel, 0};
+				PRT_ERR (buf, linenumb);
 				if (*skel == '\n') skel = "\\n";
 				prt_log ("%s(%04d) : Error at '%s', expecting 'd', 's', 't', '|', 'eq.', 'ge.', 'lt.', ';', or <integer>\n\n",
-				skl_fid, linenumb, skel);
+				skl_fid, linenumb, buf);
 				Terminate (n_errors);
+            }
       }
 		return 0;
 }
@@ -1057,7 +1043,7 @@ Top:  switch (*skel)
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
 
-void	Generate::GET_STRINGS (char *p)
+void Generate::GET_STRINGS(const char *p)
 {
 		skel = p;
 		middle_l = GET_STRING (middle, sizeof(middle));
@@ -1075,14 +1061,14 @@ void	Generate::GET_STRINGS (char *p)
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
 
-void Generate::READ_VARS(char* p)
+void Generate::READ_VARS(const char* p)
 {
     std::string* destStrings[] = {&str_char, &str_uchar, &str_short, &str_ushort, &str_int, &str_uint, &str_charp};
     for (auto& str: destStrings)
         str->clear();
     enum class State {init, str, fin} state = State::init;
     auto nextDest = std::begin(destStrings);
-    char* currStrBegin = nullptr;
+    const char* currStrBegin = nullptr;
     for (skel = p; *skel != '\n'; ++skel)
     {
         switch (state) {
@@ -1133,7 +1119,7 @@ void Generate::READ_VARS(char* p)
 
 int   Generate::GET_NUM (int& num)
 {
-		char *p;
+		const char *p;
 		int  n;
 		for (p = skel; *p == ' ' || *p == '\t'; p++);
 		if (*p == '\n') return (0);
@@ -1221,7 +1207,7 @@ void  Generate::DEF_T (int *x, int n, int min, int max) // signed or unsigned ty
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
 
-void  Generate::SkipRestOfLineOrBlock (char *s) /* Skip rest of line, including '\n' OR skip whole block. */
+void Generate::SkipRestOfLineOrBlock (const char* s) /* Skip rest of line, including '\n' OR skip whole block. */
 {
       skel = s;
       if (strncmp (skel, "...", 3) == 0) // block start? then skip the whole block.
@@ -1232,7 +1218,7 @@ void  Generate::SkipRestOfLineOrBlock (char *s) /* Skip rest of line, including 
 		}
 	  	else
 		{
-			skel = skip_rest_of_line (skel);
+			skel = skip_rest_of_line(skel);
 		}
 		return;
 }
@@ -1266,7 +1252,7 @@ Skip: while (*skel != '\n')
 				}
 				else if (*(skel+1) == '(')	// 20120227 pbm
 				{
-					skel = skip_rest_of_line (skel+3);
+					skel = skip_rest_of_line(skel+3);
 				}
 				else if (*(skel+1) == '/' && *(skel+2) == '/')
 				{
@@ -1274,11 +1260,11 @@ Skip: while (*skel != '\n')
 				}
 			  	else if (*(skel+1) == '/' && *(skel+2) == '*')
 				{
-					skel = skip_rest_of_comment (skel);
+					skel = skip_rest_of_comment(skel);
 				}
 				else if (alpha[*(skel+1)])
 				{
-					skel = skip_rest_of_code (skel+1);
+					skel = skip_rest_of_code(skel+1);
 				}
 				else
 				{
@@ -1311,10 +1297,9 @@ Skip: while (*skel != '\n')
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
 
-char*	Generate::skip_rest_of_string (char* skel)
+const char* Generate::skip_rest_of_string(const char* skel)
 {
-		char *ls;
-		ls = skel-1;
+		const char* ls = skel-1;
 Scan:	while (*skel != '"' && *skel != '\n') skel++;
 		if (*skel == '"')
 		{
@@ -1333,7 +1318,7 @@ Scan:	while (*skel != '"' && *skel != '\n') skel++;
 		return skel+1;
 }
 
-char*	Generate::skip_rest_of_code (char* sk)
+const char*	Generate::skip_rest_of_code (const char* sk)
 {
 		int  x;
 		char c;
@@ -1360,7 +1345,7 @@ char*	Generate::skip_rest_of_code (char* sk)
 			}
 			else
 			{
-				skel = skip_rest_of_line (skel);
+				skel = skip_rest_of_line(skel);
 			}
 			break;
 
@@ -1390,7 +1375,7 @@ char*	Generate::skip_rest_of_code (char* sk)
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
 
-char*	Generate::skip_rest_of_line (char* skel)
+const char* Generate::skip_rest_of_line(const char* skel)
 {
 		while (*skel++ != '\n');
 		linenumb++;
@@ -1400,29 +1385,27 @@ char*	Generate::skip_rest_of_line (char* skel)
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
 
-char*	Generate::skip_rest_of_comment (char* skel)
+const char* Generate::skip_rest_of_comment(const char* skel)
 {
-		char *ls = skel;
-		int   lineno = linenumb;
-Scan:	while (*skel != '@' && skel < skelend)
-		{
-			if (*skel++ == '\n') linenumb++;
-		}
-		if (*skel == '@')
-		{
-			if (*(skel+1) == '*' && *(skel+2) == '/')
-			{
-				while (*skel++ != '\n');
-				linenumb++;
-			   return skel;
-			}
-			skel++;
-			goto Scan;
-		}
-		PRT_ERR (ls, lineno);
-		prt_log ("%s(%04d) : End of file found while looking for '@*/'\n\n", skl_fid, lineno);
-		Terminate (n_errors);
-		return skel; // Dummy return.
+    const char *ls = skel;
+    int lineno = linenumb;
+Scan: while (*skel != '@' && skel < skelend) {
+        if (*skel++ == '\n')
+            linenumb++;
+    }
+    if (*skel == '@') {
+        if (*(skel+1) == '*' && *(skel+2) == '/') {
+            while (*skel++ != '\n');
+            linenumb++;
+            return skel;
+        }
+        skel++;
+        goto Scan;
+    }
+    PRT_ERR (ls, lineno);
+    prt_log ("%s(%04d) : End of file found while looking for '@*/'\n\n", skl_fid, lineno);
+    Terminate (n_errors);
+    return skel; // Dummy return.
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1430,28 +1413,21 @@ Scan:	while (*skel != '@' && skel < skelend)
 
 void  Generate::ERASE ()
 {
-      char *p;
-      if (strncmp (++skel, "...", 3) == 0)
-      {
-			STAKCOND();
-			skip_code = 0;
-         while (*skel++ != '\n');
-         linenumb++;
-         skelbeg = skel;
-      }
-		else // Keep spacing (I guess?)
-		{
-			for (p = skelbeg; p < skel; p++) *p = ' ';
-		}
+    if (strncmp (++skel, "...", 3) == 0) {
+        STAKCOND();
+        skip_code = 0;
+        while (*skel++ != '\n');
+        linenumb++;
+        skelbeg = skel;
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
 
-int   Generate::GET_STRING (char *string, int size)
-{
+int Generate::GET_STRING(char *string, int size) {
 		int i;
-		char *p = skel;
+		const char *p = skel;
 		size--;
       for (i = 0; *skel != '|' && *skel != '\n' && *skel != ';'; skel++)
       {
@@ -1561,27 +1537,6 @@ int   Generate::FIRSTNB (char *p) /* Check to see if p points at first nonblank 
       }
       skel = p + 1; /* Point at beginning of line. */
       return (1);
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//                                                                           //
-
-char* Generate::GETFILESPEC ()
-{
-		char* filespec;
-      char* p = ++skel;	// point at character following the '
-		filespec = p;     // get start of file specification
-      while (*p != '\'' && *p != '\n') p++;
-		if (*p == '\n')
-		{
-         PRT_ERR (filespec-1, linenumb);
-         prt_log ("%s(%04d) : End of line reached while looking for ending single quote (').\n\n", skl_fid, linenumb);
-			Terminate (1);
-	      return (NULL);
-		}
-		*p = 0; // mark end of filespec
-		skel = p+1;
-		return (filespec);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2176,15 +2131,12 @@ void  Generate::PUT_FILE (char *buffer, int leng) // If leng maybe > 32767.
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
 
-int   Generate::OUTPUT (char* buffer, int leng) // If leng <= 32767.
+int   Generate::OUTPUT (const char* buffer, int leng) // If leng <= 32767.
 {
 		#ifdef DFASTAR
 		if (optn[LG_DIRECTCODE])
 		{
-			char ch = buffer[leng];
-			buffer[leng] = 0;
-			prt_code ("%s", buffer);
-			buffer[leng] = ch;
+			prt_code ("%.*s", leng, buffer);
 		}
 		else
 		#endif
@@ -2196,7 +2148,7 @@ int   Generate::OUTPUT (char* buffer, int leng) // If leng <= 32767.
 				Terminate (1);
 			}
 		}
-		for (char* p = buffer; p < buffer+leng; p++)
+		for (const char* p = buffer; p < buffer+leng; p++)
 		{
 			if (*p == '\n') n_origlines++;
 		}
@@ -2233,7 +2185,7 @@ void  Generate::DUMP_BUFFER ()
 ///////////////////////////////////////////////////////////////////////////////
 //                                                                           //
 
-void Generate::DUMP_SKEL(char* start, char* end, char* newstart)
+void Generate::DUMP_SKEL(const char* start, const char* end, const char* newstart)
 {
       int nb;
 		DUMP_BUFFER();

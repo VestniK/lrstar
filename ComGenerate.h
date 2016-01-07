@@ -40,19 +40,19 @@ private:
     void SCAN();
 			static void	 	STAKCOND();		
 			static void	 	UNSTAKCOND();	
-    char* READ_CODE (char* sk);
-			static char* 	GETCODENUM (char *keyword, int& x);
-			static char  	GET_OPER (char* p, int x);
-			static void	 	GET_STRINGS (char *p);
-    void READ_VARS(char* p);
+    const char* READ_CODE (const char* sk);
+    static const char* GETCODENUM(const char* keyword, int& x);
+    static char GET_OPER (const char* p, int x);
+    static void GET_STRINGS(const char *p);
+    void READ_VARS(const char* p);
 			static int   	GET_NUM (int& num);
     void DEF_T (int *x, int n, int min, int max);
-			static void  	SkipRestOfLineOrBlock (char *s);
+    static void SkipRestOfLineOrBlock(const char *s);
 			static void	 	SkipBlock ();
-			static char* 	skip_rest_of_string (char* skel);
-			static char* 	skip_rest_of_code (char* sk);
-			static char* 	skip_rest_of_line (char* skel);
-			static char* 	skip_rest_of_comment (char* skel);
+    static const char* skip_rest_of_string(const char* skel);
+    static const char* skip_rest_of_code(const char* sk);
+    static const char* skip_rest_of_line(const char* skel);
+    static const char* skip_rest_of_comment(const char* skel);
 			static void  	ERASE ();
 			static int   	GET_STRING (char *string, int size);
     static int GETN(const char* p);
@@ -61,8 +61,8 @@ private:
 
 			static int   	FIRSTNB (char *p);
 			static void  	DUMP_BUFFER ();
-			static int   	OUTPUT (char* buffer, int leng);
-			static void  	DUMP_SKEL (char* start, char* end, char* newstart);
+    static int OUTPUT (const char* buffer, int leng);
+    static void DUMP_SKEL(const char* start, const char* end, const char* newstart);
 			static void  	O_TERM_CONS (int* x, int n);
 			static void  	O_DATA (int i, int* data, char* text, char* str);
 			static void  	O_NA1 (char**s, int* npp, int n, int *seq);
@@ -73,7 +73,6 @@ private:
 			static void  	O_SORTED (char**s, int n, int *seq);
 			static void  	O_SORTED2(int *s, int n, int *seq);
     static const char* prt_line (int numb, const char* line);
-			static char* 	GETFILESPEC ();
 			static void  	ISEOL (char*str);
 
 			static int   	N_NP1 (int *chk, int n);
@@ -107,7 +106,7 @@ protected:
 			static char  	 skl_fid [MAX_PATH];
 			static char  	 out_fid [MAX_PATH];
 			static int   	 linenumb;
-			static char* 	 skel;
+			static const char* 	 skel;
 			static int   	 n_addedlines;
 			static char  	 format[50];
 
@@ -129,7 +128,7 @@ private:
 			static STAKTYPE STAK[MAXTOP];
 			static int   	 staktop;
 			static int   	 maxtop;
-			static char* 	 group_start;
+    static const char* group_start;
 			static int   	 skip_code;
 			static int   	 g_size;
 			static char  	 in_group;
@@ -151,8 +150,8 @@ private:
 			static int   	 sep_l;
 			static int   	 end_l;
 			static int   	 n_out;
-			static char* 	 skelbeg;
-			static char* 	 skelend;
+			static const char* 	 skelbeg;
+			static const char* 	 skelend;
 			static char* 	 buffer;
 			static char* 	 buffptr;
 			static char* 	 buffend;

@@ -245,13 +245,12 @@
 		}
 		CODETABLE;
 
-		#define MAXTOP 10
-		typedef struct	STAKTYPE
-		{
-			char*	groupstart;
-			int	skipcode;
-		}
-		STAKTYPE;
+#define MAXTOP 10
+struct STAKTYPE
+{
+    const char* groupstart;
+    int skipcode;
+};
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //																																	//
