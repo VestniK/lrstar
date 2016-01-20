@@ -181,16 +181,6 @@ void Lexer::next() // Small lexer.
 }
 
 @@
-TokenSequence::TokenSequence():
-    beginPos(nullptr), endPos(nullptr)
-@optn_line?;...
-    , line(0)
-@@
-@optn_col?;...
-    , column(0)
-@@
-{
-}
 
 TokenSequence::TokenSequence(const Token &elem)
 {

@@ -14,20 +14,20 @@ namespace @grm_name; {
 
 struct Token
 {
-    int termNum;
-    const char* start;
-    const char* end;
+    int termNum = 0;
+    const char* start = nullptr;
+    const char* end = nullptr;
 @optn_line?;...
-    int line;
+    int line = 0;
 @@
 @optn_col?;...
-    int column;
+    int column = 0;
 
     // Returns string from the beggining of line till the end of this token
     // sequence
     std::string lineStr() const;
 @@
-    inline operator std::string () const {return std::string(start, end - start);}
+    inline operator std::string () const {return std::string(start, end);}
     // Token points to a data but not own them. If one want to store token for longer time than lexer input
     // lifetime then it's necessary to copy token content and reference copied data. Important example is
     // holding token inside an exception.
@@ -92,7 +92,7 @@ private:
 class TokenSequence
 {
 public:
-    TokenSequence();
+    TokenSequence() = default;
     // Create sequence containing single element
     TokenSequence(const Token &elem);
     // Create sequence from token first to token last includiong both of them
@@ -137,7 +137,7 @@ public:
     // sequence
     std::string lineStr() const;
 @@
-    inline operator std::string () const {return std::string(beginPos, endPos - beginPos);}
+    inline operator std::string () const {return std::string(beginPos, endPos);}
     // TokenSequence points to a data but not own them. If one want to store it for a longer time than lexer
     // input lifetime then it's necessary to copy data referenced by sequence and reference copied data.
     // Important example is holding token sequence inside an exception.
@@ -147,12 +147,13 @@ public:
     iterator end() const;
 
 private:
-    const char *beginPos, *endPos;
+    const char *beginPos = nullptr;
+    const char *endPos = nullptr;
 @optn_line?;...
-    int line;
+    int line = 0;
 @@
 @optn_col?;...
-    int column;
+    int column = 0;
 @@
 };
 
