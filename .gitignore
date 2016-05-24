@@ -3,7 +3,7 @@ build
 *.conflicts.txt
 *.warnings.txt
 *.log.txt
-*.statets.txt
+*.states.txt
 
 # VS2013 files
 Debug/
