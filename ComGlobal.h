@@ -3,6 +3,8 @@
 
 		#ifndef WINDOWS
   		#define UNIX
+		#else
+		//#define constexpr
 		#endif
 
       #ifdef MAIN

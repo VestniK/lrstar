@@ -1,0 +1,81 @@
+﻿  PGPrintStates.cpp
+  PGPrintHtml.cpp
+  PGParser.cpp
+z:\git\lrstar\pgparser.cpp(720): warning C4102: 'Cont': unreferenced label
+z:\git\lrstar\pgparser.cpp(798): warning C4102: 'Err': unreferenced label
+  PGOptimizeStates.cpp
+  PGMain.cpp
+z:\git\lrstar\pgmain.cpp(55): warning C4101: 'fn': unreferenced local variable
+z:\git\lrstar\pgmain.cpp(55): warning C4101: 'string': unreferenced local variable
+z:\git\lrstar\pgmain.cpp(54): warning C4101: 'filedesc': unreferenced local variable
+z:\git\lrstar\pgmain.cpp(54): warning C4101: 'rc': unreferenced local variable
+z:\git\lrstar\pgmain.cpp(55): warning C4101: 'dn': unreferenced local variable
+z:\git\lrstar\pgmain.cpp(55): warning C4101: 'ft': unreferenced local variable
+z:\git\lrstar\pgmain.cpp(358): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+z:\git\lrstar\pgmain.cpp(359): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+z:\git\lrstar\pgmain.cpp(360): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+z:\git\lrstar\pgmain.cpp(382): warning C4101: 'left': unreferenced local variable
+z:\git\lrstar\pgmain.cpp(383): warning C4101: 'L': unreferenced local variable
+z:\git\lrstar\pgmain.cpp(383): warning C4101: 'p': unreferenced local variable
+z:\git\lrstar\pgmain.cpp(383): warning C4101: 's': unreferenced local variable
+z:\git\lrstar\pgmain.cpp(382): warning C4101: 'length': unreferenced local variable
+z:\git\lrstar\pgmain.cpp(383): warning C4101: 'h': unreferenced local variable
+z:\git\lrstar\pgmain.cpp(383): warning C4101: 'n': unreferenced local variable
+z:\git\lrstar\pgmain.cpp(383): warning C4101: 't': unreferenced local variable
+  PGLexer.cpp
+  PGCreateTables.cpp
+z:\git\lrstar\pgcreatetables.cpp(554): warning C4101: 'value': unreferenced local variable
+z:\git\lrstar\pgcreatetables.cpp(554): warning C4101: 'nc': unreferenced local variable
+z:\git\lrstar\pgcreatetables.cpp(554): warning C4101: 'c': unreferenced local variable
+z:\git\lrstar\pgcreatetables.cpp(554): warning C4101: 'nt': unreferenced local variable
+  PGComputeLA.cpp
+  PGCheckGrammar.cpp
+  PGBuildLR1.cpp
+z:\git\lrstar\pgbuildlr1.cpp(113): warning C4101: 'ns': unreferenced local variable
+z:\git\lrstar\pgbuildlr1.cpp(316): warning C4101: 'nfi': unreferenced local variable
+z:\git\lrstar\pgbuildlr1.cpp(316): warning C4101: 'i': unreferenced local variable
+z:\git\lrstar\pgbuildlr1.cpp(412): warning C4101: 'k': unreferenced local variable
+z:\git\lrstar\pgbuildlr1.cpp(410): warning C4101: 'temp': unreferenced local variable
+z:\git\lrstar\pgbuildlr1.cpp(583): warning C4101: 'first': unreferenced local variable
+z:\git\lrstar\pgbuildlr1.cpp(583): warning C4101: 'last': unreferenced local variable
+z:\git\lrstar\pgbuildlr1.cpp(616): warning C4101: 'nfi': unreferenced local variable
+z:\git\lrstar\pgbuildlr1.cpp(616): warning C4101: 'f': unreferenced local variable
+z:\git\lrstar\pgbuildlr1.cpp(666): warning C4101: 'nfi': unreferenced local variable
+z:\git\lrstar\pgbuildlr1.cpp(915): warning C4101: 'k': unreferenced local variable
+z:\git\lrstar\pgbuildlr1.cpp(915): warning C4101: 'sym': unreferenced local variable
+z:\git\lrstar\pgbuildlr1.cpp(915): warning C4101: 'i': unreferenced local variable
+  PGBuildLR0.cpp
+  PGActions.cpp
+z:\git\lrstar\pgactions.cpp(279): warning C4102: 'Done': unreferenced label
+  LGPrintStates.cpp
+  LGPrintGrammar.cpp
+  LGParser.cpp
+  LGOptimizeStates.cpp
+  LGMain.cpp
+  LGLexer.cpp
+  LGGenerateCode.cpp
+  LGCreateTables.cpp
+  Generating Code...
+  Compiling...
+  LGComputeLA.cpp
+  LGCheckGrammar.cpp
+  LGBuildStates.cpp
+  LGAddExtra.cpp
+  LGActions.cpp
+  ComMain.cpp
+  ComGlobal.cpp
+z:\git\lrstar\comglobal.cpp(425): warning C4102: 'Loop': unreferenced label
+z:\git\lrstar\comglobal.cpp(437): warning C4102: 'Scan': unreferenced label
+z:\git\lrstar\comglobal.cpp(1790): warning C4102: 'Msg': unreferenced label
+  ComGenerate.cpp
+c:\program files (x86)\microsoft visual studio 14.0\vc\include\xutility(2322): warning C4996: 'std::copy::_Unchecked_iterators::_Deprecate': Call to 'std::copy' with parameters that may be unsafe - this call relies on the caller to check that the passed values are correct. To disable this warning, use -D_SCL_SECURE_NO_WARNINGS. See documentation on how to use Visual C++ 'Checked Iterators'
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\xutility(2322): note: see declaration of 'std::copy::_Unchecked_iterators::_Deprecate'
+  z:\git\lrstar\comgenerate.cpp(913): note: see reference to function template instantiation '_OutIt std::copy<const char*,_Ty*>(_InIt,_InIt,_OutIt)' being compiled
+          with
+          [
+              _OutIt=char *,
+              _Ty=char,
+              _InIt=const char *
+          ]
+  Generating Code...
+  LRStar.vcxproj -> Z:\git\lrstar\msvc\LRStar\Debug\LRStar.exe
