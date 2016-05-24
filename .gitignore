@@ -1,1 +1,50 @@
 build
+*.grammar.txt
+*.conflicts.txt
+*.warnings.txt
+*.log.txt
+*.statets.txt
+
+# VS2013 files
+Debug/
+Release/
+*.pdb
+*.ilk
+*.lib
+*.log
+
+# Linux files
+config.h
+config.log
+config.status
+makefile
+*.tmp
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
