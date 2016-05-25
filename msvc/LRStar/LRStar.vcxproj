@@ -1,0 +1,238 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{29237C67-C979-4AC4-9F43-93F815ABF6C2}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>LRStar</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)</OutDir>
+    <TargetName>$(ProjectName)d</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;LRSTAR;WINDOWS;_CRT_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;LRSTAR;WINDOWS;_CRT_SECURE_NO_WARNINGS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\ComGenerate.cpp" />
+    <ClCompile Include="..\..\ComGlobal.cpp" />
+    <ClCompile Include="..\..\ComMain.cpp" />
+    <ClCompile Include="..\..\LGActions.cpp" />
+    <ClCompile Include="..\..\LGAddExtra.cpp" />
+    <ClCompile Include="..\..\LGBuildStates.cpp" />
+    <ClCompile Include="..\..\LGCheckGrammar.cpp" />
+    <ClCompile Include="..\..\LGComputeLA.cpp" />
+    <ClCompile Include="..\..\LGCreateTables.cpp" />
+    <ClCompile Include="..\..\LGGenerateCode.cpp" />
+    <ClCompile Include="..\..\LGLexer.cpp" />
+    <ClCompile Include="..\..\LGMain.cpp" />
+    <ClCompile Include="..\..\LGOptimizeStates.cpp" />
+    <ClCompile Include="..\..\LGParser.cpp" />
+    <ClCompile Include="..\..\LGPrintGrammar.cpp" />
+    <ClCompile Include="..\..\LGPrintStates.cpp" />
+    <ClCompile Include="..\..\PGActions.cpp" />
+    <ClCompile Include="..\..\PGBuildLR0.cpp" />
+    <ClCompile Include="..\..\PGBuildLR1.cpp" />
+    <ClCompile Include="..\..\PGCheckGrammar.cpp" />
+    <ClCompile Include="..\..\PGComputeLA.cpp" />
+    <ClCompile Include="..\..\PGCreateTables.cpp" />
+    <ClCompile Include="..\..\PGLexer.cpp" />
+    <ClCompile Include="..\..\PGMain.cpp" />
+    <ClCompile Include="..\..\PGOptimizeStates.cpp" />
+    <ClCompile Include="..\..\PGParser.cpp" />
+    <ClCompile Include="..\..\PGPrintHtml.cpp" />
+    <ClCompile Include="..\..\PGPrintStates.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\grm\ada.grm" />
+    <None Include="..\..\grm\basic.grm" />
+    <None Include="..\..\grm\c++.grm" />
+    <None Include="..\..\grm\c.grm" />
+    <None Include="..\..\grm\c.lgr" />
+    <None Include="..\..\grm\calc.grm" />
+    <None Include="..\..\grm\calc.lgr" />
+    <None Include="..\..\grm\cics.grm" />
+    <None Include="..\..\grm\cobol.grm" />
+    <None Include="..\..\grm\dbase.grm" />
+    <None Include="..\..\grm\fortran.grm" />
+    <None Include="..\..\grm\html.grm" />
+    <None Include="..\..\grm\modula2.grm" />
+    <None Include="..\..\grm\ncsalog.grm" />
+    <None Include="..\..\grm\pascal.grm" />
+    <None Include="..\..\grm\pl1.grm" />
+    <None Include="..\..\grm\plm.grm" />
+    <None Include="..\..\grm\sql.grm" />
+    <None Include="..\..\grm\vbasic.grm" />
+    <None Include="..\..\grm\verilog.grm" />
+    <None Include="..\..\grm\xpl.grm" />
+    <None Include="..\..\grm\zeus.grm" />
+    <None Include="..\..\LG.grm" />
+    <None Include="..\..\PG.grm" />
+    <None Include="..\..\skels\c++11\lexer.cpp.skl" />
+    <None Include="..\..\skels\c++11\lexer.h.skl" />
+    <None Include="..\..\skels\c++11\parser.cpp.skl" />
+    <None Include="..\..\skels\c++11\parser.h.skl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\ComGenerate.h" />
+    <ClInclude Include="..\..\ComGlobal.h" />
+    <ClInclude Include="..\..\LGActions.h" />
+    <ClInclude Include="..\..\LGAddExtra.h" />
+    <ClInclude Include="..\..\LGBuildStates.h" />
+    <ClInclude Include="..\..\LGCheckGrammar.h" />
+    <ClInclude Include="..\..\LGComputeLA.h" />
+    <ClInclude Include="..\..\LGCreateTables.h" />
+    <ClInclude Include="..\..\LGGenerate.h" />
+    <ClInclude Include="..\..\LGGlobal.h" />
+    <ClInclude Include="..\..\LGLexer.h" />
+    <ClInclude Include="..\..\LGOptimizeStates.h" />
+    <ClInclude Include="..\..\LGParser.h" />
+    <ClInclude Include="..\..\LGPrintStates.h" />
+    <ClInclude Include="..\..\PGActions.h" />
+    <ClInclude Include="..\..\PGBuildLR1.h" />
+    <ClInclude Include="..\..\PGCheckGrammar.h" />
+    <ClInclude Include="..\..\PGComputeLA.h" />
+    <ClInclude Include="..\..\PGCreateTables.h" />
+    <ClInclude Include="..\..\PGGenerate.h" />
+    <ClInclude Include="..\..\PGGlobal.h" />
+    <ClInclude Include="..\..\PGLexer.h" />
+    <ClInclude Include="..\..\PGOptimizeStates.h" />
+    <ClInclude Include="..\..\PGParser.h" />
+    <ClInclude Include="..\..\PGPrintHtml.h" />
+    <ClInclude Include="..\..\PGPrintStates.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
