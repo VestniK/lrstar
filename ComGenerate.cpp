@@ -376,8 +376,8 @@ bool Generate::GenerateCode(const char* sklfid, const char* outfid, int verbose)
     skel = skeldata.data();
     skelend = skel + skeldata.size();
 
-      if (chmod (out_fid, S_IWRITE) == 0) // File can be written ?
-      {
+    if (chmod(out_fid, S_IWRITE) == 0) // File can be written ?
+	   {
          if (unlink (out_fid) != 0) // Delete it?
          {
 	         if (++n_errors == 1) prt_log ("\n");
@@ -514,7 +514,7 @@ void Generate::EMIT_ALL (int verbose)
 		if (verbose > 1) prt_log     ("Output:   %s (%s lines)\n", out_fid, num);
 		else             prt_logonly ("Output:   %s (%s lines)\n", out_fid, num);
 
-      chmod (out_fid, S_IREAD); // Make output file read-only.
+		chmod(out_fid, S_IREAD); // Make output file read-only.
 }
 
 void Generate::SCAN ()
