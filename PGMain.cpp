@@ -90,8 +90,8 @@ void  PG::OutputLexicalSymbols ()
       strcat (lexfid, gfn);
       strcat (lexfid, ".lex");
 
-      if (chmod (lexfid, S_IWRITE) == 0) // File can be written ?
-      {
+	  if (chmod(lexfid, S_IWRITE) == 0) // File can be written ?
+	  {
          if (unlink (lexfid) != 0) // Delete it?
          {
 	         if (++n_errors == 1) prt_log ("\n");
@@ -100,7 +100,7 @@ void  PG::OutputLexicalSymbols ()
          }
       }
 
-		filedesc = open (lexfid, O_CREAT | O_TRUNC | O_WRONLY, S_IREAD | S_IWRITE);
+	  filedesc = open(lexfid, O_CREAT | O_TRUNC | O_WRONLY, S_IREAD | S_IWRITE);
 
 	/* <lexical> symbols */
 
@@ -207,7 +207,7 @@ void  PG::OutputLexicalSymbols ()
 		write (filedesc, string, len);
 		close (filedesc);
 
-      chmod (lexfid, S_IREAD); // Make output file read-only.
+	  chmod(lexfid, S_IREAD); // Make output file read-only.
 }
 
 ///////////////////////////////////////////////////////////////////////////////
